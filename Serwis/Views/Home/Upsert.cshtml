@@ -1,0 +1,33 @@
+﻿@model Serwis.Models.Domains.Order
+
+<div class="container">
+    
+    <h2>@(Model.Id == 0 ? "Dodawanie nowego zamówienia" : "Aktualizowanie zamowienia")</h2>
+
+    <form method="post" asp-action="Upsert">
+         
+        @if(Model.Id != 0){
+         <input type="hidden" asp-for="Id">
+        }
+        
+         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+       
+        <div class="form-group row mt-3">
+            <div class="col-3">
+                <label asp-for=Name></label>
+            </div>
+            <div class="col-6">
+                <input class="form-control" asp-for=Name>
+            </div>
+            <span class="text-danger" asp-validation-for="Name"></span>
+        </div>
+        <div class="form-group row mt-3">
+            <div class="col-6">
+                <button type="submit" class=" btn btn-primary form-control">Zatwierdź</button>
+            </div>
+            <div class="col-6">
+                <a type ="button" class="btn btn-secondary form-control" asp-action="Service">Powrót</a>
+            </div>
+        </div>
+    </form>
+</div>
