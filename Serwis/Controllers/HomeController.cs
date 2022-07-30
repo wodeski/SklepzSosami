@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Serwis.Models;
 using Serwis.Models.Domains;
 using Serwis.Repository;
@@ -6,13 +7,20 @@ using System.Diagnostics;
 
 namespace Serwis.Controllers
 {
+    
+    [Authorize(Policy = "AdminOnly")]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IRepository _irepository;
+       
 
         [BindProperty]
         public Order Order { get; set; }
+
+        //[BindProperty]
+        //public Credential Credential { get; set; } //w innym kontrolerze to trzeba umiescic
 
         public HomeController(ILogger<HomeController> logger, IRepository irepository)
         {
@@ -23,7 +31,7 @@ namespace Serwis.Controllers
         public async Task<IActionResult> Service()
         {
             var items = await _irepository.GetItemsAsync();
-            if(items == null)
+            if (items == null)
             {
                 return View();
             }
@@ -31,19 +39,20 @@ namespace Serwis.Controllers
 
         }
 
-        public IActionResult Login()
-        {
-            return View();
+        //public IActionResult Login(Credential credential)
+        //{
+        //    return View(credential);
 
-        }
+        //}
 
-
+        [AllowAnonymous]
         public async Task<ActionResult> Upsert(int id = 0)
         {
-            Order = new ();
+            Order = new();
             if (id == 0)
+            {
                 return View(Order);
-
+            }
             var item = await _irepository.GetItemAsync(id);
             return View(item);
         }
@@ -51,11 +60,17 @@ namespace Serwis.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Upsert(Order order)
         {
+            //var errors = ModelState
+            //    .Where(x => x.Value.Errors.Count > 0)
+            //    .Select(x => new { x.Key, x.Value.Errors })
+            //    .ToArray();
             if (!ModelState.IsValid)
+            {
                 return View(order);
+            }
             if (order.Id == 0)
                 await _irepository.CreateItemAsync(order);
             await _irepository.UpdateItemAsync(order);
@@ -63,7 +78,7 @@ namespace Serwis.Controllers
             return RedirectToAction("Service");
         }
 
-        
+
 
         [HttpPost]
         public async Task<IActionResult> Update(Order order)
@@ -80,7 +95,7 @@ namespace Serwis.Controllers
         {
             try
             {
-                await  _irepository.DeleteItemAsync(id);
+                await _irepository.DeleteItemAsync(id);
             }
             catch (Exception ex)
             {
@@ -90,6 +105,7 @@ namespace Serwis.Controllers
             return Json(new { Success = true });
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();

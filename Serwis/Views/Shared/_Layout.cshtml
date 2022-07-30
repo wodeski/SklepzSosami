@@ -28,7 +28,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Service">Przejdź do zgłoszeń</a>
                         </li>
+
                     </ul>
+                </div>
+                <div class="mr-2 ">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index">Zaloguj</a>
+                    
                 </div>
             </div>
         </nav>
@@ -47,7 +52,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    
+
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

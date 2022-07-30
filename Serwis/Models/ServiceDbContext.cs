@@ -10,6 +10,7 @@ namespace Serwis.Models
 
         }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Credential> Credentials { get; set; }
     }
 }
 
