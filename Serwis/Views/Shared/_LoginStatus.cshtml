@@ -1,0 +1,17 @@
+﻿@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor;
+@{
+   var session =  @HttpContextAccessor.HttpContext?.Session.GetString("Login");
+}
+@if(User.Identity.IsAuthenticated)
+{
+    <span>Witaj @session</span>
+    <form method="post" class="form-inline" asp-action="Logout" asp-controller="Account">
+    <button type="submit" class="btn btn-link ml-2">Wyloguj</button>
+    
+    </form>
+    
+}else
+{
+    <a style="text-decoration:none" class="btn btn-link" asp-action="Index" asp-controller="Account">Zaloguj</a>
+}

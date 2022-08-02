@@ -5,7 +5,8 @@
 <div class="container row">
 
     <div class="col-5">
-        <h2 class="text-dark">Aktualne zamówienia</h2>
+    
+        <h2 class="text-dark">Aktualne zamówienia dla</h2>
     </div>
     <div class="col-5 offset-2">
         <a asp-action="Upsert" asp-controller="Home" class="btn btn-info form-control">
@@ -19,6 +20,7 @@
             <tr>
                 <th scope="col">Id</th>
                 <th scope="col">Name</th>
+                <th scope="col">Obrazek</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -31,6 +33,9 @@
                     <tr>
                         <td>@item.Id</td>
                         <td>@item.Name</td>
+                        <td>
+                        <img src="~/images/@item.ImageFileName" />
+                        </td>
                         <td>
                             <button onclick="removeRow('@item.Id', this)" class=" btn btn-danger">Usuń</button>
                             <a asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-info">Aktualizuj</a>

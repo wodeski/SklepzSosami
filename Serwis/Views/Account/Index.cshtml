@@ -2,6 +2,7 @@
 <div class="container border" style="padding:20px">
     <form method="post" asp-action="">
         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+        
         <div form-group row>
             <div class="col-3">
                 <label asp-for="UserName"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
@@ -26,6 +27,7 @@
                 </div>
             </div>
              <div form-group row>
+                 <span style="color:#df2c14">@TempData["UserNotFound"]</span>
             <div class="col-4">
                 <input type="submit" value="Login" class="btn btn-primary mt-3  " />
             </div>

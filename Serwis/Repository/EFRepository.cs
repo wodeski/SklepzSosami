@@ -38,6 +38,7 @@ namespace Serwis.Repository
         {
             var findItem = _serviceDbContext.Orders.Single(o => o.Id == order.Id);
             findItem.Name = order.Name;
+            findItem.ImageFileName = order.ImageFileName;
             await _serviceDbContext.SaveChangesAsync();
         }
     }

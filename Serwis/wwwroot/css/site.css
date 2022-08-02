@@ -1,18 +1,41 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+.bookItem {
+    display: grid;
+    width:100%;
+    margin-left:4rem;
+}
+
+@media screen and (min-width:1200px) {
+    .bookItem {
+        grid-template-columns: repeat(3, 30%) !important;
+    }
+}
+
+img {
+    width: 350px;
+    margin-top: 30%;
+    margin-bottom: 10px;
+}
+
+.blok {
+    display: block;
+
 }

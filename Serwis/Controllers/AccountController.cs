@@ -1,51 +1,76 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.Mvc;
 using Serwis.Models.Domains;
+using Serwis.Repository.AccountAuth;
 using System.Security.Claims;
 
 namespace Serwis.Controllers
 {
     public class AccountController : Controller
     {
+
+        private readonly AccountAuthRepository _accountAuth;
+        public const string SessionKeyName = "Login";
+        private const string UserNotFound = "Nie znaleziono użytkownika!"; 
+
+        public AccountController(AccountAuthRepository accountAuth)
+        {
+            _accountAuth = accountAuth;
+        }
         [BindProperty]
         public Credential Credential { get; set; }
-
-
         public IActionResult Index()
         {
-            if (!ModelState.IsValid)
-            {
-                Credential = new();
-                return View(Credential);
-            }
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Index(Credential credential)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)//dac js po stronie klienta
+                return View(credential);
+
+            if (!CheckAuth(credential))
             {
-                if (Credential.UserName == "admin" && Credential.Password == "admin")
-                {
-                    var claims = AddClaims();
-                    var identity = new ClaimsIdentity(claims, "MyCookieAuth");
-                    var clasimsPrincipal = new ClaimsPrincipal(identity);
-                    ////kolejnosc ma znacznie dlatego w innych projektach nalezy trzymac sie tego ukladu 
-                    //var authProperties = new AuthenticationProperties
-                    //{
-                    //    IsPersistent = Credential.RememberMe //opcja dziki ktorej cookie nie znika wraz z wylacznienim przegladarki
-                    //};
-
-                    await HttpContext.SignInAsync("MyCookieAuth", clasimsPrincipal);
-
-                    return RedirectToAction("Service", "Home"); // przekierowanie do akcji w kontrolerze home
-                };
+                TempData["UserNotFound"] = UserNotFound;
+                return View(credential); //dac info ze nie ma takiego 
             }
-            return View(credential);
+            AddSession(credential);
+            var clasimsPrincipal = AddClaims();
+
+            //Action_();
+            ////kolejnosc ma znacznie dlatego w innych projektach nalezy trzymac sie tego ukladu 
+
+            await HttpContext.SignInAsync("MyCookieAuth", clasimsPrincipal);
+            return RedirectToAction("Service", "Home");//, login); // przekierowanie do akcji w kontrolerze home
+
+
         }
 
-        private List<Claim> AddClaims()
+        private void Action_()
+        {
+            //var authProperties = new AuthenticationProperties
+            //{
+            //    IsPersistent = Credential.RememberMe //opcja dziki ktorej cookie nie znika wraz z wylacznienim przegladarki
+            //};
+        }
+        private void AddSession(Credential credential)
+        {
+            HttpContext.Session.SetString(SessionKeyName, credential.UserName);
+        }
+
+        private bool CheckAuth(Credential credential)
+        {
+            return _accountAuth.FindUser(credential);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("MyCookieAuth"); // najlepiej const string
+            return RedirectToAction("Index", "Home");
+        }
+
+        private ClaimsPrincipal AddClaims()
         {
             var claims = new List<Claim>
                         {
@@ -57,15 +82,9 @@ namespace Serwis.Controllers
                  // new Claim("EmploymentDate", "2022-04-01") //claim w ktorym bedzie informacje o dacie zatrudnienia
                  //CLAIM DODANIE GO DO COOKIE DAJW MOZLIWOSC WGLADU DO ZAWARTOSCI USTALONEJ W PROGRAM.CS
              };
-            return claims;
-        }
-
-
-        [Authorize(Policy = "AdminOnly")]
-        public IActionResult Test()
-        {
-
-            return View();
+            var identity = new ClaimsIdentity(claims, "MyCookieAuth");
+            var clasimsPrincipal = new ClaimsPrincipal(identity);
+            return clasimsPrincipal;
         }
     }
 }

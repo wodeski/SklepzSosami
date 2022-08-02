@@ -8,13 +8,13 @@ using System.Diagnostics;
 namespace Serwis.Controllers
 {
     
-    [Authorize(Policy = "AdminOnly")]
+   
 
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IRepository _irepository;
-       
+        private readonly IWebHostEnvironment _hostEnviroment;
 
         [BindProperty]
         public Order Order { get; set; }
@@ -22,14 +22,17 @@ namespace Serwis.Controllers
         //[BindProperty]
         //public Credential Credential { get; set; } //w innym kontrolerze to trzeba umiescic
 
-        public HomeController(ILogger<HomeController> logger, IRepository irepository)
+        public HomeController(ILogger<HomeController> logger, IRepository irepository, IWebHostEnvironment hostEnviroment)
         {
             _logger = logger;
             _irepository = irepository;
+            _hostEnviroment = hostEnviroment;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Service()
         {
+
             var items = await _irepository.GetItemsAsync();
             if (items == null)
             {
@@ -58,7 +61,6 @@ namespace Serwis.Controllers
         }
 
 
-
         [HttpPost]
 
         public async Task<IActionResult> Upsert(Order order)
@@ -68,27 +70,50 @@ namespace Serwis.Controllers
             //    .Select(x => new { x.Key, x.Value.Errors })
             //    .ToArray();
             if (!ModelState.IsValid)
-            {
                 return View(order);
-            }
+            
             if (order.Id == 0)
+            {
+                AddImageToDirectory(order);
                 await _irepository.CreateItemAsync(order);
+            }
+            else 
+            {
             await _irepository.UpdateItemAsync(order);
-
+            }
             return RedirectToAction("Service");
         }
 
-
-
-        [HttpPost]
-        public async Task<IActionResult> Update(Order order)
+        private void AddImageToDirectory(Order order)
         {
-            if (!ModelState.IsValid)
-                return View(order);
-            await _irepository.UpdateItemAsync(order);
-
-            return RedirectToAction("Service");
+            var imageFilePath = AddPathToImage(order);
+            using(var fileStream = new FileStream(imageFilePath, FileMode.Create))
+            {
+                order.ImageFile.CopyTo(fileStream);
+            }
         }
+
+        private string AddPathToImage(Order order)
+        {
+            var wwwRootPath = _hostEnviroment.WebRootPath;
+            var fileName = Path.GetFileNameWithoutExtension(order.ImageFile.FileName);
+            var extension = Path.GetExtension(order.ImageFile.FileName);
+            order.ImageFileName = fileName + DateTime.Now.ToString("yyMMddmmss") + extension;
+            var imageFilePath = Path.Combine(wwwRootPath + "/Images/", order.ImageFileName);
+            return imageFilePath;
+        }
+
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> Update(Order order)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return View(order);
+        //    await _irepository.UpdateItemAsync(order);
+
+        //    return RedirectToAction("Service");
+        //}
 
         [HttpPost]
         public async Task<IActionResult> DeleteAsync(int id)
@@ -108,6 +133,7 @@ namespace Serwis.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
+
             return View();
         }
 

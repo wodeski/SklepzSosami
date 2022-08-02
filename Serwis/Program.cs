@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Serwis.Models;
 using Serwis.Repository;
+using Serwis.Repository.AccountAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,14 +31,28 @@ builder.Services.AddAuthorization(options =>
 // Add services to the container.
 builder.Services.AddScoped<IServiceDbContext, ServiceDbContext>();
 
-
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // do obs³ugi sesji po stronie view w tym wypadku oczywiscie ma tez inne zastosowanie 
 
 
 builder.Services.AddDbContext<ServiceDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultContext")));
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IRepository, EFRepository>(); 
+builder.Services.AddScoped<IRepository, EFRepository>();
+builder.Services.AddScoped<AccountAuthRepository, AccountAuthRepository>();
+
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); // POZWALA NA WIDZENIE ZMIAN PO ODSWIEZENIU STRONY
+builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(
+    options =>
+{
+   // options.IdleTimeout = TimeSpan.FromSeconds(10);
+//    options.Cookie.HttpOnly = true;
+//    options.Cookie.IsEssential = true;
+}
+);
 
 var app = builder.Build();
 
@@ -52,13 +67,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
+app.UseSession(); // dodanie midleware
 
 app.UseRouting();
 
 app.UseAuthentication();//  BEZ TEGO NIE ZADZIA£A AUTORYZACJA
 
 app.UseAuthorization();
+
+
 
 //app.MapGet("/Service", () => "Hello World!")
 //    .RequireAuthorization("AtLeast21");

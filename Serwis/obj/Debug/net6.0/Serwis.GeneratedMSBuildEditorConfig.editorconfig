@@ -11,16 +11,12 @@ build_property.RootNamespace = Serwis
 build_property.ProjectDir = C:\Users\Wojtek\source\repos\Serwis\Serwis\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
-build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = true
 build_property.MSBuildProjectDirectory = C:\Users\Wojtek\source\repos\Serwis\Serwis
 build_property._RazorSourceGeneratorDebug = 
 
 [C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Account/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Account/Test.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxUZXN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Home/Create.cshtml]
@@ -45,6 +41,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Shared/_LoginStatus.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpblN0YXR1cy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Shared/_ValidationScriptsPartial.cshtml]
