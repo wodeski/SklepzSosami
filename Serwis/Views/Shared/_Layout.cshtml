@@ -31,6 +31,11 @@
 
                     </ul>
                 </div>
+                <div class="cart-btn">
+                    <i id="cart" class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-quantity">0</span>
+                </div>
+                <i id= "cart" class="fa-solid fa-user"></i>
                 <div class="mr-2 ">
                     <partial name="_LoginStatus" />
                 </div>
@@ -51,6 +56,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://kit.fontawesome.com/b1af44c630.js" crossorigin="anonymous"></script>
+
 
     @await RenderSectionAsync("Scripts", required: false)
 

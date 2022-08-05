@@ -8,19 +8,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options => // pierwsze jest nazwa schematu autentykacji nie ze nazwa cookie  
 {
     options.Cookie.Name = "MyCookieAuth";//ustawienie  nazwy cookie
-    options.LoginPath = "/Account/Index";//dosmylnie jest tak ustawione jesli chcemy dac w³asna sciezke wtedy trzeba ja sprecyzowac w³asnie w tym miejscu
-    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.LoginPath = "/Account/Login";//dosmylnie jest tak ustawione jesli chcemy dac w³asna sciezke wtedy trzeba ja sprecyzowac w³asnie w tym miejscu
+    options.AccessDeniedPath = "/Home/Index";
 
 });
 
 builder.Services.AddAuthorization(options =>
 {
-    //options.AddPolicy("AdminOnly",
-    //    policy => policy.RequireClaim("Admin"));
+    options.AddPolicy("User",
+        policy => policy
+        .RequireClaim("User"));
 
     options.AddPolicy("AdminOnly",
-        policy => policy.RequireClaim("Department", "Orders"));
-
+        policy => policy.RequireClaim("Admin"));
     //options.AddPolicy("HRManagerOnly",
     //    policy => policy
     //    .RequireClaim("Department", "HR")

@@ -6,6 +6,8 @@ namespace Serwis.Models
     public interface IServiceDbContext
     {
         DbSet<Order> Orders { get; set; }
-        DbSet<Credential> Credentials { get; set; }
+        DbSet<ApplicationUser> Credentials { get; set; }
+        DbSet<OrderPosition> OrderPositions { get; set; }
+        DbSet<Product> Products { get; set; }
     }
 }

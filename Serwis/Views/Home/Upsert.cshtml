@@ -1,4 +1,4 @@
-﻿@model Serwis.Models.Domains.Order
+﻿@model Serwis.Models.Domains.Product
 
 
 <div class="container">
@@ -23,15 +23,7 @@
             </div>
             <span class="text-danger" asp-validation-for="Name"></span>
         </div>
-        <div class="form-group row mt-3">
-            <div class="col-3">
-                <label asp-for="ImageFileName"></label>
-            </div>
-            @*<div class="col-6">
-                <input class="form-control" asp-for="ImageFileName">
-            </div>*@
-            @*<span class="text-danger" asp-validation-for="ImageFileName"></span>*@
-        </div>
+        
         <div class="form-group row mt-3">
             <div class="col-3">
                 <label asp-for="ImageFile"></label>
@@ -39,7 +31,7 @@
             <div class="col-6">
                 <input class="form-control" accept="image/*" asp-for="ImageFile">
             </div>
-            @*<span class="text-danger" asp-validation-for="ImageFile"></span>*@
+            <span class="text-danger" asp-validation-for="ImageFile"></span>
         </div>
         <div class="form-group row mt-3">
             <div class="col-6">

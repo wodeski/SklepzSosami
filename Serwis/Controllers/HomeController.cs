@@ -17,7 +17,7 @@ namespace Serwis.Controllers
         private readonly IWebHostEnvironment _hostEnviroment;
 
         [BindProperty]
-        public Order Order { get; set; }
+        public Product Product { get; set; }
 
         //[BindProperty]
         //public Credential Credential { get; set; } //w innym kontrolerze to trzeba umiescic
@@ -36,7 +36,8 @@ namespace Serwis.Controllers
             var items = await _irepository.GetItemsAsync();
             if (items == null)
             {
-                return View();
+                var emptyList = new List<Product>();
+                return View(emptyList);
             }
             return View(items);
 
@@ -51,10 +52,10 @@ namespace Serwis.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Upsert(int id = 0)
         {
-            Order = new();
+            Product = new();
             if (id == 0)
             {
-                return View(Order);
+                return View(Product);
             }
             var item = await _irepository.GetItemAsync(id);
             return View(item);
@@ -63,46 +64,45 @@ namespace Serwis.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> Upsert(Order order)
+        public async Task<IActionResult> Upsert(Product product)
         {
             //var errors = ModelState
             //    .Where(x => x.Value.Errors.Count > 0)
             //    .Select(x => new { x.Key, x.Value.Errors })
             //    .ToArray();
             if (!ModelState.IsValid)
-                return View(order);
+                return View(product);
             
-            if (order.Id == 0)
+            if (product.Id == 0)
             {
-                AddImageToDirectory(order);
-                await _irepository.CreateItemAsync(order);
+                AddImageToDirectory(product);
+                await _irepository.CreateProductAsync(product);
             }
             else 
             {
-            await _irepository.UpdateItemAsync(order);
+            await _irepository.UpdateProductAsync(product);
             }
             return RedirectToAction("Service");
         }
 
-        private void AddImageToDirectory(Order order)
+        private void AddImageToDirectory(Product product)
         {
-            var imageFilePath = AddPathToImage(order);
+            var imageFilePath = AddPathToImage(product);
             using(var fileStream = new FileStream(imageFilePath, FileMode.Create))
             {
-                order.ImageFile.CopyTo(fileStream);
+                product.ImageFile.CopyTo(fileStream);
             }
         }
 
-        private string AddPathToImage(Order order)
+        private string AddPathToImage(Product product)
         {
             var wwwRootPath = _hostEnviroment.WebRootPath;
-            var fileName = Path.GetFileNameWithoutExtension(order.ImageFile.FileName);
-            var extension = Path.GetExtension(order.ImageFile.FileName);
-            order.ImageFileName = fileName + DateTime.Now.ToString("yyMMddmmss") + extension;
-            var imageFilePath = Path.Combine(wwwRootPath + "/Images/", order.ImageFileName);
+            var fileName = Path.GetFileNameWithoutExtension(product.ImageFile.FileName);
+            var extension = Path.GetExtension(product.ImageFile.FileName);
+            product.ImageFileName = fileName + DateTime.Now.ToString("yyMMddmmss") + extension;
+            var imageFilePath = Path.Combine(wwwRootPath + "/Images/", product.ImageFileName);
             return imageFilePath;
         }
-
 
 
         //[HttpPost]
@@ -125,18 +125,24 @@ namespace Serwis.Controllers
             catch (Exception ex)
             {
                 //logowanie do pliku
-                return Json(new { Success = false, message = ex.Message });
+                return Json(new { success = false, message = ex.Message });
             }
-            return Json(new { Success = true });
+            return Json(new { success = true });
         }
 
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-
-            return View();
+            var items = await _irepository.GetItemsAsync();
+            if (items == null)
+            {
+                var emptyList = new List<Order>();
+                return View(emptyList);
+            }
+            return View(items);
         }
 
+        [Authorize(Policy = "User")] // jesli ma obaj maja miec mozliwosc wejscia trzeba dac roles
         public IActionResult Privacy()
         {
             return View();

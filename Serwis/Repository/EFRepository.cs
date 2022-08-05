@@ -11,9 +11,24 @@ namespace Serwis.Repository
         {
             _serviceDbContext = serviceDbContext;
         }
-        public async Task CreateItemAsync(Order order)
+
+        public void AddPosition(int UserId, int ProductId)
         {
-            await _serviceDbContext.AddAsync(order);
+            var pozycja = new OrderPosition
+            {
+                OrderId = 1,
+                UserId = UserId,
+                ProductId = ProductId,
+            };
+            //warunek gdy nie ma zamówień
+            //warunek gdy nie ma uzytkownika
+            _serviceDbContext.OrderPositions.Add(pozycja);
+            _serviceDbContext.SaveChanges();
+        }
+
+        public async Task CreateProductAsync(Product product)
+        {
+            await _serviceDbContext.Products.AddAsync(product);
             await _serviceDbContext.SaveChangesAsync();
         }
 
@@ -24,22 +39,44 @@ namespace Serwis.Repository
             await _serviceDbContext.SaveChangesAsync();
         }
 
-        public async Task<Order> GetItemAsync(int id)
+        public async Task<Product> GetItemAsync(int id)
         {
-            return await _serviceDbContext.Orders.SingleAsync(o => o.Id == id);
+            return await _serviceDbContext.Products.SingleAsync(o => o.Id == id);
         }
 
-        public async Task<IEnumerable<Order>> GetItemsAsync()
+        public async Task<IEnumerable<Product>> GetItemsAsync()
         {
-            return await _serviceDbContext.Orders.ToListAsync(); //entity framework 
+            return await _serviceDbContext.Products.ToListAsync(); //entity framework 
         }
 
-        public async Task UpdateItemAsync(Order order)
+        public IEnumerable<OrderPosition> GetPositions()
         {
-            var findItem = _serviceDbContext.Orders.Single(o => o.Id == order.Id);
-            findItem.Name = order.Name;
-            findItem.ImageFileName = order.ImageFileName;
+           return _serviceDbContext.OrderPositions
+                .Include(x=>x.Product)
+                .Include(x=>x.User)
+                .Include(x=>x.Order)
+                .ToList();//zle
+            
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            var findItem = _serviceDbContext.Products.Single(o => o.Id == product.Id);
+            findItem.Name = product.Name;
+            findItem.ImageFileName = product.ImageFileName;
             await _serviceDbContext.SaveChangesAsync();
         }
+        public ApplicationUser FindUser(string userName)
+        {
+            //poprawic warunki
+            var findUser = _serviceDbContext.Credentials.Where(o => o.UserName == userName).FirstOrDefault();
+            if(findUser == null)
+            {
+                return new ApplicationUser();
+            }
+            return findUser;
+        }
+
+
     }
 }
