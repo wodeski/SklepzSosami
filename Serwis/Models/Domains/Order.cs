@@ -15,6 +15,8 @@ namespace Serwis.Models.Domains
         [Display(Name = "Identyfikator")]
         public int Id { get; set; }
 
+        public bool IsCompleted { get; set; }
+
         [ForeignKey("User")]
         public int UserId { get; set; }
         public ApplicationUser User { get; set; } // klucz obcy

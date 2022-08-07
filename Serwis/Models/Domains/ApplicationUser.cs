@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Serwis.Models.Domains
 {
-    public class ApplicationUser
+
+    public class ApplicationUser : IApplicationUser
     {
 
         public ApplicationUser()
@@ -13,6 +15,7 @@ namespace Serwis.Models.Domains
 
         [Key]
         public int Id { get; set; }
+
         [Required]
         [Display(Name = "Nazwa uzytkownika")]
         public string UserName { get; set; }
@@ -24,7 +27,8 @@ namespace Serwis.Models.Domains
 
         [Display(Name = "Zapamietaj mnie")]
         public bool RememberMe { get; set; }
-
         public ICollection<Order> Orders { get; set; } //uztykownik moze miec wiele zamówień
+        public string? Email { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

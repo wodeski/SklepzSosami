@@ -77,6 +77,22 @@ namespace Serwis.Repository
             return findUser;
         }
 
+        public Product GetProduct(int id)
+        {
+            var find = _serviceDbContext.Products.FirstOrDefault(x => x.Id == id);
+            if (find == null)
+                throw new ArgumentNullException();
+            return find;
+        }
 
+        public IEnumerable<OrderPosition> GetPositionsForUser(int userId)
+        {
+            return _serviceDbContext.OrderPositions
+                 .Include(x => x.Product)
+                 .Include(x => x.User)
+                 .Include(x => x.Order)
+                 .Where(x=>x.UserId == userId)
+                 .ToList();//zle
+        }
     }
 }

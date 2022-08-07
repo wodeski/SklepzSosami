@@ -12,6 +12,7 @@ namespace Serwis.Controllers
 
     public class HomeController : Controller
     {
+        private readonly EmailSender _emailSender;
         private readonly ILogger<HomeController> _logger;
         private readonly IRepository _irepository;
         private readonly IWebHostEnvironment _hostEnviroment;
@@ -22,11 +23,12 @@ namespace Serwis.Controllers
         //[BindProperty]
         //public Credential Credential { get; set; } //w innym kontrolerze to trzeba umiescic
 
-        public HomeController(ILogger<HomeController> logger, IRepository irepository, IWebHostEnvironment hostEnviroment)
+        public HomeController(ILogger<HomeController> logger, IRepository irepository, IWebHostEnvironment hostEnviroment, EmailSender emailSender)
         {
             _logger = logger;
             _irepository = irepository;
             _hostEnviroment = hostEnviroment;
+            _emailSender = emailSender;
         }
 
         [Authorize(Policy = "AdminOnly")]
@@ -66,6 +68,9 @@ namespace Serwis.Controllers
 
         public async Task<IActionResult> Upsert(Product product)
         {
+            var userEmail = HttpContext.Session.GetString("Email");
+
+            _emailSender.SendMail(userEmail);
             //var errors = ModelState
             //    .Where(x => x.Value.Errors.Count > 0)
             //    .Select(x => new { x.Key, x.Value.Errors })
@@ -148,10 +153,18 @@ namespace Serwis.Controllers
             return View();
         }
 
+       
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult Test()
+        {
+            return View();
+        }
+
     }
 }

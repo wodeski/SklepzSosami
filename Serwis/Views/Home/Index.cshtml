@@ -2,7 +2,7 @@
 @model List<Serwis.Models.Domains.Product>
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
-   var session =  @HttpContextAccessor.HttpContext?.Session.GetString("Login");
+    var session = @HttpContextAccessor.HttpContext?.Session.GetString("Login");
 }
 <div class="bookItem">
 
@@ -12,91 +12,75 @@
         @foreach (var item in Model)
         {
             <div>
-                <img src="~/images/@item.ImageFileName" />
+                <a style="cursor: pointer;" asp-action="Product" asp-controller="Shop" asp-route-productId="@item.Id"><img
+                src="~/images/@item.ImageFileName" /></a>
                 <span>@item.Name</span>
+                <span>@item.Price zł</span>
                 <div style="display:block">
                     <button class=" mt-1 btn btn-sm btn-secondary"> Kupuj</button>
-                    <button class=" mt-1 btn btn-sm btn-primary" style="display: inline" onclick="AddToCart('@item.Id', '@session')">Dodaj do koszyka</button>
+                    <button class=" mt-1 btn btn-sm btn-primary" style="display: inline"
+                onclick="AddToCart('@item.Id', '@session')">Dodaj do koszyka</button>
                 </div>
             </div>
         }
 
-    }else{
-    <h2>Brak pozycji do wyswietlenia</h2>
+    }
+    else
+    {
+        <h2>Brak pozycji do wyswietlenia</h2>
     }
 </div>
 @*<div id="container">
-        <h1>Ludzie, którzy weszli:</h1>
-        <h2 class="count_el"></h2>
-        <h2 class="count_element"></h2>
+    <h1>Ludzie, którzy weszli:</h1>
+    <h2 class="count_el"></h2>
+    <h2 class="count_element"></h2>
 
-        <button onclick="dodaj()">Dodaj</button>
-        <button onclick="zapisz()">Zapisz</button>
-        
+    <button onclick="dodaj()">Dodaj</button>
+    <button onclick="zapisz()">Zapisz</button>
 
-        <h2 id="save_num"></h2>
+
+    <h2 id="save_num"></h2>
     </div>*@
 
 @section scripts{
-<script type="text/javascript" >
+<script type="text/javascript">
 
-function AddToCart(id, userName) {
-    if (!confirm(" Czy na pewno chesz dodac te pozycje do koszyka?"))
-        return;
-    $.ajax({
-        type: 'POST',
-        url: "@Url.Action("Add", "Cart")",
-        data:
-        {
-            id: id,
-            userName: userName
-        },
-        success: function (data) {
-            if (data.success) { // musza byc male litery i tu i tu
+    function AddToCart(id, userName)
+    {
+        if (!confirm(" Czy na pewno chesz dodac te pozycje do koszyka?"))
+            return;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("Add", "Shop")",
+            data:
+            {
+                id: id,
+                userName: userName
+            },
+            success: function (data)
+            {
+                if (data.success)
+                { // musza byc male litery i tu i tu
 
-                let quantity = document.getElementsByClassName('cart-quantity')[0].textContent
-                quantity++;
-                console.log(quantity);
+                    let quantity = document.getElementsByClassName('cart-quantity')[0].textContent
+                    quantity++;
+                    console.log(quantity);
 
-                document.getElementsByClassName('cart-quantity')[0].textContent = quantity;
+                    document.getElementsByClassName('cart-quantity')[0].textContent = quantity;
 
 
-            } else {
-                alert(data.message+"tu sie zjebalo");
-            }
-        },
-        error: function (data) {
-            alert(data.message+"nie bo tutaj");
-        },
-        dataType: 'json'
+                } else
+                {
+                    alert(data.message + "tu sie zjebalo");
+                }
+            },
+            error: function (data)
+            {
+                alert(data.message + "nie bo tutaj");
+            },
+            dataType: 'json'
 
-    });
-}
-    
-//    let doc = document.getElementsByClassName("count_el")
-//let count = document.getElementByClassName("count_element")
-//let save_num = document.getElementById("save_num")
-//let powitanie = "Witaj"
-//let imie = "wojtek"
-//doc.innerText = powitanie + "," + imie
-//doc.innerText += " chuju"
-
-//let liczba = 0
-//function dodaj()
-//{
-//    liczba++
-//    count.innerText = liczba
-//}
-
-//function zapisz()
-//{
-//    save_num.textContent += liczba + " - " // nawet całkiem przydatne //contnet text lepiej sie nadaje bo w przeciwienstwie do innextext nie usuwa znaków niewidocznych// tak po czesci to prawda
-//    liczba = 0  
-//    count.innerText = liczba
-//}
-
+        });
+    }
 </script>
 }
-    
-
- 

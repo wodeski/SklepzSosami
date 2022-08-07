@@ -18,11 +18,25 @@ namespace Serwis.Models.Domains
         [Display(Name = "Nazwa")]
         public string Name { get; set; }
 
+        [Required(ErrorMessage = "Pole Wartość musi zostac wypełnione")]
+        [Display(Name = "Wartość")]
+        [Column(TypeName = "decimal(2,2)")]
+        [Range(1, 100)]
+        public decimal Price { get; set; }
+
+        [Required(ErrorMessage = "Pole Opis musi zostac wypełnione")]
+        [Display(Name = "Opis")]
+        [MaxLength(250)]
+        public string Description { get; set; }
+
         public string? ImageFileName { get; set; }
 
-        [Required(ErrorMessage = "Dodaj zdjęcie")]
+        [Required(ErrorMessage = "Zdjęcie jest wymagane!")]
         [NotMapped]
+        [Display(Name ="Dodaj zdjęcie")]
         public IFormFile? ImageFile { get; set; }
+
+        public DateTime CreatedDate { get; set; }
 
         public ICollection<OrderPosition> OrderPositions { get; set; }
     }

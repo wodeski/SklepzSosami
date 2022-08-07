@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Serwis.Models.Domains;
 using Serwis.Repository.AccountAuth;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Serwis.Converter;
 
 namespace Serwis.Controllers
 {
@@ -19,46 +21,65 @@ namespace Serwis.Controllers
         {
             _accountAuth = accountAuth;
         }
-        [BindProperty]
-        public ApplicationUser Credential { get; set; }
+        public Register Credential { get; set; }
         public IActionResult Login()
         {
             return View();
         }
 
-        public IActionResult Register()
+        public IActionResult Register() //przekirowanie zrobic
         {
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home"); 
+
+            Credential = new Register(); // chyba najlepiej bedzie view model zrobic
             return View();
 
         }
 
         [HttpPost]
-        public IActionResult Register(ApplicationUser applicationUser)
+        public IActionResult Register(Register register) //trzeba doprowadzic do sytuacji w kótrej sprawdzone zostanie register tylko
         {
+            register.CreatedDate = DateTime.Now;    
+            if (!ModelState.IsValid)
+                return View(register);
+            if (register.Password != register.RepeatPassword)
+            {
+                TempData["Walidacja"] = "Hasła nie sa takie same";
+                return View(register);
+            }
             try
             {
-                Console.WriteLine("jest okej");
+                var user = register.ConvertToApplicationUser();
+                _accountAuth.CreateUser(user);
             }
             catch (Exception ex)
             {
                 //logowanie do pliku
-                return Json(new { Success = false, message = ex.Message });
+                throw new Exception(ex.Message);
             }
-            return Json(new { Success = true });
+            return RedirectToAction("Login", "Account");
 
         }
         [HttpPost]
         public async Task<IActionResult> Login(ApplicationUser credential)
         {
-            if (!ModelState.IsValid)//dac js po stronie klienta
+            if (!ModelState.IsValid)
+            {
+                
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { x.Key, x.Value.Errors })
+                    .ToArray();
                 return View(credential);
-
-            if (!CheckAuth(credential))
+            }
+            var userInDatabase = CheckAuth(credential);
+            if (userInDatabase == null)
             {
                 TempData["UserNotFound"] = UserNotFound;
                 return View(credential); //dac info ze nie ma takiego 
             }
-            AddSession(credential);
+            AddSession(userInDatabase);
             var clasimsPrincipal = AddClaims(credential);
 
             //Action_();
@@ -80,9 +101,12 @@ namespace Serwis.Controllers
         private void AddSession(ApplicationUser credential)
         {
             HttpContext.Session.SetString(SessionKeyName, credential.UserName);
+            HttpContext.Session.SetString("Email", credential.Email);
+            HttpContext.Session.SetString("Id", (credential.Id).ToString());
+
         }
 
-        private bool CheckAuth(ApplicationUser credential)
+        private ApplicationUser CheckAuth(ApplicationUser credential)
         {
             return _accountAuth.FindUser(credential);
         }
@@ -99,29 +123,43 @@ namespace Serwis.Controllers
             if (credential.UserName.ToLower() == AdminIsSigningIn)
             {
                 var claims = new List<Claim>
-                        {
-                       // new Claim(ClaimTypes.Name, "admin"), //własciwosci jak mniemam
-                       // new Claim(ClaimTypes.Email, "admin@wp.pl"), //własciwosci jak mniemam
-                        new Claim("Admin", "true")
-                 // new Claim("Admin", "true"),
-                 // new Claim("Manager", "true"),
-                 // new Claim("EmploymentDate", "2022-04-01") //claim w ktorym bedzie informacje o dacie zatrudnienia
-                 //CLAIM DODANIE GO DO COOKIE DAJW MOZLIWOSC WGLADU DO ZAWARTOSCI USTALONEJ W PROGRAM.CS
-                 
-            };
+                {
+                    new Claim("Admin", "true")
+                // new Claim(ClaimTypes.Name, "admin"), //własciwosci jak mniemam
+                // new Claim(ClaimTypes.Email, "admin@wp.pl"), //własciwosci jak mniemam
+                // new Claim("Admin", "true"),
+                // new Claim("Manager", "true"),
+                // new Claim("EmploymentDate", "2022-04-01") //claim w ktorym bedzie informacje o dacie zatrudnienia
+                //CLAIM DODANIE GO DO COOKIE DAJW MOZLIWOSC WGLADU DO ZAWARTOSCI USTALONEJ W PROGRAM.CS
+                };
                 var identity = new ClaimsIdentity(claims, "MyCookieAuth");
                 var clasimsPrincipal = new ClaimsPrincipal(identity);
                 return clasimsPrincipal;
             }
-
-            var claims_user = new List<Claim>
+            else
             {
-                new Claim("User", "true"),
-            };
-            var identity_user = new ClaimsIdentity(claims_user, "MyCookieAuth");
-            var clasimsPrincipal_user = new ClaimsPrincipal(identity_user);
-            return clasimsPrincipal_user;
 
+                var claims_user = new List<Claim>
+                {
+                    new Claim("User", "true"),
+                };
+                HttpContext.Session.SetString("Zwykly", credential.UserName);
+
+
+                var identity_user = new ClaimsIdentity(claims_user, "MyCookieAuth");
+                var clasimsPrincipal_user = new ClaimsPrincipal(identity_user);
+                return clasimsPrincipal_user;
+            }
+
+        }
+
+        [Authorize]
+        public IActionResult UserInfo()
+        {
+            var credential = HttpContext.Session.GetString(SessionKeyName);
+
+            var user = _accountAuth.GetUser(credential);
+            return View(user);
         }
     }
 }

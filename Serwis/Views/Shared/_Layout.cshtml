@@ -1,9 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor;
+@{
+   var sessionId =  @HttpContextAccessor.HttpContext?.Session.GetString("Id");
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Serwis</title>
+    <title>@ViewData["Title"] - SklEp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Serwis.styles.css" asp-append-version="true" />
@@ -32,7 +37,7 @@
                     </ul>
                 </div>
                 <div class="cart-btn">
-                    <i id="cart" class="fa-solid fa-cart-shopping"></i>
+                    <a style="color: inherit;" asp-action="Cart" asp-controller="Shop" asp-route-userId="@sessionId"><i id="cart" class="fa-solid fa-cart-shopping"></i></a>
                     <span class="cart-quantity">0</span>
                 </div>
                 <i id= "cart" class="fa-solid fa-user"></i>

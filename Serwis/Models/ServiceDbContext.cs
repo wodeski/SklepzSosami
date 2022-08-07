@@ -36,7 +36,14 @@ namespace Serwis.Models
                 .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Product>()
+                .Property(x => x.Price)
+                 .HasColumnType("decimal(2,2)");
+
             base.OnModelCreating(modelBuilder);
+           
+                
+               
         }
     }
 }

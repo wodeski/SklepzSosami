@@ -13,22 +13,32 @@ namespace Serwis.Repository.AccountAuth
             _serviceDbContext = serviceDbContext;
         }
 
-        public bool FindUser(ApplicationUser credential)
+        public ApplicationUser FindUser(ApplicationUser credential)
         {
-            try
+            var find = _serviceDbContext.Credentials
+                .SingleOrDefault(x => x.UserName == credential.UserName && x.Password == credential.Password);
+            if (find == null)
             {
-                var find = _serviceDbContext.Credentials
-                    .SingleOrDefault(x => x.UserName == credential.UserName && x.Password == credential.Password);
-                if (find !=null)
-                {
-                    return true;
-                }
+                return null;
             }
-            catch
+            return find;
+        }
+
+        public ApplicationUser GetUser(string userName)
+        {
+            var find = _serviceDbContext.Credentials
+                .SingleOrDefault(x => x.UserName == userName);
+            if (find == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
-            return false;
-    }
+            return find;
+        }
+
+        public void CreateUser(ApplicationUser user)
+        {
+            _serviceDbContext.Credentials.Add(user);
+            _serviceDbContext.SaveChanges();
+        }
     }
 }

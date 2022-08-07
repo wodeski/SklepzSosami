@@ -40,6 +40,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultContext")
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IRepository, EFRepository>();
 builder.Services.AddScoped<AccountAuthRepository, AccountAuthRepository>();
+builder.Services.AddSingleton<EmailSender, EmailSender>();
 
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); // POZWALA NA WIDZENIE ZMIAN PO ODSWIEZENIU STRONY
 builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();

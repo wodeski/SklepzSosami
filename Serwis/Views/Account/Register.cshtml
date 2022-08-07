@@ -1,6 +1,6 @@
 ﻿@model Serwis.Models.Domains.Register
 <div class="container border" style="padding:20px">
-    <form method="post" asp-action="Login" asp-controller="Account">
+    <form method="post" asp-action="Register" asp-controller="Account">
         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
 
         <div form-group row>
@@ -30,9 +30,18 @@
                 </div>
             </div>
             <div form-group row>
+                <div class="col-3">
+                    <label asp-for="Email"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+                </div>
+                <div class=" col-5">
+                    <input type="password" asp-for="Email" class="form-control">
+                    <span class="text-danger" asp-validation-for="Email"></span>
+                </div>
+            </div>
+            <div form-group row>
                 <span style="color:#df2c14">@TempData["Walidacja"]</span>
                 <div class="col-4">
-                    <input type="submit" value="Login" class="btn btn-primary mt-3  " />
+                    <input type="submit" onclick="CheckValues('@Model.Password','@Model.RepeatPassword')" value="Login" class="btn btn-primary mt-3  " />
                 </div>
                 <div class=" col-4">
                 </div>
@@ -42,7 +51,10 @@
 </div>
 @section scripts{
     <script type="text/javascript">
-        }
+function CheckValues(pass, repeatPass) {
+    if (pass !== repeatPass)
+        return;
+}
 
     </script>
 }
