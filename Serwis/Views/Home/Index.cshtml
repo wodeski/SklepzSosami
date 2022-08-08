@@ -6,7 +6,7 @@
 }
 <div class="bookItem">
 
-    <h2>@TempData["Error"]</h2>
+    
     @if (Model != null || !Model.Any())
     {
         @foreach (var item in Model)
@@ -45,7 +45,7 @@
 @section scripts{
 <script type="text/javascript">
 
-    function AddToCart(id, userName)
+    function AddToCart(productId, userName)
     {
         if (!confirm(" Czy na pewno chesz dodac te pozycje do koszyka?"))
             return;
@@ -54,7 +54,7 @@
             url: "@Url.Action("Add", "Shop")",
             data:
             {
-                id: id,
+                productId: productId,
                 userName: userName
             },
             success: function (data)

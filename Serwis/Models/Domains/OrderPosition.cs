@@ -9,7 +9,7 @@ namespace Serwis.Models.Domains
         public int Id { get; set; }
 
         [ForeignKey("Order")]
-        public int? OrderId { get; set; }
+        public int OrderId { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }

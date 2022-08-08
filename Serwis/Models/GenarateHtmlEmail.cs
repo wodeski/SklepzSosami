@@ -1,27 +1,27 @@
-﻿namespace Serwis.Models
+﻿using Serwis.Models.Domains;
+
+namespace Serwis.Models
 {
     public class GenarateHtmlEmail
     {
-        public string GenerateInvoice(Report report)
+        public string GenerateInvoice(IEnumerable<OrderPosition> orderPositions, string orderTitle)
         {
-            if (report == null)
-                throw new ArgumentNullException(nameof(report));
-            var html = $"Raport{report.Title} z dnia {report.Date.ToString("dd-mm-yyyy")}.<br /><br />";
+            if (orderPositions == null)
+                throw new ArgumentNullException(nameof(orderPositions));
+            var html = $"Zamówienie {orderTitle} z dnia {DateTime.Now.ToString("dd-MM-yyyy")}.<br /><br />";
 
-            if (report.Positions != null && report.Positions.Any())
+            if (orderPositions != null && orderPositions.Any())
             {
                 html += @"<table border = 1 cellpadding=5 cellspacing=1>
                         <tr>
-                            <td align = center bgcolor= lightgrey>Tytuł</td>
-                            <td align = center bgcolor= lightgrey>Opis</td>
-                            <td align = center bgcolor= lightgrey>Wartość</td>
+                            <td align = center bgcolor= lightgrey>Produkt</td>
+                            <td align = center bgcolor= lightgrey>Cena</td>
                         </tr>";
-                foreach (var position in report.Positions)
+                foreach (var position in orderPositions)
                 {
                     html += $@"<tr>
-                            <td aling = center>{position.Title}</td>
-                            <td align = center>{position.Description}</td>
-                            <td align = center>{position.Value.ToString("0.00")} zł</td>
+                            <td aling = center>{position.Product.Name}</td>
+                            <td align = center>{position.Product.Price.ToString("0.00")}</td>
                             </tr>";
 
 

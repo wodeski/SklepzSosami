@@ -86,7 +86,7 @@ namespace Serwis.Controllers
             ////kolejnosc ma znacznie dlatego w innych projektach nalezy trzymac sie tego ukladu 
 
             await HttpContext.SignInAsync("MyCookieAuth", clasimsPrincipal);
-            return RedirectToAction("Service", "Home");//, login); // przekierowanie do akcji w kontrolerze home
+            return RedirectToAction("Index", "Home");//, login); // przekierowanie do akcji w kontrolerze home
 
 
         }

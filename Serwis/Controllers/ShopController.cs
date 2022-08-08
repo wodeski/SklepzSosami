@@ -8,10 +8,14 @@ namespace Serwis.ShopControllers
     public class ShopController : Controller
     {
         private readonly IRepository _repository;
+        private readonly ReportRepository _reportRepository;
+        private EmailSender _emailSender;
 
-        public ShopController(IRepository repository)
+        public ShopController(IRepository repository, ReportRepository reportRepository, EmailSender emailSender)
         {
             _repository = repository;
+            _reportRepository = reportRepository;
+            _emailSender = emailSender;
         }
 
         public IActionResult Cart(int userId)
@@ -35,18 +39,27 @@ namespace Serwis.ShopControllers
         }
 
 
-        
-        public IActionResult Buy(int orderId)
+        [HttpPost]
+        public ActionResult OrderPayment(int orderId, int userId)
         {
+            var userEmail = HttpContext.Session.GetString("Email");
 
-            return View();
+            var order = _repository.GetOrderPositionsForUser(orderId, userId); // zwróci liste pozycji wraz z produktami dl konkretnego uzytkownika
+            _emailSender.SendMail(userEmail, order);
+
+
+            return Json(new { success = true });
         }
 
 
         [HttpPost]
-        public ActionResult Add(int id, string userName) // id produktu
+        public ActionResult Add(int productId, string userName) // id produktu
         {
             //wprowadzic walidacje jak uzytkownik nie jest zalogowany
+
+            if(userName == null)
+                return RedirectToAction("Index", "Home");
+            
             try
             {
                 var find = _repository.FindUser(userName);
@@ -57,7 +70,7 @@ namespace Serwis.ShopControllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                _repository.AddPosition(find.Id, id);
+                _repository.AddPosition(find.Id, productId);
 
             }
             catch (Exception ex)

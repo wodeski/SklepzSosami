@@ -13,7 +13,8 @@ namespace Serwis.Models.Domains
         }
         [Key]
         [Display(Name = "Identyfikator")]
-        public int Id { get; set; }
+        public int Id { get; set; } //jak zwiekszac inta zrobic view model
+        public string? Title { get; set; }
 
         public bool IsCompleted { get; set; }
 

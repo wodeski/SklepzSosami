@@ -1,13 +1,22 @@
-﻿@model IEnumerable<Serwis.Models.Domains.OrderPosition>
+﻿@using Microsoft.AspNetCore.Http;
+@model IEnumerable<Serwis.Models.Domains.OrderPosition>
+@inject IHttpContextAccessor HttpContextAccessor;
 
+@{
+    var sessionId = HttpContextAccessor.HttpContext?.Session.GetString("Id");
+
+
+
+}
 <div class="bookItem">
 
-    @if (User.Identity.IsAuthenticated){
+    @if (User.Identity.IsAuthenticated)
+    {
 
 
-        @if (Model != null || !Model.Any())
+        @if (Model.Count() != 0)
         {
-
+            var orderId = Model.Select(x => x.OrderId).First();
             @foreach (var item in Model)
             {
                 <div>
@@ -17,18 +26,51 @@
                     <span>@item.Order.Id</span>
                 </div>
             }
-                <button type="submit" asp-action="Buy" asp-controller="Shop" asp-route-id="@Model.Select(x=>x.OrderId)">Dokonaj zakupu</button>
 
-
+            <button onclick="PayForOrder('@orderId', '@sessionId')">Dokonaj zakupu</button>
         }
         else
         {
             <h2>Brak pozycji do wyswietlenia</h2>
         }
-
     }
     else
     {
         <h2>Zaloguj się aby skorzystac z funkcji koszyka</h2>
+        <p id="test"></p>
     }
 </div>
+
+@section scripts
+    {
+    <script type="text/javascript">
+        const p = document.getElementById("test");
+        function PayForOrder(orderId, sessionId) {
+
+            if (!confirm("Test"))
+                return;
+            $.ajax({
+                type: "post",
+                url: "@Url.Action("OrderPayment", "Shop")",
+                data: {
+                    orderId: orderId,
+                    userId: sessionId
+                },
+                success: function(data) {
+                    if (data.success) {
+
+                        const a = document.createElement("a")
+                        p.innerText = "TEST";
+                        p.appendChild(a)
+
+                    } else {
+                        alert("zjebalo sie");
+                    }
+                },
+                dataType: "json"
+            });
+
+        }
+
+    </script>
+}

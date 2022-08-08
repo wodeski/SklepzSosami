@@ -15,5 +15,8 @@ namespace Serwis.Repository
         IEnumerable<OrderPosition> GetPositionsForUser(int userId);
         ApplicationUser FindUser(string userName);
 
+        IEnumerable<OrderPosition> GetOrderPositionsForUser(int orderId, int userId);
+        string UpdateOrder(int OrderId);
+
     }
 }

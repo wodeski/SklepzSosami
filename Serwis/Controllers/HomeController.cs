@@ -68,9 +68,7 @@ namespace Serwis.Controllers
 
         public async Task<IActionResult> Upsert(Product product)
         {
-            var userEmail = HttpContext.Session.GetString("Email");
-
-            _emailSender.SendMail(userEmail);
+            
             //var errors = ModelState
             //    .Where(x => x.Value.Errors.Count > 0)
             //    .Select(x => new { x.Key, x.Value.Errors })
