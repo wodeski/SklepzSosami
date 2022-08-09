@@ -1,4 +1,4 @@
-﻿@model Serwis.Models.Domains.ApplicationUser
+﻿@model Serwis.Models.ViewModels.ApplicationUserViewModel
 <div class="container border" style="padding:20px">
     <form method="post" asp-action="Login" asp-controller="Account">
         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
@@ -31,6 +31,7 @@
             <div class="col-4">
                 <input type="submit" value="Login" class="btn btn-primary mt-3  " />
             </div>
+            <span><a asp-action="Register" asp-controller="Account">Rejestracja</a></span>
             <div class=" col-4">
             </div>
         </div>

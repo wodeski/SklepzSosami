@@ -14,9 +14,16 @@ namespace Serwis.Repository
         IEnumerable<OrderPosition> GetPositions();
         IEnumerable<OrderPosition> GetPositionsForUser(int userId);
         ApplicationUser FindUser(string userName);
+        ApplicationUser FindUserById(int userId);
+        Product FindProductById(int productId);
+        Order FindOrderById(int orderId);
 
         IEnumerable<OrderPosition> GetOrderPositionsForUser(int orderId, int userId);
+        IEnumerable<Order> GetOrdersForUser(int userId); 
+       // Order GetOrderForUser(int userId); 
         string UpdateOrder(int OrderId);
+
+        void CreateOrder(Order order);
 
     }
 }

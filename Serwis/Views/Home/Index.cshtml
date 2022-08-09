@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http;
-@model List<Serwis.Models.Domains.Product>
+@model List<Serwis.Models.ViewModels.ProductViewModel>
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
     var sessionForProducts = HttpContextAccessor.HttpContext?.Session.GetString("Login");

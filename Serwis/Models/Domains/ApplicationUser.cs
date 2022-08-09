@@ -28,6 +28,10 @@ namespace Serwis.Models.Domains
         [Display(Name = "Zapamietaj mnie")]
         public bool RememberMe { get; set; }
         public ICollection<Order> Orders { get; set; } //uztykownik moze miec wiele zamówień
+
+        [Required(ErrorMessage ="Mail musi zostac uzupełniony")]
+
+        [EmailAddress]
         public string? Email { get; set; }
         public decimal? Wallet { get; set; }
         public DateTime CreatedDate { get; set; }

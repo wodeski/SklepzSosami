@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http;
-@model IEnumerable<Serwis.Models.Domains.OrderPosition>
+@model List<Serwis.Models.ViewModels.OrderPositionViewModel>
 @inject IHttpContextAccessor HttpContextAccessor;
 
 @{
@@ -7,7 +7,7 @@
     var lp = 0;
 }
 
-@if (Model != null)
+@if (Model != null && Model.Any())
 {
     var orderId = Model.Select(x => x.OrderId).First();
 

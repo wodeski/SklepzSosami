@@ -6,6 +6,7 @@ using Serwis.Repository.AccountAuth;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Serwis.Converter;
+using Serwis.Models.ViewModels;
 
 namespace Serwis.Controllers
 {
@@ -21,7 +22,7 @@ namespace Serwis.Controllers
         {
             _accountAuth = accountAuth;
         }
-        public Register Credential { get; set; }
+        public RegisterViewModel RegisterVM { get; set; }
         public IActionResult Login()
         {
             return View();
@@ -30,27 +31,27 @@ namespace Serwis.Controllers
         public IActionResult Register() //przekirowanie zrobic
         {
             if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Index", "Home"); 
+                return RedirectToAction("Index", "Home");
 
-            Credential = new Register(); // chyba najlepiej bedzie view model zrobic
-            return View();
+            RegisterVM = new RegisterViewModel(); // chyba najlepiej bedzie view model zrobic
+            return View(RegisterVM);
 
         }
 
         [HttpPost]
-        public IActionResult Register(Register register) //trzeba doprowadzic do sytuacji w kótrej sprawdzone zostanie register tylko
+        public IActionResult Register(RegisterViewModel registerVM) //trzeba doprowadzic do sytuacji w kótrej sprawdzone zostanie register tylko
         {
-            register.CreatedDate = DateTime.Now;    
+            registerVM.CreatedDate = DateTime.Now;  // sprawdzic czy dziala w instrukcji  
             if (!ModelState.IsValid)
-                return View(register);
-            if (register.Password != register.RepeatPassword)
+                return View(registerVM);
+            if (registerVM.Password != registerVM.RepeatPassword)
             {
                 TempData["Walidacja"] = "Hasła nie sa takie same";
-                return View(register);
+                return View(registerVM);
             }
             try
             {
-                var user = register.ConvertToApplicationUser();
+                var user = registerVM.ConvertToApplicationUserFromRegisterViewModel();
                 _accountAuth.CreateUser(user);
             }
             catch (Exception ex)
@@ -62,25 +63,27 @@ namespace Serwis.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> Login(ApplicationUser credential)
+        public async Task<IActionResult> Login(ApplicationUserViewModel userVM)
         {
             if (!ModelState.IsValid)
             {
-                
                 var errors = ModelState
                     .Where(x => x.Value.Errors.Count > 0)
                     .Select(x => new { x.Key, x.Value.Errors })
                     .ToArray();
-                return View(credential);
+                return View(userVM);
             }
-            var userInDatabase = CheckAuth(credential);
+
+           var user = userVM.ConvertToApplicationUser();
+
+            var userInDatabase = CheckAuth(user);
             if (userInDatabase == null)
             {
                 TempData["UserNotFound"] = UserNotFound;
-                return View(credential); //dac info ze nie ma takiego 
+                return View(userVM); //dac info ze nie ma takiego 
             }
             AddSession(userInDatabase);
-            var clasimsPrincipal = AddClaims(credential);
+            var clasimsPrincipal = AddClaims(user);
 
             //Action_();
             ////kolejnosc ma znacznie dlatego w innych projektach nalezy trzymac sie tego ukladu 
@@ -118,10 +121,10 @@ namespace Serwis.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private ClaimsPrincipal AddClaims(ApplicationUser credential)
+        private ClaimsPrincipal AddClaims(ApplicationUser user)
         {
 
-            if (credential.UserName.ToLower() == AdminIsSigningIn)
+            if (user.UserName.ToLower() == AdminIsSigningIn)
             {
                 var claims = new List<Claim>
                 {
@@ -144,7 +147,7 @@ namespace Serwis.Controllers
                 {
                     new Claim("User", "true"),
                 };
-                HttpContext.Session.SetString("Zwykly", credential.UserName);
+                HttpContext.Session.SetString("Zwykly", user.UserName);
 
 
                 var identity_user = new ClaimsIdentity(claims_user, "MyCookieAuth");
@@ -157,10 +160,28 @@ namespace Serwis.Controllers
         [Authorize]
         public IActionResult UserInfo()
         {
-            var credential = HttpContext.Session.GetString(SessionKeyName);
+            var sessionUser = HttpContext.Session.GetString(SessionKeyName);
 
-            var user = _accountAuth.GetUser(credential);
-            return View(user);
+            var user = _accountAuth.GetUser(sessionUser);
+
+            var userVM = PrepareApplicationUserViewModel(user);
+            return View(userVM);
+        }
+        private ApplicationUserViewModel PrepareApplicationUserViewModel(ApplicationUser user) // obracowac klase dla view modeli
+        {
+            var userVM = new ApplicationUserViewModel
+            {
+                Id = user.Id,
+                Password = user.Password,
+                UserName = user.UserName,
+                CreatedDate = user.CreatedDate,
+                Email = user.Email,
+                Orders = user.Orders
+
+
+            };
+
+            return userVM;
         }
     }
 }

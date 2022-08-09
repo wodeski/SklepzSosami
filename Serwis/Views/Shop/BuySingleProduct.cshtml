@@ -1,12 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Http;
-@model Serwis.Models.Domains.Product
+@model Serwis.Models.ViewModels.ProductViewModel
 @inject IHttpContextAccessor HttpContextAccessor;
 
 @{
+    
+    var sessionForUserId = Convert.ToInt32(HttpContextAccessor.HttpContext?.Session.GetString("Id"));
+
      
-    var sessionForWallet = HttpContextAccessor.HttpContext?.Session.GetString("Wallet");
-    decimal wallet;
-    var amountOfMoney = Decimal.TryParse(sessionForWallet, out wallet) == true ? Decimal.Parse(sessionForWallet) : 0;
+    //var sessionForWallet = HttpContextAccessor.HttpContext?.Session.GetString("Wallet");
+    //decimal wallet;
+    //var amountOfMoney = Decimal.TryParse(sessionForWallet, out wallet) == true ? Decimal.Parse(sessionForWallet) : 0;
  }
 @if(Model!= null)
 {
@@ -31,8 +34,8 @@
             </td>
             <td style="text-align:center;">@Model.Price</td>
             <td style="text-align:center;">
-                <button class="btn btn-success "
-                onclick="PayForProduct('@Model.Price', '@amountOfMoney')">Dokonaj zakupu</button>
+                <a asp-action="InvoiceOfOrder" asp-route-productId = "@Model.Id" asp-route-userId = "@sessionForUserId"  class="btn btn-success">Dokonaj zakupu</a>
+                @*onclick="PayForProduct('@Model.Id', '@sessionForUserId')"*@
             </td>
         </tr>
     </tbody>
@@ -53,15 +56,6 @@
    </table>
 
 }
-@section scripts{
-    <script type="text/javascript">
-         function PayForProduct(priceofProduct, wallet) {
-            if (!confirm(" Czy na pewno chesz kupic te pozycje?"))
-                return;
-            if (priceofProduct > wallet) {
-            }
-        }
-    </script>
 }
 
 

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Serwis.Models;
 using Serwis.Models.Domains;
+using Serwis.Models.Service;
+using Serwis.Models.ViewModels;
 using Serwis.Repository;
 using Serwis.Repository.AccountAuth;
 
@@ -44,7 +46,7 @@ builder.Services.AddScoped<AccountAuthRepository, AccountAuthRepository>();
 builder.Services.AddScoped<EmailSender, EmailSender>();
 builder.Services.AddScoped<GenarateHtmlEmail, GenarateHtmlEmail>();
 builder.Services.AddTransient<ReportRepository, ReportRepository>();
-builder.Services.AddSingleton<List<OrderPosition>, List<OrderPosition>>();
+builder.Services.AddSingleton<List<OrderPositionViewModel>, List<OrderPositionViewModel>>();
 
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); // POZWALA NA WIDZENIE ZMIAN PO ODSWIEZENIU STRONY
 builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();

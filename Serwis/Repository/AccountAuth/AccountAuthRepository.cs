@@ -1,7 +1,6 @@
-﻿using Serwis.Models;
-using Serwis.Models.Domains;
+﻿using Serwis.Models.Domains;
 using Microsoft.EntityFrameworkCore;
-
+using Serwis.Models.Service;
 
 namespace Serwis.Repository.AccountAuth
 {

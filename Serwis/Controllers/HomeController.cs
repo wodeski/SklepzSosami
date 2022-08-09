@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Serwis.Models;
 using Serwis.Models.Domains;
+using Serwis.Models.ViewModels;
 using Serwis.Repository;
 using System.Diagnostics;
 
 namespace Serwis.Controllers
 {
-    
-   
+
+
 
     public class HomeController : Controller
     {
@@ -35,13 +36,38 @@ namespace Serwis.Controllers
         public async Task<IActionResult> Service()
         {
 
-            var items = await _irepository.GetItemsAsync();
-            if (items == null)
+            var products = await _irepository.GetItemsAsync();
+            if (products.ToList() == null)
             {
-                var emptyList = new List<Product>();
+                var emptyList = new List<ProductViewModel>();
                 return View(emptyList);
             }
-            return View(items);
+            var productsVM = ProductsIEnumerableToList(products);
+
+            return View(productsVM);
+
+        }
+
+        private List<ProductViewModel> ProductsIEnumerableToList(IEnumerable<Product> products)
+        {
+            var productsVM = new List<ProductViewModel>();
+            foreach (var product in products)
+            {
+                productsVM.Add(
+                    new ProductViewModel
+                    {
+                        Id = product.Id,
+                        CreatedDate = product.CreatedDate,
+                        Description = product.Description,
+                        ImageFileName = product.ImageFileName,
+                        Name = product.Name,
+                        Price = product.Price,
+                        OrderPositions = product.OrderPositions
+
+                    });
+            }
+
+            return productsVM;
 
         }
 
@@ -54,13 +80,17 @@ namespace Serwis.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Upsert(int id = 0)
         {
-            Product = new();
             if (id == 0)
             {
-                return View(Product);
+                Product = new();
+                var productVManonim = PrepareProductViewModel(Product);
+                return View(productVManonim);
             }
             var item = await _irepository.GetItemAsync(id);
-            return View(item);
+
+            var productVM = PrepareProductViewModel(item);
+
+            return View(productVM);
         }
 
 
@@ -68,22 +98,22 @@ namespace Serwis.Controllers
 
         public async Task<IActionResult> Upsert(Product product)
         {
-            
+
             //var errors = ModelState
             //    .Where(x => x.Value.Errors.Count > 0)
             //    .Select(x => new { x.Key, x.Value.Errors })
             //    .ToArray();
             if (!ModelState.IsValid)
                 return View(product);
-            
+
             if (product.Id == 0)
             {
                 AddImageToDirectory(product);
                 await _irepository.CreateProductAsync(product);
             }
-            else 
+            else
             {
-            await _irepository.UpdateProductAsync(product);
+                await _irepository.UpdateProductAsync(product);
             }
             return RedirectToAction("Service");
         }
@@ -91,7 +121,7 @@ namespace Serwis.Controllers
         private void AddImageToDirectory(Product product)
         {
             var imageFilePath = AddPathToImage(product);
-            using(var fileStream = new FileStream(imageFilePath, FileMode.Create))
+            using (var fileStream = new FileStream(imageFilePath, FileMode.Create))
             {
                 product.ImageFile.CopyTo(fileStream);
             }
@@ -106,17 +136,6 @@ namespace Serwis.Controllers
             var imageFilePath = Path.Combine(wwwRootPath + "/Images/", product.ImageFileName);
             return imageFilePath;
         }
-
-
-        //[HttpPost]
-        //public async Task<IActionResult> Update(Order order)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View(order);
-        //    await _irepository.UpdateItemAsync(order);
-
-        //    return RedirectToAction("Service");
-        //}
 
         [HttpPost]
         public async Task<IActionResult> DeleteAsync(int id)
@@ -136,13 +155,16 @@ namespace Serwis.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var items = await _irepository.GetItemsAsync();
-            if (items == null)
-            {
-                var emptyList = new List<Order>();
-                return View(emptyList);
+            var products = await _irepository.GetItemsAsync();
+            if (products.Count() == 0)
+            { // tu raczej nalezy sprawdzic czy lista jest pusta a nie null
+                var emptyListOfProducts = new List<ProductViewModel>();
+                return View(emptyListOfProducts);
             }
-            return View(items);
+
+            var productsVM = ProductsIEnumerableToList(products);
+
+            return View(productsVM);
         }
 
         [Authorize(Policy = "User")] // jesli ma obaj maja miec mozliwosc wejscia trzeba dac roles
@@ -151,7 +173,7 @@ namespace Serwis.Controllers
             return View();
         }
 
-       
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -162,6 +184,67 @@ namespace Serwis.Controllers
         public IActionResult Test()
         {
             return View();
+        }
+
+        private ProductViewModel PrepareProductViewModel(Product product) // obracowac klase dla view modeli
+        {
+            var productVM = new ProductViewModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                CreatedDate = product.CreatedDate,
+                ImageFileName = product.ImageFileName,
+                Price = product.Price,
+                OrderPositions = product.OrderPositions
+            };
+
+            return productVM;
+        }
+
+        private ApplicationUserViewModel PrepareApplicationUserViewModel(ApplicationUser user) // obracowac klase dla view modeli
+        {
+            var userVM = new ApplicationUserViewModel
+            {
+                Id = user.Id,
+                Password = user.Password,
+                UserName = user.UserName,
+                CreatedDate = user.CreatedDate,
+                Email = user.Email,
+                Orders = user.Orders,
+
+
+            };
+
+            return userVM;
+        }
+        private OrderViewModel PrepareOrderViewModel(Order order) // obracowac klase dla view modeli
+        {
+            var orderVM = new OrderViewModel
+            {
+                Id = order.Id,
+                Title = order.Title,
+                UserId = order.UserId,
+                OrderPositions = order.OrderPositions,
+            };
+
+            return orderVM;
+        }
+        private OrderPositionViewModel PrepareOrderPositionViewModel(OrderPosition orderPosition) // obracowac klase dla view modeli
+        {
+            var orderPositionVM = new OrderPositionViewModel
+            {
+                Id = orderPosition.Id,
+                OrderId = orderPosition.OrderId,
+                ProductId = orderPosition.ProductId,
+                UserId = orderPosition.UserId,
+                Product = orderPosition.Product,
+                Order = orderPosition.Order,
+                User = orderPosition.User
+
+            };
+
+            return orderPositionVM;
         }
 
     }

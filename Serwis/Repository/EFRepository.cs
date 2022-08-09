@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Serwis.Models;
 using Serwis.Models.Domains;
+using Serwis.Models.Service;
 
 namespace Serwis.Repository
 {
@@ -64,6 +64,7 @@ namespace Serwis.Repository
             return await _serviceDbContext.Products.SingleAsync(o => o.Id == id);
         }
 
+
         public async Task<IEnumerable<Product>> GetItemsAsync()
         {
             return await _serviceDbContext.Products.ToListAsync(); //entity framework 
@@ -122,9 +123,9 @@ namespace Serwis.Repository
                   .Where(x => x.UserId == userId && x.OrderId==orderId && x.Order.IsCompleted == false)
                   .ToList();//zle
 
-            var positionsTest = _serviceDbContext.Orders
-                  .Include(x => x.OrderPositions)
-                  .Single(x => x.UserId == userId && x.Id == orderId && x.IsCompleted == false);
+            //var positionsTest = _serviceDbContext.Orders
+            //      .Include(x => x.OrderPositions)
+            //      .Single(x => x.UserId == userId && x.Id == orderId && x.IsCompleted == false);
                   
 
             return positions;
@@ -140,6 +141,45 @@ namespace Serwis.Repository
             return findOrder.Title;
 
 
+        }
+
+        public IEnumerable<Order> GetOrdersForUser(int userId)
+        {
+           var orders = _serviceDbContext.Orders.Where(x => x.UserId == userId).ToList();
+            return orders;
+        }
+
+        public ApplicationUser FindUserById(int userId)
+        {
+            var findUser = _serviceDbContext.Credentials.Where(x => x.Id == userId).First();
+            if (findUser == null)
+            {
+                return null;
+            }
+            return findUser;
+        }
+        public Order FindOrderById(int orderId)
+        {
+            var findOrder = _serviceDbContext.Orders.Where(x => x.Id == orderId).First();
+            if (findOrder == null)
+                return null;
+            return findOrder;
+        }
+
+        public void CreateOrder(Order order)
+        {
+            _serviceDbContext.Orders.Add(order);
+            _serviceDbContext.SaveChanges();
+        }
+
+        public Product FindProductById(int id)
+        {
+            var findProduct = _serviceDbContext.Products.Single(o => o.Id == id);
+            if (findProduct == null)
+            {
+                return null;
+            }
+            return findProduct;
         }
     }
 }
