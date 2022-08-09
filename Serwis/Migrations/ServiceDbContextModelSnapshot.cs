@@ -47,6 +47,9 @@ namespace Serwis.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal?>("Wallet")
+                        .HasColumnType("decimal(5,2)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Credentials");
@@ -128,7 +131,7 @@ namespace Serwis.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(2,2)");
+                        .HasColumnType("decimal(5,2)");
 
                     b.HasKey("Id");
 

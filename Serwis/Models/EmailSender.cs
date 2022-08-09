@@ -9,16 +9,18 @@ namespace Serwis.Models
     {
 
         private ReportRepository _reportRepository;
+        private readonly GenarateHtmlEmail genarateHtmlEmail;
         private Email _email;
-        private GenarateHtmlEmail _htmlEmail = new GenarateHtmlEmail();
+        private GenarateHtmlEmail _genarateHtmlEmail;
         //private StringCipher _stringCipher = new StringCipher("6AD15A5C-2E1E-434A-9193-E5AF43E2D013");
 
             
         
-        public EmailSender(ReportRepository reportRepository)
+        public EmailSender(ReportRepository reportRepository, GenarateHtmlEmail genarateHtmlEmail)
         {
             _reportRepository = reportRepository;
-        try
+            _genarateHtmlEmail = genarateHtmlEmail;
+            try
             {
                 _email = new Email(new EmailParams
                 {
@@ -61,7 +63,7 @@ namespace Serwis.Models
                 return;
           var orderTitle = _reportRepository.ReportSent(orderPositionsFromCart);//zmiana statusu zamówienia
             
-            await _email.Send("Informacje o zakupie", _htmlEmail.GenerateInvoice(orderPositionsFromCart, orderTitle), emailReceiver);
+            await _email.Send("Informacje o zakupie", _genarateHtmlEmail.GenerateInvoice(orderPositionsFromCart, orderTitle), emailReceiver);
 
         }
     }

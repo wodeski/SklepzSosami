@@ -101,7 +101,7 @@ namespace Serwis.Repository
         {
             var find = _serviceDbContext.Products.FirstOrDefault(x => x.Id == id);
             if (find == null)
-                throw new ArgumentNullException();
+                return null;
             return find;
         }
 

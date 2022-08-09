@@ -29,6 +29,7 @@ namespace Serwis.Models.Domains
         public bool RememberMe { get; set; }
         public ICollection<Order> Orders { get; set; } //uztykownik moze miec wiele zamówień
         public string? Email { get; set; }
+        public decimal? Wallet { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }

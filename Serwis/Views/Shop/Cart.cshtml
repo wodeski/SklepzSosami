@@ -4,42 +4,54 @@
 
 @{
     var sessionId = HttpContextAccessor.HttpContext?.Session.GetString("Id");
-
-
-
+    var lp = 0;
 }
-<div class="bookItem">
 
-    @if (User.Identity.IsAuthenticated)
-    {
+@if (Model != null)
+{
+    var orderId = Model.Select(x => x.OrderId).First();
 
-
-        @if (Model.Count() != 0)
-        {
-            var orderId = Model.Select(x => x.OrderId).First();
-            @foreach (var item in Model)
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="text-align:center;">Lp.</th>
+                <th style="text-align:center;">Nazwa</th>
+                <th style="text-align:center;">Podgląd</th>
+                <th style="text-align:center;">Cena</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var position in Model)
             {
-                <div>
-                    <img src="~/images/@item.Product.ImageFileName" />
-                    <span>@item.Product.Name</span>
-                    <span>@item.User.UserName</span>
-                    <span>@item.Order.Id</span>
-                </div>
+                <tr>
+                    <td style="text-align:center;">@(lp = lp +1 )</td>
+                    <td style="text-align:center;">@position.Product.Name</td>
+                    <td style="text-align:center;"><img style="width:200px; height 140px;" src="~/images/@position.Product.ImageFileName" /></td>
+                    <td style="text-align:center;">@position.Product.Price</td>
+                    <td style="text-align:center;"><button class="btn btn-success" onclick="PayForOrder('@orderId', '@sessionId')">Dokonaj zakupu</button></td>
+                </tr>
             }
-
-            <button onclick="PayForOrder('@orderId', '@sessionId')">Dokonaj zakupu</button>
-        }
-        else
-        {
-            <h2>Brak pozycji do wyswietlenia</h2>
-        }
-    }
-    else
-    {
-        <h2>Zaloguj się aby skorzystac z funkcji koszyka</h2>
-        <p id="test"></p>
-    }
-</div>
+        </tbody>
+    </table>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="text-align:center;">Lp.</th>
+                <th style="text-align:center;">Nazwa</th>
+                <th style="text-align:center;">Podgląd</th>
+                <th style="text-align:center;">Cena</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr> <td>Nie wybrano produktu</td></tr>
+        </tbody>
+    </table>
+}
 
 @section scripts
     {
@@ -51,7 +63,7 @@
                 return;
             $.ajax({
                 type: "post",
-                url: "@Url.Action("OrderPayment", "Shop")",
+                url: "@Url.Action("PayForOrderFromCart", "Shop")",
                 data: {
                     orderId: orderId,
                     userId: sessionId

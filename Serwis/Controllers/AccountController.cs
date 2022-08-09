@@ -103,6 +103,7 @@ namespace Serwis.Controllers
             HttpContext.Session.SetString(SessionKeyName, credential.UserName);
             HttpContext.Session.SetString("Email", credential.Email);
             HttpContext.Session.SetString("Id", (credential.Id).ToString());
+            HttpContext.Session.SetString("Wallet", (credential.Wallet).ToString());
 
         }
 

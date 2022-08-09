@@ -2,24 +2,30 @@
 @model List<Serwis.Models.Domains.Product>
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
-    var session = @HttpContextAccessor.HttpContext?.Session.GetString("Login");
+    var sessionForProducts = HttpContextAccessor.HttpContext?.Session.GetString("Login");
+   
+
 }
+
 <div class="bookItem">
 
-    
     @if (Model != null || !Model.Any())
     {
+
         @foreach (var item in Model)
         {
             <div>
-                <a style="cursor: pointer;" asp-action="Product" asp-controller="Shop" asp-route-productId="@item.Id"><img
-                src="~/images/@item.ImageFileName" /></a>
+                <a style="cursor: pointer;" asp-action="Product" asp-controller="Shop" asp-route-productId="@item.Id">
+                    <img src="~/images/@item.ImageFileName" />
+                </a>
                 <span>@item.Name</span>
                 <span>@item.Price zł</span>
                 <div style="display:block">
-                    <button class=" mt-1 btn btn-sm btn-secondary"> Kupuj</button>
+                    <a asp-action="BuySingleProduct" asp-controller="Shop" asp-route-productId="@item.Id" class=" mt-1 btn btn-sm btn-secondary"> Kupuj</a>
                     <button class=" mt-1 btn btn-sm btn-primary" style="display: inline"
-                onclick="AddToCart('@item.Id', '@session')">Dodaj do koszyka</button>
+                    onclick="AddPositionToCart('@item.Id', '@sessionForProducts')">
+                        Dodaj do koszyka
+                    </button>
                 </div>
             </div>
         }
@@ -29,58 +35,43 @@
     {
         <h2>Brak pozycji do wyswietlenia</h2>
     }
-</div>
-@*<div id="container">
-    <h1>Ludzie, którzy weszli:</h1>
-    <h2 class="count_el"></h2>
-    <h2 class="count_element"></h2>
-
-    <button onclick="dodaj()">Dodaj</button>
-    <button onclick="zapisz()">Zapisz</button>
-
-
-    <h2 id="save_num"></h2>
-    </div>*@
-
+</div>S
 @section scripts{
-<script type="text/javascript">
-
-    function AddToCart(productId, userName)
-    {
-        if (!confirm(" Czy na pewno chesz dodac te pozycje do koszyka?"))
-            return;
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("Add", "Shop")",
-            data:
-            {
-                productId: productId,
-                userName: userName
-            },
-            success: function (data)
-            {
-                if (data.success)
-                { // musza byc male litery i tu i tu
-
-                    let quantity = document.getElementsByClassName('cart-quantity')[0].textContent
-                    quantity++;
-                    console.log(quantity);
-
-                    document.getElementsByClassName('cart-quantity')[0].textContent = quantity;
+    <script type="text/javascript">
 
 
-                } else
+
+        function AddPositionToCart(productId, userName) {
+            if (!confirm(" Czy na pewno chesz dodac te pozycje do koszyka?"))
+                return;
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("AddPositionToCart", "Shop")",
+                data:
                 {
-                    alert(data.message + "tu sie zjebalo");
-                }
-            },
-            error: function (data)
-            {
-                alert(data.message + "nie bo tutaj");
-            },
-            dataType: 'json'
+                    productId: productId,
+                    userName: userName
+                },
+                success: function(data) {
+                    if (data.success) { // musza byc male litery i tu i tu
 
-        });
-    }
-</script>
+                        let quantity = document.getElementsByClassName('cart-quantity')[0].textContent
+                        quantity++;
+                        console.log(quantity);
+
+                        document.getElementsByClassName('cart-quantity')[0].textContent = quantity;
+
+
+                    } else {
+                        alert(data.message + "tu sie zjebalo");
+                    }
+                },
+                error: function(data) {
+                    alert(data.message + "nie bo tutaj");
+                },
+                dataType: 'json'
+
+            });
+        }
+    </script>
 }

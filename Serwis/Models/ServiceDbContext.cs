@@ -38,7 +38,11 @@ namespace Serwis.Models
 
             modelBuilder.Entity<Product>()
                 .Property(x => x.Price)
-                 .HasColumnType("decimal(2,2)");
+                .HasColumnType("decimal(5,2)");
+
+            modelBuilder.Entity<ApplicationUser>()
+               .Property(x => x.Wallet)
+               .HasColumnType("decimal(5,2)");
 
             base.OnModelCreating(modelBuilder);
            

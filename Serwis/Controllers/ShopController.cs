@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serwis.Models;
+using Serwis.Models.Domains;
+using Serwis.Models.Extensions;
 using Serwis.Repository;
 
 namespace Serwis.ShopControllers
@@ -8,22 +10,28 @@ namespace Serwis.ShopControllers
     public class ShopController : Controller
     {
         private readonly IRepository _repository;
-        private readonly ReportRepository _reportRepository;
         private EmailSender _emailSender;
+        private List<OrderPosition> _orderPositions;
 
-        public ShopController(IRepository repository, ReportRepository reportRepository, EmailSender emailSender)
+        public ShopController(IRepository repository, EmailSender emailSender, List<OrderPosition> orderPositions)
         {
             _repository = repository;
-            _reportRepository = reportRepository;
             _emailSender = emailSender;
+            _orderPositions = orderPositions;
         }
 
+        public IActionResult BuySingleProduct(int productId)
+        {
+            var product = _repository.GetProduct(productId);
+            return View(product);
+        }
         public IActionResult Cart(int userId)
         {
 
             if(userId == 0)
             {
-                return RedirectToAction("Index", "Home");
+                var data = HttpContext.Session.GetComplexData<List<OrderPosition>>("AnoniomousCart");
+                return View(data);
             }
             //zapytanie skonstruować tak aby wyswietlalo sie dla konkretnego uzytkownika
            var positions =  _repository.GetPositionsForUser(userId);
@@ -40,7 +48,7 @@ namespace Serwis.ShopControllers
 
 
         [HttpPost]
-        public ActionResult OrderPayment(int orderId, int userId)
+        public ActionResult PayForOrderFromCart(int orderId, int userId)
         {
             var userEmail = HttpContext.Session.GetString("Email");
 
@@ -53,12 +61,33 @@ namespace Serwis.ShopControllers
 
 
         [HttpPost]
-        public ActionResult Add(int productId, string userName) // id produktu
+        public ActionResult AddPositionToCart(int productId, string userName) // id produktu
         {
+
             //wprowadzic walidacje jak uzytkownik nie jest zalogowany
 
-            if(userName == null)
-                return RedirectToAction("Index", "Home");
+            //co sie stanie jesli dodac do koszyka a nastepnie sie zaloguje9
+
+            if (userName == null)
+            {
+                var data = _orderPositions;
+                var id = data.Count();
+                id++;
+                var produkt = _repository.GetProduct(productId);
+                var obj = new OrderPosition
+                {
+                    Id = id,
+                    OrderId = 1,
+                    Product = produkt,
+                    
+                    
+                };
+
+                data.Add(obj);
+                HttpContext.Session.SetComplexData("AnoniomousCart", data);
+                    return Json(new { Success = true });
+            }
+
             
             try
             {
