@@ -11,11 +11,11 @@ namespace Serwis.Models
             _repository = repository;   
 
         }
-        public string ReportSent(IEnumerable<OrderPosition> orderPositions)
+        public async Task<string> ReportSentAsync(IEnumerable<OrderPosition> orderPositions)
         {
             //pobieranie z BD
             var find = orderPositions.Select(x=>x.OrderId).First();
-            var title = _repository.UpdateOrder(find); // ustawienie zamówienia jako zrealizowanego
+            var title = await _repository.UpdateOrderAsync(find); // ustawienie zamówienia jako zrealizowanego
             return title;
         }
         

@@ -12,15 +12,26 @@ namespace Serwis.Repository.AccountAuth
             _serviceDbContext = serviceDbContext;
         }
 
-        public ApplicationUser FindUser(ApplicationUser credential)
+        public ApplicationUser FindUserWithLoginCredentials(string userName, string password)
         {
             var find = _serviceDbContext.Credentials
-                .SingleOrDefault(x => x.UserName == credential.UserName && x.Password == credential.Password);
+                .SingleOrDefault(x => x.UserName == userName && x.Password == password);
             if (find == null)
             {
                 return null;
             }
             return find;
+        }
+
+        public bool IsUserNameFromRegisterValid(string userName)
+        {
+            var find = _serviceDbContext.Credentials
+                .SingleOrDefault(x => x.UserName ==userName);
+            if (find == null)
+            {
+                return true;
+            }
+            return false;
         }
 
         public ApplicationUser GetUser(string userName)

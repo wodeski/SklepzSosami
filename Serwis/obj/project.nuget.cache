@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "DNpNAEkmj/oaJMZgzva/Rsbs0hniTUcwLC22F517cRGpGkniysegVE44ikdu6pLKZwtQenzot2PROGktNdXtfA==",
+  "dgSpecHash": "rC6/UXIb6UtgQZmcqUXTziSo4kMnSR74m2k0BJwhIUa6r0ObLewmJOALPVLr+DPUzn+OUVOsTz6aIeWNeviNEw==",
   "success": true,
   "projectFilePath": "C:\\Users\\Wojtek\\source\\repos\\Serwis\\Serwis\\Serwis.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Wojtek\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\Wojtek\\.nuget\\packages\\jquery\\1.4.4\\jquery.1.4.4.nupkg.sha512",
+    "C:\\Users\\Wojtek\\.nuget\\packages\\jquery.cookie\\1.4.1\\jquery.cookie.1.4.1.nupkg.sha512",
     "C:\\Users\\Wojtek\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\2.2.0\\microsoft.aspnetcore.cryptography.internal.2.2.0.nupkg.sha512",
     "C:\\Users\\Wojtek\\.nuget\\packages\\microsoft.aspnetcore.dataprotection\\2.2.0\\microsoft.aspnetcore.dataprotection.2.2.0.nupkg.sha512",
     "C:\\Users\\Wojtek\\.nuget\\packages\\microsoft.aspnetcore.dataprotection.abstractions\\2.2.0\\microsoft.aspnetcore.dataprotection.abstractions.2.2.0.nupkg.sha512",

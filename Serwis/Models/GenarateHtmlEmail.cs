@@ -7,7 +7,7 @@ namespace Serwis.Models
         public string GenerateInvoice(IEnumerable<OrderPosition> orderPositions, string orderTitle)
         {
             if (orderPositions == null)
-                throw new ArgumentNullException(nameof(orderPositions));
+                throw new ArgumentNullException(nameof(orderPositions)); //tez do zmiany
             var html = $"Zamówienie {orderTitle} z dnia {DateTime.Now.ToString("dd-MM-yyyy")}.<br /><br />";
 
             if (orderPositions != null && orderPositions.Any())
@@ -33,7 +33,7 @@ namespace Serwis.Models
 
 
 
-            html += @"<br /> <br /> Wiadomosc wysłana z aplikacji ReportService.";
+            html += @"<br /> <br /> Wiadomosc wysłana z sklepu internetowego.";
             return html;
         }
     }

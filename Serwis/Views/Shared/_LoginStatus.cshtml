@@ -1,19 +1,27 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
-   var sessionLogin =  @HttpContextAccessor.HttpContext?.Session.GetString("Login");
-   var sessionWallet =  @HttpContextAccessor.HttpContext?.Session.GetString("Wallet");
+    var sessionLogin = @HttpContextAccessor.HttpContext?.Session.GetString("Login");
+    var sessionWallet = @HttpContextAccessor.HttpContext?.Session.GetString("Wallet");
 }
-@if(User.Identity.IsAuthenticated)
+@if (User.Identity.IsAuthenticated)
 {
     <span>Masz aktualnie na koncie @sessionWallet zł</span>
     <span>Witaj @sessionLogin</span>
     <form method="post" class="form-inline" asp-action="Logout" asp-controller="Account">
-    <button type="submit" class="btn btn-link ml-2">Wyloguj</button>
-    
+    <button onclick="deleteCookie()" type="submit" class="btn btn-link ml-2">Wyloguj</button>
+
     </form>
-    
-}else
-{
-    <a style="text-decoration:none" class="btn btn-link" asp-action="Login" asp-controller="Account">Zaloguj</a>
+
+
 }
+else
+{
+    <a style="text-decoration:none"  class="btn btn-link" asp-action="Login" asp-controller="Account">Zaloguj</a>
+}
+    <script type="text/javascript">
+
+        function deleteCookie() {
+           document.cookie = 'cart =; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+    </script>

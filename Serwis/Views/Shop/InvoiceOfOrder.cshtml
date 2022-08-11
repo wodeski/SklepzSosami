@@ -10,7 +10,7 @@
                 <label asp-for="Product.Name"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
             </div>
             <div class=" col-7">
-                  <input type="text" value="@Model.Product.Name" class="form-control">
+                  <input readonly type="text" value="@Model.Product.Name" class="form-control">
             </div>
         </div>
         <div form-group row>
@@ -18,7 +18,7 @@
                 <label asp-for="Product.Price"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
             </div>
             <div class=" col-7">
-                <input value="@Model.Product.Price" class="form-control">
+                <input readonly value="@Model.Product.Price" class="form-control">
             </div>
         </div>
         <div form-group row>
@@ -54,6 +54,8 @@
 @section scripts{
     <script type="text/javascript">
 const email = document.getElementById("email");
+
+
 function ConfirmInvoiceOrder(productId, userId, orderId, email) {
     if (!confirm("test"))
         return;

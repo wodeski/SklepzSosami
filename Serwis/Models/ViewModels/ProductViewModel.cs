@@ -10,6 +10,8 @@ namespace Serwis.Models.ViewModels
         public ProductViewModel()
         {
             OrderPositions = new Collection<OrderPosition>();
+            CategoriesList = new Collection<ProductCategory>(); // na potrzeby viewmodelu
+
         }
         [Display(Name = "Identyfikator")]
         public int Id { get; set; }
@@ -32,10 +34,17 @@ namespace Serwis.Models.ViewModels
 
         [Required(ErrorMessage = "Zdjęcie jest wymagane!")]
         [Display(Name = "Dodaj zdjęcie")]
+
+        public int CategoryId { get; set; }
+        
+        public ProductCategory? Categories { get; set; }
+
+        public ICollection<ProductCategory> CategoriesList { get; set; } 
+
         public IFormFile? ImageFile { get; set; }
 
         public DateTime CreatedDate { get; set; }
-
+        
         public ICollection<OrderPosition> OrderPositions { get; set; }
     }
 }

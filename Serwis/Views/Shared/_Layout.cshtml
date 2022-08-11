@@ -1,10 +1,11 @@
-﻿@using Microsoft.AspNetCore.Http;
+﻿,@using Microsoft.AspNetCore.Http;
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
-   var sessionId =  @HttpContextAccessor.HttpContext?.Session.GetString("Id");
+    var sessionForUserId = @HttpContextAccessor.HttpContext?.Session.GetString("Id");
 }
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,13 +14,18 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Serwis.styles.css" asp-append-version="true" />
 </head>
+
 <body>
+    @if (User.Identity.IsAuthenticated)
+{
+    <input id="confirm" hidden value="true" /> 
+}
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Serwis</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -28,19 +34,25 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
+                               asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Service">Przejdź do zgłoszeń</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Service">
+                                Przejdź
+                                do zgłoszeń
+                            </a>
                         </li>
 
                     </ul>
                 </div>
                 <div class="cart-btn">
-                    <a style="color: inherit;" asp-action="Cart" asp-controller="Shop" asp-route-userId="@sessionId"><i id="cart" class="fa-solid fa-cart-shopping"></i></a>
+                    <a style="color: inherit;" asp-action="Cart" asp-controller="Shop" asp-route-userId="@sessionForUserId">
+                        <i id="cart" class="fa-solid fa-cart-shopping"></i>
+                    </a>
                     <span class="cart-quantity">0</span>
                 </div>
-                <i id= "cart" class="fa-solid fa-user"></i>
+                <i id="cart" class="fa-solid fa-user"></i>
                 <div class="mr-2 ">
                     <partial name="_LoginStatus" />
                 </div>
@@ -62,9 +74,37 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://kit.fontawesome.com/b1af44c630.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            let cookie_value = document.cookie.split(';');
+            let cookie_value_split = cookie_value[0].split('=')
+            let cart_quantity_cookie = cookie_value_split[1];
+
+            
+            if (cookie_value_split[0] === "cart") {
+                let cart_quantity_cookie = cookie_value_split[1];
+                document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity_cookie
+                sessionStorage.removeItem('key');
+            } else {
+
+                let cart_quantity = sessionStorage.getItem('key');
+                document.cookie = 'cart =; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                if (cart_quantity === null) {
+                    return;
+                }
+                document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity;
+
+            }
+
+        });
+
+
+    </script>
 
 
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
+
 </html>

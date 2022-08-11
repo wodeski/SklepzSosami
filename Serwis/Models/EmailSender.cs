@@ -47,7 +47,7 @@ namespace Serwis.Models
         {
             try
             {
-                    await SendReport(emailReciever, orderPositionsFromCart);
+                    await SendReportAsync(emailReciever, orderPositionsFromCart);
             }
             catch (Exception ex)
             {
@@ -57,11 +57,11 @@ namespace Serwis.Models
 
 
         }
-        private async Task SendReport(string emailReceiver, IEnumerable<OrderPosition> orderPositionsFromCart)
+        private async Task SendReportAsync(string emailReceiver, IEnumerable<OrderPosition> orderPositionsFromCart)
         {
             if (orderPositionsFromCart == null)
                 return;
-          var orderTitle = _reportRepository.ReportSent(orderPositionsFromCart);//zmiana statusu zamówienia
+          var orderTitle = await _reportRepository.ReportSentAsync(orderPositionsFromCart);//zmiana statusu zamówienia
             
             await _email.Send("Informacje o zakupie", _genarateHtmlEmail.GenerateInvoice(orderPositionsFromCart, orderTitle), emailReceiver);
 

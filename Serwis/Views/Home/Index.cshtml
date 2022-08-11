@@ -2,8 +2,8 @@
 @model List<Serwis.Models.ViewModels.ProductViewModel>
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
-    var sessionForProducts = HttpContextAccessor.HttpContext?.Session.GetString("Login");
-   
+    var sessionForLogin = HttpContextAccessor.HttpContext?.Session.GetString("Login");
+
 
 }
 
@@ -21,9 +21,10 @@
                 <span>@item.Name</span>
                 <span>@item.Price zł</span>
                 <div style="display:block">
-                    <a asp-action="BuySingleProduct" asp-controller="Shop" asp-route-productId="@item.Id" class=" mt-1 btn btn-sm btn-secondary"> Kupuj</a>
+                    <a asp-action="BuySingleProduct" asp-controller="Shop" asp-route-productId="@item.Id"
+               class=" mt-1 btn btn-sm btn-secondary"> Kupuj</a>
                     <button class=" mt-1 btn btn-sm btn-primary" style="display: inline"
-                    onclick="AddPositionToCart('@item.Id', '@sessionForProducts')">
+                    onclick="AddPositionToCart('@item.Id', '@sessionForLogin')">
                         Dodaj do koszyka
                     </button>
                 </div>
@@ -35,12 +36,12 @@
     {
         <h2>Brak pozycji do wyswietlenia</h2>
     }
-</div>S
+</div>
 @section scripts{
     <script type="text/javascript">
 
 
-
+const confirmMsg = document.getElementById("confirm");
         function AddPositionToCart(productId, userName) {
             if (!confirm(" Czy na pewno chesz dodac te pozycje do koszyka?"))
                 return;
@@ -55,19 +56,48 @@
                 success: function(data) {
                     if (data.success) { // musza byc male litery i tu i tu
 
+                        // function closePrivacyPolicy()
+                        //{
+
+                        //  $.cookie("privacyPolicyCookie", "ciastko", { path: "/", expires: 365 });
+
+                        // }
+                        console.log(confirmMsg);
+
                         let quantity = document.getElementsByClassName('cart-quantity')[0].textContent
                         quantity++;
-                        console.log(quantity);
 
-                        document.getElementsByClassName('cart-quantity')[0].textContent = quantity;
+                        if (confirmMsg !== null ) {
 
+                            var expires = "";
+                           
+                                var date = new Date();
+                                date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000));
+                                
+                                var data = date.toUTCString();
 
+                            document.cookie = `cart = ${quantity}; expires = ${data}; path=/`;
+                            let cookie_value = document.cookie.split(';');
+                            let cookie_value_split = cookie_value[0].split('=')
+                            let cart_quantity_cookie = cookie_value_split[1];
+
+                            document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity_cookie
+                            sessionStorage.removeItem('key');
+                            
+                        } else {
+                            sessionStorage.setItem('key', quantity.toString());
+                            let cart_quantity = sessionStorage.getItem('key');
+                            document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity;
+                            document.cookie = 'cart =; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                        }
                     } else {
-                        alert(data.message + "tu sie zjebalo");
+                        alert(data.message);
                     }
+
                 },
+
                 error: function(data) {
-                    alert(data.message + "nie bo tutaj");
+                    alert(data.message);
                 },
                 dataType: 'json'
 

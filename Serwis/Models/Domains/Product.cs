@@ -35,9 +35,11 @@ namespace Serwis.Models.Domains
         [NotMapped]
         [Display(Name ="Dodaj zdjęcie")]
         public IFormFile? ImageFile { get; set; }
-
         public DateTime CreatedDate { get; set; }
 
+        [ForeignKey("Categories")]
+        public int CategoryId { get; set; }
+        public ProductCategory Categories { get; set; }
         public ICollection<OrderPosition> OrderPositions { get; set; }
     }
 }

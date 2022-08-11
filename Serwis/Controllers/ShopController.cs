@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serwis.Converter;
+using Serwis.Converters;
 using Serwis.Models;
 using Serwis.Models.Domains;
 using Serwis.Models.Extensions;
@@ -13,69 +15,110 @@ namespace Serwis.ShopControllers
         private readonly IRepository _repository;
         private EmailSender _emailSender;
         private List<OrderPositionViewModel> _orderPositions;
+        private const int AnonymousId = 3;
+        private const string AnonymousCart = "AnonyomousCart";
+        public const string Id = "Id";
 
         public ShopController(IRepository repository, EmailSender emailSender, List<OrderPositionViewModel> orderPositions)
         {
             _repository = repository;
             _emailSender = emailSender;
             _orderPositions = orderPositions;
-
         }
 
-        public IActionResult BuySingleProduct(int productId)
+        public async Task<IActionResult> BuySingleProduct(int productId)//do zmiany nazwa
         {
-            var product = _repository.GetProduct(productId);
-            var productVM = PrepareProductViewModel(product);
+            var product = await _repository.GetProductAsync(productId);
+            var productVM = product.PrepareProductViewModel();
             return View(productVM);
         }
 
-        //[HttpPost]
-        //public IActionResult BuySingleProduct()
-        //{
-        //    return View()
-        //}
-
         [HttpPost]
-        public IActionResult InvoiceOfOrder(int productId, int userId, int orderId, string email)
+        public async Task<IActionResult> InvoiceOfOrder(int productId, int userId, int orderId, string email)
         {
+            
             //sprawdzenie czy taki produtk taki uzytkownik i takie zamówienie istenija nastepnie 
             if (string.IsNullOrEmpty(email))
             {
-                var order = _repository.FindOrderById(orderId);
-                var user = _repository.FindUserById(userId);
-                var product = _repository.FindProductById(productId);
-
-                var orderPositionVM = new OrderPositionViewModel
-                {
-                    Order=order,
-                    User=user,
-                    Product=product,
-
-                };
-                TempData["EmailValidationError"] = "Podaj maila!!!";
+                var orderPositionVM = PrepareViewModelForInvoice(productId, userId, orderId);
                 return View(orderPositionVM);
             }
+            var orderPosition = SetOrderPosition(productId, userId, orderId);
+
+            await _repository.CreateOrderPositionAsync(orderPosition);
+
             PayForOrderFromCart(orderId, userId, email);
 
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult InvoiceOfOrder(int productId, int userId)
+        private async Task<OrderPositionViewModel> PrepareViewModelForInvoice(int productId, int userId, int orderId)
+        {
+            var order = await _repository.FindOrderByIdAsync(orderId);
+
+            var user = await _repository.FindUserByIdAsync(userId);
+
+            var product = await _repository.FindProductByIdAsync(productId);
+
+            var orderPositionVM = SetOrderPositionViewModel(order, user, product);
+
+            return orderPositionVM;
+        }
+
+        public async Task<IActionResult> DeleteUserOrderPositionFromCart(string productId, int orderId)
+        {
+            var userId = HttpContext.Session.GetString(Id);
+
+            if (userId == null)
+            {
+                await RemoveAnonymousPositionFromCart(Convert.ToInt32(productId));
+                return Json(new { Success = true });
+            }
+
+           await _repository.DeleteOrderPositionAsync(orderId, Convert.ToInt32(userId), Convert.ToInt32(productId));
+            return Json(new { Success = true });
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InvoiceOfOrder(int productId, int userId)
         {
             if (productId == 0)
                 return RedirectToAction("Index", "Home");
 
             if (userId == 0)
-                userId = 3; ///!!! zmienić przy najblizszej okazji
+                userId = AnonymousId; ///!!! zmienić przy najblizszej okazji
 
-            var product = _repository.GetProduct(productId); //async dac
+            var product = await _repository.GetProductAsync(productId); 
+
             var order = SetOrderForProduct(userId); //ustawienie danych dla zamownia 
-            var user = _repository.FindUserById(userId);
+
+            var user = await _repository.FindUserByIdAsync(userId);
+
             var orderPositionVM = SetOrderPositionViewModelForProduct(product, order, user);
 
             return View(orderPositionVM); //stworzyc viemodel dla order position
         }
+        private OrderPositionViewModel SetOrderPositionViewModel(Order order, ApplicationUser user, Product product)
+        {
+            return new OrderPositionViewModel
+            {
+                Order = order,
+                User = user,
+                Product = product,
 
+            };
+        }
+        private OrderPosition SetOrderPosition(int productId, int userId, int orderId)
+        {
+            return new OrderPosition
+            {
+                OrderId = orderId,
+                UserId = userId,
+                ProductId = productId
+
+            };
+        }
         private OrderPositionViewModel SetOrderPositionViewModelForProduct(Product product, Order order, ApplicationUser user)
         {
             var orderPositionVM = new OrderPositionViewModel
@@ -95,144 +138,67 @@ namespace Serwis.ShopControllers
                 IsCompleted = false,
                 Title = $"Fak/{userId}/{DateTime.Now.ToString("dd-MM-yyyy:mm:ss")}"
             };
-            _repository.CreateOrder(order);
+            _repository.CreateOrderAsync(order);
             return order;
         }
 
-        private ProductViewModel PrepareProductViewModel(Product product) // obracowac klase dla view modeli
-        {
-            var productVM = new ProductViewModel
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                CreatedDate = product.CreatedDate,
-                ImageFileName = product.ImageFileName,
-                Price = product.Price,
-                OrderPositions = product.OrderPositions
-            };
 
-            return productVM;
-        }
 
-        private ApplicationUserViewModel PrepareApplicationUserViewModel(ApplicationUser user) // obracowac klase dla view modeli
-        {
-            var userVM = new ApplicationUserViewModel
-            {
-                Id = user.Id,
-                Password = user.Password,
-                UserName = user.UserName,
-                CreatedDate = user.CreatedDate,
-                Email = user.Email,
-                Orders = user.Orders,
-                
-                
-            };
-
-            return userVM;
-        }
-        private OrderViewModel PrepareOrderViewModel(Order order) // obracowac klase dla view modeli
-        {
-            var orderVM = new OrderViewModel
-            {
-                Id = order.Id,
-                Title = order.Title,
-                UserId = order.UserId,
-                OrderPositions = order.OrderPositions,
-            };
-
-            return orderVM;
-        }
-        private OrderPositionViewModel PrepareOrderPositionViewModel(OrderPosition orderPosition) // obracowac klase dla view modeli
-        {
-            var orderPositionVM = new OrderPositionViewModel
-            {
-                Id= orderPosition.Id,
-                OrderId = orderPosition.OrderId,
-                ProductId = orderPosition.ProductId,
-                UserId = orderPosition.UserId,
-                Product = orderPosition.Product,
-                Order = orderPosition.Order,
-                User = orderPosition.User
-
-            };
-
-            return orderPositionVM;
-        }
-
-        public IActionResult Cart(int userId)
+        public async Task<IActionResult> Cart(int userId)
         {
 
-            if(userId == 0)
+            if (userId == 0)
             {
-                var data = HttpContext.Session.GetComplexData<List<OrderPositionViewModel>>("AnoniomousCart");
+                //anonimowy uzytkownik
+                var data = HttpContext.Session.GetComplexData<List<OrderPositionViewModel>>(AnonymousCart);
                 return View(data);
             }
-            //zapytanie skonstruować tak aby wyswietlalo sie dla konkretnego uzytkownika
-           var orderPositions = _repository.GetPositionsForUser(userId);
-            //tutututututututuut
+            var orderPositions = await _repository.GetPositionsForUserAsync(userId);//usuwa wszystkue te ktore mg byc false i byc ich wiecej kak jedno
 
-            var orderPositionsVm = OrderPositionsIEnumerableToList(orderPositions);
+            var orderPositionsVm = orderPositions.OrderPositionsIEnumerableToList();
             return View(orderPositionsVm);
         }
 
-        private List<OrderPositionViewModel> OrderPositionsIEnumerableToList(IEnumerable<OrderPosition> orderPositions)
+        public async Task<IActionResult> Product(int productId)
         {
-            var orderPositionVM = new List<OrderPositionViewModel>();
-            foreach (var orderPosition in orderPositions)
-            {
-                orderPositionVM.Add(
-                    new OrderPositionViewModel
-                    {
-                       Order = orderPosition.Order,
-                       Product = orderPosition.Product,
-                    });
-            }
+            var product = await _repository.GetProductAsync(productId);
 
-            return orderPositionVM;
-
-        }
-
-        public IActionResult Product(int productId)
-        {
-            var product = _repository.GetProduct(productId);
-
-            var productVM = PrepareProductViewModel(product);
+            var productVM = product.PrepareProductViewModel();
 
             return View(productVM);
         }
 
-
         [HttpPost]
-        public ActionResult PayForOrderFromCart(int orderId, int userId, string userEmail)
+        /////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        public async Task<ActionResult> PayForOrderFromCart(int orderId, int userId, string userEmail)
         {
-            if(string.IsNullOrEmpty(userEmail))
+            
+            if (string.IsNullOrEmpty(userEmail))
                 userEmail = HttpContext.Session.GetString("Email");
 
-            var order = _repository.GetOrderPositionsForUser(orderId, userId); // zwróci liste pozycji wraz z produktami dl konkretnego uzytkownika
+            var order = await _repository.GetOrderPositionsForUserAsync(orderId, userId); // zwróci liste pozycji wraz z produktami dl konkretnego uzytkownika
             _emailSender.SendMail(userEmail, order);
-
 
             return Json(new { success = true });
         }
 
-
         [HttpPost]
-        public ActionResult AddPositionToCart(int productId, string userName) // id produktu
+        public async Task<ActionResult> AddPositionToCart(int productId, string userName)
         {
             if (userName == null)
-                return SetAnonimousCart(productId);
+                return await AddAnonymousPositionToCart(productId);
 
             try
             {
-                var find = _repository.FindUser(userName);
+                var user = await _repository.FindUserAsync(userName);
 
-                if(find == null)
+                if (user == null)
                 {
                     return RedirectToAction("Index", "Home");
                 }
-
-                _repository.AddPosition(find.Id, productId);
+                await _repository.AddPositionAsync(user.Id, productId);
 
             }
             catch (Exception ex)
@@ -243,23 +209,34 @@ namespace Serwis.ShopControllers
             return Json(new { Success = true });
         }
 
-        private ActionResult SetAnonimousCart(int productId)
+        private async Task<ActionResult> AddAnonymousPositionToCart(int productId)
         {
             var data = _orderPositions;
             var id = data.Count();
             id++;
-            var produkt = _repository.GetProduct(productId);
+            var produkt =  await _repository.GetProductAsync(productId);
             var obj = new OrderPositionViewModel
             {
                 Id = id,
                 OrderId = 1,
                 Product = produkt,
-
-
             };
 
             data.Add(obj);
-            HttpContext.Session.SetComplexData("AnoniomousCart", data);
+            HttpContext.Session.SetComplexData(AnonymousCart, data);
+            return Json(new { Success = true });
+        }
+
+        private async Task<ActionResult> RemoveAnonymousPositionFromCart(int productId)
+        {
+            var data = _orderPositions;
+            
+            var produkt = await _repository.GetProductAsync(productId);
+            
+            var positionToDelete = data.Find(x=>x.Product.Id == productId);
+
+            data.Remove(positionToDelete);
+            HttpContext.Session.SetComplexData(AnonymousCart, data);
             return Json(new { Success = true });
         }
     }

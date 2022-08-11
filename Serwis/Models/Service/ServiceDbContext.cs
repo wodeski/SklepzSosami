@@ -14,10 +14,10 @@ namespace Serwis.Models.Service
         public DbSet<ApplicationUser> Credentials { get; set; }
         public DbSet<OrderPosition> OrderPositions { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(x => x.Orders)
                 .WithOne(x => x.User)
@@ -34,6 +34,12 @@ namespace Serwis.Models.Service
                 .HasMany(x => x.OrderPositions)
                 .WithOne(x => x.Product)
                 .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ProductCategory>()
+                .HasMany(x => x.Products)
+                .WithOne(x => x.Categories)
+                .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Product>()

@@ -11,6 +11,15 @@
           "lib/netstandard2.0/Humanizer.dll": {}
         }
       },
+      "jQuery/1.4.4": {
+        "type": "package"
+      },
+      "jQuery.Cookie/1.4.1": {
+        "type": "package",
+        "dependencies": {
+          "jQuery": "1.4.4"
+        }
+      },
       "Microsoft.AspNetCore.Cryptography.Internal/2.2.0": {
         "type": "package",
         "compile": {
@@ -1131,6 +1140,33 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "jQuery/1.4.4": {
+      "sha512": "kexCeYIZehR5fRjo8CK1sngN5SZEQRFNfCYZHMS1RxwEEiSKetBw/gliYJcLJdJEBB+e9aHqleLCjuaSI7u23g==",
+      "type": "package",
+      "path": "jquery/1.4.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Content/Scripts/jquery-1.4.4-vsdoc.js",
+        "Content/Scripts/jquery-1.4.4.js",
+        "Content/Scripts/jquery-1.4.4.min.js",
+        "jquery.1.4.4.nupkg.sha512",
+        "jquery.nuspec"
+      ]
+    },
+    "jQuery.Cookie/1.4.1": {
+      "sha512": "P51hSplNrHZbaq6kXsTPEhuL8eIi3gPLiNQChQdtZGUrgaW+xLgs/5dHrPnne47xgAZf5e2NuR03kvLHytw2rQ==",
+      "type": "package",
+      "path": "jquery.cookie/1.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Content/Scripts/jquery.cookie-1.4.1.min.js",
+        "Content/Scripts/jquery.cookie.js",
+        "jquery.cookie.1.4.1.nupkg.sha512",
+        "jquery.cookie.nuspec"
       ]
     },
     "Microsoft.AspNetCore.Cryptography.Internal/2.2.0": {
@@ -3092,7 +3128,8 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 6.0.7",
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.7",
       "Newtonsoft.Json >= 13.0.1",
-      "System.ServiceProcess.ServiceController >= 6.0.0"
+      "System.ServiceProcess.ServiceController >= 6.0.0",
+      "jquery.cookie >= 1.4.1"
     ]
   },
   "packageFolders": {
@@ -3172,6 +3209,10 @@
           "System.ServiceProcess.ServiceController": {
             "target": "Package",
             "version": "[6.0.0, )"
+          },
+          "jquery.cookie": {
+            "target": "Package",
+            "version": "[1.4.1, )"
           }
         },
         "imports": [

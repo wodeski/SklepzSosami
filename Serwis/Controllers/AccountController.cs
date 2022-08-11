@@ -16,7 +16,14 @@ namespace Serwis.Controllers
         private readonly AccountAuthRepository _accountAuth;
         public const string SessionKeyName = "Login";
         private const string UserNotFound = "Nie znaleziono użytkownika!";
-        private const string AdminIsSigningIn = "admin";
+        private const string IsAdmin = "admin";
+        private const string Cookie = "CookieAuth";
+        private const string IsUser = "User";
+        private const string Email = "Email";
+        private const string Id = "Id";
+        private const string Wallet = "Wallet";
+        private const string Validation = "Walidacja";
+        private const string True = "true";
 
         public AccountController(AccountAuthRepository accountAuth)
         {
@@ -39,19 +46,30 @@ namespace Serwis.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(RegisterViewModel registerVM) //trzeba doprowadzic do sytuacji w kótrej sprawdzone zostanie register tylko
+        public IActionResult Register(RegisterViewModel registerVM)
         {
-            registerVM.CreatedDate = DateTime.Now;  // sprawdzic czy dziala w instrukcji  
+            registerVM.CreatedDate = DateTime.Now;
             if (!ModelState.IsValid)
                 return View(registerVM);
-            if (registerVM.Password != registerVM.RepeatPassword)
+
+            if (registerVM.Password != registerVM.RepeatPassword) //po stronie uzytkownika również
             {
-                TempData["Walidacja"] = "Hasła nie sa takie same";
+                TempData[Validation] = "Hasła nie sa takie same";
                 return View(registerVM);
             }
+
+            var usernameFromRegister = registerVM.UserName.ToLower();
+
+            if (!IsUserNameFromRegisterViewModelValid(usernameFromRegister))
+            {
+                TempData[Validation] = "Uzytkownik o podanej nazwie juz istnieje";
+                return View(registerVM);
+            }
+
             try
             {
                 var user = registerVM.ConvertToApplicationUserFromRegisterViewModel();
+
                 _accountAuth.CreateUser(user);
             }
             catch (Exception ex)
@@ -61,6 +79,15 @@ namespace Serwis.Controllers
             }
             return RedirectToAction("Login", "Account");
 
+        }
+        private bool IsUserNameFromRegisterViewModelValid(string username)
+        {
+            var isValid = _accountAuth.IsUserNameFromRegisterValid(username);
+            if (isValid)
+            {
+                return true;
+            }
+            return false;
         }
         [HttpPost]
         public async Task<IActionResult> Login(ApplicationUserViewModel userVM)
@@ -74,84 +101,73 @@ namespace Serwis.Controllers
                 return View(userVM);
             }
 
-           var user = userVM.ConvertToApplicationUser();
+            var user = userVM.ConvertToApplicationUser();
 
-            var userInDatabase = CheckAuth(user);
-            if (userInDatabase == null)
+            var userFromLoginCredentials = UserFromLogin(user.UserName, user.Password);
+
+            if (userFromLoginCredentials == null)
             {
                 TempData["UserNotFound"] = UserNotFound;
                 return View(userVM); //dac info ze nie ma takiego 
             }
-            AddSession(userInDatabase);
-            var clasimsPrincipal = AddClaims(user);
+            AddSessionForUserFrom(userFromLoginCredentials);
 
-            //Action_();
-            ////kolejnosc ma znacznie dlatego w innych projektach nalezy trzymac sie tego ukladu 
+            var clasimsPrincipal = AddClaimsForUserFromLogin(user);
 
-            await HttpContext.SignInAsync("MyCookieAuth", clasimsPrincipal);
-            return RedirectToAction("Index", "Home");//, login); // przekierowanie do akcji w kontrolerze home
+            await HttpContext.SignInAsync(Cookie, clasimsPrincipal);
+            return RedirectToAction("Index", "Home");
 
 
         }
-
-        private void Action_()
+        private void AddSessionForUserFrom(ApplicationUser credential)
         {
-            //var authProperties = new AuthenticationProperties
-            //{
-            //    IsPersistent = Credential.RememberMe //opcja dziki ktorej cookie nie znika wraz z wylacznienim przegladarki
-            //};
-        }
-        private void AddSession(ApplicationUser credential)
-        {
-            HttpContext.Session.SetString(SessionKeyName, credential.UserName);
-            HttpContext.Session.SetString("Email", credential.Email);
-            HttpContext.Session.SetString("Id", (credential.Id).ToString());
-            HttpContext.Session.SetString("Wallet", (credential.Wallet).ToString());
-
+            HttpContext.Session.SetString(SessionKeyName, credential.UserName); // zoabczyc co tu sie stanie w tej sytuacji nie wyswietla sie w narozniku
+            HttpContext.Session.SetString(Email, credential.Email);// prawdopobonie to powinno byc w cookie
+            HttpContext.Session.SetString(Id, (credential.Id).ToString()); // prawdopobonie to powinno byc w cookie
+            HttpContext.Session.SetString(Wallet, (credential.Wallet).ToString()); // prawdopobonie to powinno byc w cookie
+            //poniewaz po wylaczeniu przegladarki uzytkownik badac dalej zalogowanym 
+            // nie bedzie widzial tych pozycji mozliwe problemy pozniej
+            //ustawic dla uzytkownka mozliwosc nie wylogowywania
         }
 
-        private ApplicationUser CheckAuth(ApplicationUser credential)
+        private ApplicationUser UserFromLogin(string userName, string password)
         {
-            return _accountAuth.FindUser(credential);
+            return _accountAuth.FindUserWithLoginCredentials(userName, password);
         }
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("MyCookieAuth"); // najlepiej const string
+            HttpContext.Session.Remove(SessionKeyName); // zoabczyc co tu sie stanie w tej sytuacji nie wyswietla sie w narozniku
+            HttpContext.Session.Remove(Email);// prawdopobonie to powinno byc w cookie
+            HttpContext.Session.Remove(Id); // prawdopobonie to powinno byc w cookie
+            HttpContext.Session.Remove(Wallet);
+            await HttpContext.SignOutAsync(Cookie);
             return RedirectToAction("Index", "Home");
         }
-
-        private ClaimsPrincipal AddClaims(ApplicationUser user)
+        private ClaimsPrincipal AddClaimsForUserFromLogin(ApplicationUser user)
         {
-
-            if (user.UserName.ToLower() == AdminIsSigningIn)
+            var userName = user.UserName.ToLower();
+            if (userName == IsAdmin)
             {
                 var claims = new List<Claim>
                 {
-                    new Claim("Admin", "true")
-                // new Claim(ClaimTypes.Name, "admin"), //własciwosci jak mniemam
-                // new Claim(ClaimTypes.Email, "admin@wp.pl"), //własciwosci jak mniemam
-                // new Claim("Admin", "true"),
-                // new Claim("Manager", "true"),
-                // new Claim("EmploymentDate", "2022-04-01") //claim w ktorym bedzie informacje o dacie zatrudnienia
-                //CLAIM DODANIE GO DO COOKIE DAJW MOZLIWOSC WGLADU DO ZAWARTOSCI USTALONEJ W PROGRAM.CS
+                    new Claim(IsAdmin, True)
                 };
-                var identity = new ClaimsIdentity(claims, "MyCookieAuth");
+                var identity = new ClaimsIdentity(claims, Cookie);
                 var clasimsPrincipal = new ClaimsPrincipal(identity);
                 return clasimsPrincipal;
             }
             else
             {
 
-                var claims_user = new List<Claim>
+                var claimsUser = new List<Claim>
                 {
-                    new Claim("User", "true"),
+                    new Claim(IsUser, True),
                 };
-                HttpContext.Session.SetString("Zwykly", user.UserName);
+               // HttpContext.Session.SetString("Zwykly", userName);
 
-
-                var identity_user = new ClaimsIdentity(claims_user, "MyCookieAuth");
-                var clasimsPrincipal_user = new ClaimsPrincipal(identity_user);
+                var identityUser = new ClaimsIdentity(claimsUser, Cookie);
+                var clasimsPrincipal_user = new ClaimsPrincipal(identityUser);
                 return clasimsPrincipal_user;
             }
 
@@ -164,24 +180,8 @@ namespace Serwis.Controllers
 
             var user = _accountAuth.GetUser(sessionUser);
 
-            var userVM = PrepareApplicationUserViewModel(user);
+            var userVM = user.PrepareApplicationUserViewModel();
             return View(userVM);
-        }
-        private ApplicationUserViewModel PrepareApplicationUserViewModel(ApplicationUser user) // obracowac klase dla view modeli
-        {
-            var userVM = new ApplicationUserViewModel
-            {
-                Id = user.Id,
-                Password = user.Password,
-                UserName = user.UserName,
-                CreatedDate = user.CreatedDate,
-                Email = user.Email,
-                Orders = user.Orders
-
-
-            };
-
-            return userVM;
         }
     }
 }

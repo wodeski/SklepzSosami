@@ -4,26 +4,27 @@ namespace Serwis.Repository
 {
     public interface IRepository
     {
+        Task DeleteOrderPositionAsync(int orderId, int userId, int productId);
+        Task CreateListOfCategories();
+        Task<List<ProductCategory>> GetListOfProductCategories();
+        Task<bool> IsProductCategoryListEmpty();
         Task CreateProductAsync(Product product);
-        Task DeleteItemAsync(int id);
-        Task<Product> GetItemAsync(int id);
-        Task<IEnumerable<Product>> GetItemsAsync();
-        Product GetProduct(int id);
+        Task DeleteProductAsync(int id);
+        Task<IEnumerable<Product>> GetProductsAsync();
+        Task<Product> GetProductAsync(int id);
         Task UpdateProductAsync(Product product);
-        void AddPosition(int UserId, int ProductId);
-        IEnumerable<OrderPosition> GetPositions();
-        IEnumerable<OrderPosition> GetPositionsForUser(int userId);
-        ApplicationUser FindUser(string userName);
-        ApplicationUser FindUserById(int userId);
-        Product FindProductById(int productId);
-        Order FindOrderById(int orderId);
-
-        IEnumerable<OrderPosition> GetOrderPositionsForUser(int orderId, int userId);
-        IEnumerable<Order> GetOrdersForUser(int userId); 
-       // Order GetOrderForUser(int userId); 
-        string UpdateOrder(int OrderId);
-
-        void CreateOrder(Order order);
+        Task AddPositionAsync(int UserId, int ProductId);
+        Task<IEnumerable<OrderPosition>> GetPositionsAsync();
+        Task<IEnumerable<OrderPosition>> GetPositionsForUserAsync(int userId);
+        Task<ApplicationUser> FindUserAsync(string userName);
+        Task<ApplicationUser> FindUserByIdAsync(int userId);
+        Task<Product> FindProductByIdAsync(int productId);
+        Task<Order> FindOrderByIdAsync(int orderId);
+        Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int orderId, int userId);
+        Task<IEnumerable<Order>> GetOrdersForUserAsync(int userId); 
+        Task<string> UpdateOrderAsync(int OrderId);
+        Task CreateOrderAsync(Order order);
+        Task CreateOrderPositionAsync(OrderPosition orderPosition);
 
     }
 }

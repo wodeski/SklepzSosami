@@ -18,7 +18,7 @@ namespace Serwis.Models.Domains
             private string _senderEmailPassword;
             private string _senderName;
 
-            public Email(EmailParams emailParams) //to jes dependecy injection chyba
+            public Email(EmailParams emailParams) 
             {
                 _hostSmtp = emailParams.HostSmtp;
                 _enableSsl = emailParams.EnableSsl;

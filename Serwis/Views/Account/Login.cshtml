@@ -29,12 +29,21 @@
              <div form-group row>
                  <span style="color:#df2c14">@TempData["UserNotFound"]</span>
             <div class="col-4">
-                <input type="submit" value="Login" class="btn btn-primary mt-3  " />
+                <input onclick="ClearSession()" type="submit" value="Login" class="btn btn-primary mt-3  " />
             </div>
-            <span><a asp-action="Register" asp-controller="Account">Rejestracja</a></span>
+            <span><a  asp-action="Register" asp-controller="Account">Rejestracja</a></span>
             <div class=" col-4">
             </div>
         </div>
         </div>
     </form>
 </div>
+@section scripts{
+    <script type="text/javascript">
+
+function ClearSession() {
+    sessionStorage.removeItem('key');
+    document.getElementsByClassName('cart-quantity')[0].textContent = 0;
+}
+        </script>
+}

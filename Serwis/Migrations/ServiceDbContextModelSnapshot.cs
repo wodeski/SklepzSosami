@@ -34,6 +34,7 @@ namespace Serwis.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -115,6 +116,9 @@ namespace Serwis.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -135,7 +139,26 @@ namespace Serwis.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Serwis.Models.Domains.ProductCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductCategories");
                 });
 
             modelBuilder.Entity("Serwis.Models.Domains.Order", b =>
@@ -176,6 +199,17 @@ namespace Serwis.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Serwis.Models.Domains.Product", b =>
+                {
+                    b.HasOne("Serwis.Models.Domains.ProductCategory", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Serwis.Models.Domains.ApplicationUser", b =>
                 {
                     b.Navigation("Orders");
@@ -189,6 +223,11 @@ namespace Serwis.Migrations
             modelBuilder.Entity("Serwis.Models.Domains.Product", b =>
                 {
                     b.Navigation("OrderPositions");
+                });
+
+            modelBuilder.Entity("Serwis.Models.Domains.ProductCategory", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

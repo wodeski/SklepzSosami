@@ -3,9 +3,9 @@ using Serwis.Models.ViewModels;
 
 namespace Serwis.Converters
 {
-    public class ListConverter
+    public static class ListConverter
     {
-        private List<ProductViewModel> ProductsIEnumerableToList(IEnumerable<Product> products)
+        public static List<ProductViewModel> ProductsIEnumerableToList(this IEnumerable<Product> products)
         {
             var productsVM = new List<ProductViewModel>();
             foreach (var product in products)
@@ -26,7 +26,7 @@ namespace Serwis.Converters
 
             return productsVM;
         }
-        private List<OrderPositionViewModel> OrderPositionsIEnumerableToList(IEnumerable<OrderPosition> orderPositions)
+        public static List<OrderPositionViewModel> OrderPositionsIEnumerableToList(this IEnumerable<OrderPosition> orderPositions)
         {
             var orderPositionVM = new List<OrderPositionViewModel>();
             foreach (var orderPosition in orderPositions)

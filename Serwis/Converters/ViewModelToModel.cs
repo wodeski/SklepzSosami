@@ -15,8 +15,11 @@ namespace Serwis.Converter
                 Description = productVM.Description,
                 CreatedDate = productVM.CreatedDate,
                 ImageFileName = productVM.ImageFileName,
+                ImageFile = productVM.ImageFile,
                 Price = productVM.Price,
-                OrderPositions = productVM.OrderPositions
+                OrderPositions = productVM.OrderPositions,
+                CategoryId = productVM.CategoryId
+                
             };
 
             return product;
