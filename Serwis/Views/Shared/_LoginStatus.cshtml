@@ -9,7 +9,7 @@
     <span>Masz aktualnie na koncie @sessionWallet zł</span>
     <span>Witaj @sessionLogin</span>
     <form method="post" class="form-inline" asp-action="Logout" asp-controller="Account">
-    <button onclick="deleteCookie()" type="submit" class="btn btn-link ml-2">Wyloguj</button>
+    <button onclick="setCart()" type="submit" class="btn btn-link ml-2">Wyloguj</button>
 
     </form>
 
@@ -22,6 +22,7 @@ else
     <script type="text/javascript">
 
         function deleteCookie() {
-           document.cookie = 'cart =; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity;
+           
         }
     </script>

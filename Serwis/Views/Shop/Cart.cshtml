@@ -46,13 +46,18 @@
                     </td>
                     <td align="center" valign="middle" id="price_value" class="sum_of_all" style="text-align:center;">@position.Product.Price</td>
                     <td align="center" valign="middle" style="text-align:center;">
-                        @if(User.Identity.IsAuthenticated){
-                        <button onclick="DeletePosition('@position.Product.Id', '@position.Order.Id', this)" class="btn btn-sm btn-danger">X
-                        </button>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button onclick="DeletePosition('@position.Product.Id', '@position.Order.Id', this)" class="btn btn-sm btn-danger">
+                                X
+                            </button>
 
-                        }else{
-                        <button onclick="DeletePosition('@position.Product.Id', '@orderId', this)" class="btn btn-sm btn-danger">X
-                        </button>
+                        }
+                        else
+                        {
+                            <button onclick="DeletePosition('@position.Product.Id', '@orderId', this)" class="btn btn-sm btn-danger">
+                                X
+                            </button>
 
                         }
                     </td>
@@ -105,7 +110,6 @@ else
 @section scripts
     {
     <script type="text/javascript">
-        const confirmMsg = document.getElementById("confirm");
         const btn_minus = document.getElementById("btn_minus");
         const btn_plus = document.getElementById("btn_plus");
         let quantity = document.getElementById("quantity");
@@ -144,65 +148,66 @@ else
             quantity.textContent = new_quantity;
         });
 
-
-
-        const p = document.getElementById("test");
-
-
-
-
         function DeletePosition(productId, orderId, btn) {
-            console.log(orderId)
+            swal({
+                title: "Usuwanie?",
+                text: "Jestes pewien ze chcesz usunac te pozycje?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "post",
+                        url: "@Url.Action("DeleteUserOrderPositionFromCart", "Shop")",
+                        data: {
+                            productId: productId,
+                            orderId: orderId
+                        },
+                        success: function(data) {
+                            if (data.success) {
+                                const row = btn.parentNode.parentNode;
+                                row.parentNode.removeChild(row);
+                                const tbody = parent_node[0].parentNode;
 
-            if (!confirm("Test"))
-                return;
-            $.ajax({
-                type: "post",
-                url: "@Url.Action("DeleteUserOrderPositionFromCart", "Shop")",
-                data: {
-                    productId: productId,
-                    orderId: orderId
-                },
-                success: function(data) {
-                    if (data.success) {
-                        const row = btn.parentNode.parentNode;
-                        row.parentNode.removeChild(row);
-                        const tbody = parent_node[0].parentNode;
+                                if (sum_of_all.length < 1) {
+                                    tbody.removeChild(parent_node[0]); //usuwa pierwszy dlatego trzeba znowu podawc 0 element
+                                    tbody.removeChild(parent_node[0]);
+                                } else {
+                                    let sum = 0;
 
-                        if (sum_of_all.length < 1) {
-                            tbody.removeChild(parent_node[0]); //usuwa pierwszy dlatego trzeba znowu podawc 0 element
-                            tbody.removeChild(parent_node[0]);
-                        } else {
-                            let sum = 0;
+                                    for (let i = 0; i < sum_of_all.length; i++) {
+                                        sum += parseInt(sum_of_all[i].textContent);
+                                    }
+                                    sum_value.textContent = sum.toFixed(2);
+                                }
 
-                            for (let i = 0; i < sum_of_all.length; i++) {
-                                sum += parseInt(sum_of_all[i].textContent);
+
+                                let quantity = document.getElementsByClassName('cart-quantity')[0].textContent;
+                                quantity--;
+
+                                if (confirmMsg !== null) {
+                                    document.cookie = `cart = ${quantity}; expires = ${data}; path=/`;
+                                    let cookie_value = document.cookie.split(';');
+                                    let cookie_value_split = cookie_value[0].split('=')
+                                    let cart_quantity_cookie = cookie_value_split[1];
+
+                                    document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity_cookie
+                                } else {
+
+                                    sessionStorage.setItem('key', quantity.toString());
+                                    let cart_quantity = sessionStorage.getItem('key');
+
+                                    document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity;
+                                }
+
+                            } else {
+                                toastr.error("Niepowodzenie operacji \n" + data.message);
                             }
-                            sum_value.textContent = sum.toFixed(2);
-                        }
-
-
-                        let quantity = document.getElementsByClassName('cart-quantity')[0].textContent;
-                        quantity--;
-                        if (confirmMsg !== null) {
-                            document.cookie = `cart = ${quantity}; expires = ${data}; path=/`;
-                            let cookie_value = document.cookie.split(';');
-                            let cookie_value_split = cookie_value[0].split('=')
-                            let cart_quantity_cookie = cookie_value_split[1];
-
-                            document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity_cookie
-                        } else {
-                            console.log(quantity);
-                            sessionStorage.setItem('key', quantity.toString());
-                            let cart_quantity = sessionStorage.getItem('key');
-
-                            document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity;
-                        }
-                    } else {
-                        alert("Nie powiodło sie");
-                    }
-                },
-                dataType: "json"
+                        },
+                        dataType: "json"
+                    });
+                }
             });
         }
         function PayForOrder(orderId, sessionId) {

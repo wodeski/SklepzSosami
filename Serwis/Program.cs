@@ -1,10 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Serwis.Core;
+using Serwis.Core.Repositories;
+using Serwis.Core.Service;
 using Serwis.Models;
 using Serwis.Models.Domains;
-using Serwis.Models.Service;
 using Serwis.Models.ViewModels;
+using Serwis.Persistance;
+using Serwis.Persistance.Repository;
+using Serwis.Persistance.Service;
 using Serwis.Repository;
-using Serwis.Repository.AccountAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +30,19 @@ builder.Services.AddAuthorization(options =>
         policy => policy.RequireClaim("Admin"));
 });
 
-builder.Services.AddScoped<IServiceDbContext, ServiceDbContext>();
+builder.Services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // do obs³ugi sesji po stronie view w tym wypadku oczywiscie ma tez inne zastosowanie 
-builder.Services.AddDbContext<ServiceDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultContext")));
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IRepository, EFRepository>();
-builder.Services.AddScoped<AccountAuthRepository, AccountAuthRepository>();
+builder.Services.AddTransient<IService, Service>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<AuthRepository, AuthRepository>();
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
+builder.Services.AddTransient<IOrderPositionRepository, OrderPositionRepository>();
+builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddScoped<EmailSender, EmailSender>();
 builder.Services.AddScoped<GenarateHtmlEmail, GenarateHtmlEmail>();
 builder.Services.AddTransient<ReportRepository, ReportRepository>();

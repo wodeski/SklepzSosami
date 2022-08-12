@@ -5,7 +5,7 @@
 <div class="container row">
 
     <div class="col-5">
-    
+
         <h2 class="text-dark">Produkty</h2>
     </div>
     <div class="col-5 offset-2">
@@ -40,7 +40,7 @@
                         <td>@item.Price</td>
                         <td>@item.CreatedDate</td>
                         <td>
-                        <img src="~/images/@item.ImageFileName" />
+                            <img src="~/images/@item.ImageFileName" />
                         </td>
                         <td>
                             <button onclick="removeRow('@item.Id', this)" class=" btn btn-danger">Usuń</button>
@@ -51,7 +51,7 @@
             }
             else
             {
-                 <tr>
+                <tr>
                     <td colspan="5" class="text-center">
                         Brak produktów
                     </td>
@@ -61,58 +61,76 @@
     </table>
 </div>
 @section Scripts
+{
+<script type="text/javascript">
+
+
+
+
+    function removeRow(id, btn)
     {
-    <script type="text/javascript">
+        swal({
+            title: "Usuwanie?",
+            text: "Jestes pewien ze chcesz usunac te pozycje?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true
+        }).then((willDelete) =>
+        {
+            if (willDelete)
+            {
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("Delete", "Home")",
+                    data:
+                    {
+                        id: id,
+                    },
+                    success: function (data)
+                    {
+                        if (data.success)
+                        { // musza byc male litery i tu i tu
+                            //usuwanie w html
+                            const table = document.getElementById("orders");
+
+                            const row = btn.parentNode.parentNode;
+
+                            //pierwszy parentNode to <td> drugi parentNode dotyczy <tr> - cały wiersz
+                            row.parentNode.removeChild(row);
+                            //kolejny parentNode tyczy sie <tbody> po wywolaniu nastepuje usuwanie wiersza
+
+                            let tbodyRowCount = table.tBodies[0].rows.length;
+
+                            if (tbodyRowCount === 0)
+                            {
+
+                                let row = table.insertRow(1);
+
+                                let cell1 = row.insertCell(0);
 
 
-       
+                                cell1.innerHTML = "Brak zaplanowanych zadan";
+                            }
 
-        function removeRow(id, btn) {
-            if (!confirm(" Czy na pewno chesz usunac te pozycje?"))
-                return;
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("Delete", "Home")",
-                data:
-                {
-                    id: id,
-                },
-                success: function(data) {
-                    if (data.success) { // musza byc male litery i tu i tu
-                        //usuwanie w html
-                        const table = document.getElementById("orders");
-                        
-                        const row = btn.parentNode.parentNode;
-
-                        //pierwszy parentNode to <td> drugi parentNode dotyczy <tr> - cały wiersz
-                        row.parentNode.removeChild(row);
-                        //kolejny parentNode tyczy sie <tbody> po wywolaniu nastepuje usuwanie wiersza
-
-                        let tbodyRowCount = table.tBodies[0].rows.length;
-                        
-                        if (tbodyRowCount === 0) {
-
-                            let row = table.insertRow(1);
-
-                            let cell1 = row.insertCell(0);
-
-
-                            cell1.innerHTML = "Brak zaplanowanych zadan";
+                            toastr.success("Operacja się powiodła");
+                        } else
+                        {
+                            toastr.error("Niepowodzenie operacji \n" + data.message);
                         }
-                    }else{
+                    },
+                    error: function (data)
+                    {
                         alert(data.message);
-                    }
-                },
-                error: function(data) {
-                    alert(data.message);
-                },
-                dataType: 'json'
+                    },
+                    dataType: 'json'
 
-            });
-        }
-        
+                });
+            }
+
+        });
+    }
 
 
 
-    </script>
+</script>
 }

@@ -5,13 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Serwis.Models.Service;
+using Serwis.Core;
+using Serwis.Persistance.Service;
 
 #nullable disable
 
 namespace Serwis.Migrations
 {
-    [DbContext(typeof(ServiceDbContext))]
+    [DbContext(typeof(IApplicationDbContext))]
     [Migration("20220810193704_productcategories")]
     partial class productcategories
     {

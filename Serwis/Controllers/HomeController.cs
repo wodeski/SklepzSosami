@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Serwis.Converter;
 using Serwis.Converters;
+using Serwis.Core.Service;
 using Serwis.Models;
 using Serwis.Models.Domains;
 using Serwis.Models.ViewModels;
@@ -14,16 +15,16 @@ namespace Serwis.Controllers
     {
         private readonly EmailSender _emailSender;
         private readonly ILogger<HomeController> _logger;
-        private readonly IRepository _irepository;
+        private readonly IService _service;
         private readonly IWebHostEnvironment _hostEnviroment;
 
         [BindProperty]
         public ProductViewModel Product { get; set; }
 
-        public HomeController(ILogger<HomeController> logger, IRepository irepository, IWebHostEnvironment hostEnviroment, EmailSender emailSender)
+        public HomeController(ILogger<HomeController> logger, IService service, IWebHostEnvironment hostEnviroment, EmailSender emailSender)
         {
             _logger = logger;
-            _irepository = irepository;
+            _service = service;
             _hostEnviroment = hostEnviroment;
             _emailSender = emailSender;
            
@@ -32,7 +33,7 @@ namespace Serwis.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Service()
         {
-            var products = await _irepository.GetProductsAsync();
+            var products = await _service.GetProductsAsync();
 
             if (products.ToList() == null)
             {
@@ -48,7 +49,7 @@ namespace Serwis.Controllers
         [Authorize(Policy ="AdminOnly")]
         public async Task<ActionResult> Upsert(int id = 0)
         {
-            var productCategories = await _irepository.GetListOfProductCategories();
+            var productCategories = await _service.GetListOfProductCategories();
             if (id == 0)
             {
                 Product = new();
@@ -57,7 +58,7 @@ namespace Serwis.Controllers
 
                 return View(productVManonym);
             }
-            var product = await _irepository.GetProductAsync(id);
+            var product = await _service.GetProductAsync(id);
 
             var productVM = product.PrepareProductViewModel();
             productVM.CategoriesList = productCategories;
@@ -82,11 +83,11 @@ namespace Serwis.Controllers
             {
                 product.CreatedDate = DateTime.Now;
                 AddImageToDirectory(product);
-                await _irepository.CreateProductAsync(product);
+                await _service.CreateProductAsync(product);
             }
             else
             {
-                await _irepository.UpdateProductAsync(product);
+                await _service.UpdateProductAsync(product);
             }
             return RedirectToAction("Service");
         }
@@ -120,7 +121,7 @@ namespace Serwis.Controllers
         {
             try
             {
-                await _irepository.DeleteProductAsync(id);
+                await _service.DeleteProductAsync(id);
             }
             catch (Exception ex)
             {
@@ -133,12 +134,12 @@ namespace Serwis.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var isCategoryListEmpty = await _irepository.IsProductCategoryListEmpty();
+            var isCategoryListEmpty = await _service.IsProductCategoryListEmpty();
             if (isCategoryListEmpty)
             {
-                await _irepository.CreateListOfCategories();
+                await _service.CreateListOfCategories();
             }
-            var products = await _irepository.GetProductsAsync();
+            var products = await _service.GetProductsAsync();
             if (products.Count() == 0)
             { 
                 var emptyListOfProducts = new List<ProductViewModel>();

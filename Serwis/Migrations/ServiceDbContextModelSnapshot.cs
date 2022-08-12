@@ -4,13 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Serwis.Models.Service;
+using Serwis.Core;
+using Serwis.Persistance.Service;
 
 #nullable disable
 
 namespace Serwis.Migrations
 {
-    [DbContext(typeof(ServiceDbContext))]
+    [DbContext(typeof(IApplicationDbContext))]
     partial class ServiceDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -63,6 +64,9 @@ namespace Serwis.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("FullPrice")
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
@@ -135,7 +139,7 @@ namespace Serwis.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(2,2)");
 
                     b.HasKey("Id");
 
@@ -201,13 +205,13 @@ namespace Serwis.Migrations
 
             modelBuilder.Entity("Serwis.Models.Domains.Product", b =>
                 {
-                    b.HasOne("Serwis.Models.Domains.ProductCategory", "Category")
+                    b.HasOne("Serwis.Models.Domains.ProductCategory", "Categories")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Serwis.Models.Domains.ApplicationUser", b =>

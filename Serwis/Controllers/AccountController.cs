@@ -2,18 +2,18 @@
 using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.Mvc;
 using Serwis.Models.Domains;
-using Serwis.Repository.AccountAuth;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Serwis.Converter;
 using Serwis.Models.ViewModels;
+using Serwis.Repository;
 
 namespace Serwis.Controllers
 {
     public class AccountController : Controller
     {
 
-        private readonly AccountAuthRepository _accountAuth;
+        private readonly AuthRepository _accountAuth;
         public const string SessionKeyName = "Login";
         private const string UserNotFound = "Nie znaleziono użytkownika!";
         private const string IsAdmin = "admin";
@@ -25,7 +25,7 @@ namespace Serwis.Controllers
         private const string Validation = "Walidacja";
         private const string True = "true";
 
-        public AccountController(AccountAuthRepository accountAuth)
+        public AccountController(AuthRepository accountAuth)
         {
             _accountAuth = accountAuth;
         }

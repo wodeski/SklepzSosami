@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Serwis.Converter;
 using Serwis.Converters;
+using Serwis.Core.Service;
 using Serwis.Models;
 using Serwis.Models.Domains;
 using Serwis.Models.Extensions;
@@ -12,23 +13,23 @@ namespace Serwis.ShopControllers
 {
     public class ShopController : Controller
     {
-        private readonly IRepository _repository;
+        private readonly IService _service;
         private EmailSender _emailSender;
         private List<OrderPositionViewModel> _orderPositions;
-        private const int AnonymousId = 3;
+        private const int AnonymousId = 7;
         private const string AnonymousCart = "AnonyomousCart";
         public const string Id = "Id";
 
-        public ShopController(IRepository repository, EmailSender emailSender, List<OrderPositionViewModel> orderPositions)
+        public ShopController(IService service, EmailSender emailSender, List<OrderPositionViewModel> orderPositions)
         {
-            _repository = repository;
+            _service = service;
             _emailSender = emailSender;
             _orderPositions = orderPositions;
         }
 
         public async Task<IActionResult> BuySingleProduct(int productId)//do zmiany nazwa
         {
-            var product = await _repository.GetProductAsync(productId);
+            var product = await _service.GetProductAsync(productId);
             var productVM = product.PrepareProductViewModel();
             return View(productVM);
         }
@@ -45,7 +46,7 @@ namespace Serwis.ShopControllers
             }
             var orderPosition = SetOrderPosition(productId, userId, orderId);
 
-            await _repository.CreateOrderPositionAsync(orderPosition);
+            await _service.CreateOrderPositionAsync(orderPosition);
 
             PayForOrderFromCart(orderId, userId, email);
 
@@ -54,11 +55,11 @@ namespace Serwis.ShopControllers
 
         private async Task<OrderPositionViewModel> PrepareViewModelForInvoice(int productId, int userId, int orderId)
         {
-            var order = await _repository.FindOrderByIdAsync(orderId);
+            var order = await _service.FindOrderByIdAsync(orderId);
 
-            var user = await _repository.FindUserByIdAsync(userId);
+            var user = await _service.FindUserByIdAsync(userId);
 
-            var product = await _repository.FindProductByIdAsync(productId);
+            var product = await _service.FindProductByIdAsync(productId);
 
             var orderPositionVM = SetOrderPositionViewModel(order, user, product);
 
@@ -75,26 +76,32 @@ namespace Serwis.ShopControllers
                 return Json(new { Success = true });
             }
 
-           await _repository.DeleteOrderPositionAsync(orderId, Convert.ToInt32(userId), Convert.ToInt32(productId));
+           await _service.DeleteOrderPositionAsync(orderId, Convert.ToInt32(userId), Convert.ToInt32(productId));
             return Json(new { Success = true });
 
         }
 
-        [HttpPost]
         public async Task<IActionResult> InvoiceOfOrder(int productId, int userId)
         {
+            // na podstawie produktu id oraz id uzytkownika mozna by pobrac
+            // id order poniewaz uzytkownikk moze miec tylko jedno zamowienie
+            // nie zrealizowane wie cmozna zakladac z gory ze wszystkie pozycje
+            // naleza do tego samego zamowienia jedyne co wymaga korekty to przeniesienie
+            // wartosci łacznej zamówienia
+            //najwiecej sensu bedzie chyba mialo podanie order
             if (productId == 0)
                 return RedirectToAction("Index", "Home");
 
             if (userId == 0)
                 userId = AnonymousId; ///!!! zmienić przy najblizszej okazji
 
-            var product = await _repository.GetProductAsync(productId); 
+            var product = await _service.GetProductAsync(productId); 
 
-            var order = SetOrderForProduct(userId); //ustawienie danych dla zamownia 
+            var order = await SetOrderForProduct(userId); //ustawienie danych dla zamownia 
 
-            var user = await _repository.FindUserByIdAsync(userId);
+            var user = await _service.FindUserByIdAsync(userId);
 
+            //od  tego momentu mozna łaczyc 
             var orderPositionVM = SetOrderPositionViewModelForProduct(product, order, user);
 
             return View(orderPositionVM); //stworzyc viemodel dla order position
@@ -130,7 +137,7 @@ namespace Serwis.ShopControllers
             return orderPositionVM;
         }
 
-        private Order SetOrderForProduct(int userId)
+        private async Task<Order> SetOrderForProduct(int userId)
         {
             var order = new Order
             {
@@ -138,7 +145,7 @@ namespace Serwis.ShopControllers
                 IsCompleted = false,
                 Title = $"Fak/{userId}/{DateTime.Now.ToString("dd-MM-yyyy:mm:ss")}"
             };
-            _repository.CreateOrderAsync(order);
+           await _service.CreateOrderAsync(order);
             return order;
         }
 
@@ -153,7 +160,7 @@ namespace Serwis.ShopControllers
                 var data = HttpContext.Session.GetComplexData<List<OrderPositionViewModel>>(AnonymousCart);
                 return View(data);
             }
-            var orderPositions = await _repository.GetPositionsForUserAsync(userId);//usuwa wszystkue te ktore mg byc false i byc ich wiecej kak jedno
+            var orderPositions = await _service.GetPositionsForUserAsync(userId);//usuwa wszystkue te ktore mg byc false i byc ich wiecej kak jedno
 
             var orderPositionsVm = orderPositions.OrderPositionsIEnumerableToList();
             return View(orderPositionsVm);
@@ -161,7 +168,7 @@ namespace Serwis.ShopControllers
 
         public async Task<IActionResult> Product(int productId)
         {
-            var product = await _repository.GetProductAsync(productId);
+            var product = await _service.GetProductAsync(productId);
 
             var productVM = product.PrepareProductViewModel();
 
@@ -178,28 +185,29 @@ namespace Serwis.ShopControllers
             if (string.IsNullOrEmpty(userEmail))
                 userEmail = HttpContext.Session.GetString("Email");
 
-            var order = await _repository.GetOrderPositionsForUserAsync(orderId, userId); // zwróci liste pozycji wraz z produktami dl konkretnego uzytkownika
+            var order = await _service.GetOrderPositionsForUserAsync(orderId, userId); // zwróci liste pozycji wraz z produktami dl konkretnego uzytkownika
             _emailSender.SendMail(userEmail, order);
 
             return Json(new { success = true });
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddPositionToCart(int productId, string userName)
+        public async Task<ActionResult> AddPositionToCart(int productId, string userId)
         {
-            if (userName == null)
+            if (userId == null && !User.Identity.IsAuthenticated) // jesli uzytkownik jest niezalogowany 
+            {
                 return await AddAnonymousPositionToCart(productId);
 
-            try
+            }
+            else
             {
-                var user = await _repository.FindUserAsync(userName);
+                return Json(new { Success = false, message = "Wystąpił błąd przy identyfikacji uzytkownika" });
+            }
 
-                if (user == null)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                await _repository.AddPositionAsync(user.Id, productId);
-
+            try 
+            {
+                //AddOrderIfNotExist();
+                await _service.AddPositionAsync(Convert.ToInt32(userId), productId);
             }
             catch (Exception ex)
             {
@@ -209,12 +217,30 @@ namespace Serwis.ShopControllers
             return Json(new { Success = true });
         }
 
+        //private void AddOrderIfNotExist()
+        //{
+        //    //zakladamy ze moze byc tylko jedno zamowienie niezrealizowane
+        //    //znalesc ilosc order aby utworzyc order id  
+        //    if (!isThereAnyOrderIncomplete)// jesli nie ma zadnego nieukonczonego zamowienia to stworz nowe 
+        //    {
+        //        var newOrder = new Order
+        //        {
+        //            UserId = UserId, //dodanie nowego zamowienia dla usera
+        //            IsCompleted = false
+        //        };
+        //        //dodac nowe zamowienie
+        //        await _serviceDbContext.Orders.AddAsync(newOrder);
+        //        await _serviceDbContext.SaveChangesAsync();
+        //        orderId++;
+        //    }
+        //}
+
         private async Task<ActionResult> AddAnonymousPositionToCart(int productId)
         {
             var data = _orderPositions;
             var id = data.Count();
             id++;
-            var produkt =  await _repository.GetProductAsync(productId);
+            var produkt =  await _service.GetProductAsync(productId);
             var obj = new OrderPositionViewModel
             {
                 Id = id,
@@ -231,7 +257,7 @@ namespace Serwis.ShopControllers
         {
             var data = _orderPositions;
             
-            var produkt = await _repository.GetProductAsync(productId);
+            var produkt = await _service.GetProductAsync(productId);
             
             var positionToDelete = data.Find(x=>x.Product.Id == productId);
 
