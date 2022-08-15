@@ -1,77 +1,97 @@
-﻿@model Serwis.Models.ViewModels.OrderPositionViewModel
-<div class="container border" style="padding:20px">
+﻿@using Microsoft.AspNetCore.Http;
+@model Serwis.Models.ViewModels.OrderViewModel;
+@inject IHttpContextAccessor HttpContextAccessor;
+@{
+    var sessionForUserEmail = HttpContextAccessor.HttpContext?.Session.GetString("Email");
+
+    //var test = Model.OrderPositions.Select(x => x.ProductId = 1);
+  //  Console.WriteLine(test);
+}
+@* <input readonly hidden value = "@model.order.id" />
+        <input readonly hidden value = "@model.product.id" />
+        <input readonly hidden value = "@model.user.id" />
+
         
-        <input readonly hidden value = "@Model.Order.Id" /> 
-        <input readonly hidden value = "@Model.Product.Id" /> 
-        <input readonly hidden value = "@Model.User.Id" /> 
+*@
 
-        <div form-group row>
-            <div class="col-5">
-                <label asp-for="Product.Name"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-7">
-                  <input readonly type="text" value="@Model.Product.Name" class="form-control">
-            </div>
-        </div>
-        <div form-group row>
-            <div class="col-5">
-                <label asp-for="Product.Price"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-7">
-                <input readonly value="@Model.Product.Price" class="form-control">
-            </div>
-        </div>
-        <div form-group row>
-            <div class="col-5">
-                <label asp-for="User.Email"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-7">
-                <input id="email" asp-for="@Model.User.Email" class="form-control">
-                <p style="color:red;">@TempData["EmailValidationError"]</p>
-            </div>
-        </div>
-        <div form-group row>
-            <div class="col-5">
-                <label asp-for="Order.Title"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-7">
-                <input readonly asp-for="@Model.Order.Title" class="form-control">
-            </div>
 
+<div class="container border" style="padding:20px">
+
+    
+
+@*@foreach(var pos in test)
+{
+    <div form-group row>
+        <div class=" col-6">
+            <input readonly type="text" value="@pos" class="form-control">
         </div>
-        <div form-group row>
-            <div class="col-6">
-                <button onclick="ConfirmInvoiceOrder('@Model.Product.Id','@Model.User.Id','@Model.Order.Id',document.getElementById('email').value)"
-                value="Kupuję"
-                class="btn btn-primary mt-3  form-control">Kupuję</button>
-            </div>
-            <div class=" col-6">
-                <a type="button" class="btn btn-secondary form-control mt-1" asp-action="Index" asp-controller="Home" >Rezygnuję</a>
-            </div>
+        
+    </div>
+}*@
+    
+
+    <div form-group row>
+        <div class="col-5">
+@*           // <label asp-for=""></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+*@        </div>
+        <div class=" col-7">
+            <input readonly type="text" value="@Model." class="form-control">
         </div>
-   
+    </div>
+    <div form-group row>
+        <div class="col-5">
+@*            <label asp-for="FullPrice"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+*@        </div>
+        <div class=" col-7">
+@*            <input readonly value="@Model.FullPrice" class="form-control">
+*@        </div>
+    </div>
+    <div form-group row>
+        <div class="col-5">
+@*           // <label asp-for="User.Email"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+*@        </div>
+        <div class=" col-7">
+            <input id="email" value="@sessionForUserEmail" class="form-control">
+            <p style="color:red;">@TempData["EmailValidationError"]</p>
+        </div>
+    </div>
+
 </div>
+<div form-group row>
+    <div class="col-6">
+        <button onclick="ConfirmInvoiceOrder()"
+                value="Kupuję"
+                class="btn btn-primary mt-3  form-control">
+            Kupuję
+        </button>
+    </div>
+    <div class=" col-6">
+        <a type="button" class="btn btn-secondary form-control mt-1" asp-action="Index" asp-controller="Admin">Rezygnuję</a>
+    </div>
+</div>
+
+    </div>
 @section scripts{
     <script type="text/javascript">
-const email = document.getElementById("email");
+        const email = document.getElementById("email");
 
 
-function ConfirmInvoiceOrder(productId, userId, orderId, email) {
-    if (!confirm("test"))
-        return;
+        function ConfirmInvoiceOrder(productId, userId, orderId, email) {
+            if (!confirm("test"))
+                return;
 
-    $.ajax({
-        type: "post",
-        url: "@Url.Action("InvoiceOfOrder","Shop")",
-        data: {
-            productId: productId,
-            userId: userId,
-            orderId: orderId,
-            email: email
-        },
-        dataType: "json"
-    });
-}
+            $.ajax({
+                type: "post",
+                url: "@Url.Action("InvoiceOfOrder","Shop")",
+                data: {
+                    productId: productId,
+                    userId: userId,
+                    orderId: orderId,
+                    email: email
+                },
+                dataType: "json"
+            });
+        }
 
     </script>
-}
+    }

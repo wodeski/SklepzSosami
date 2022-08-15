@@ -27,20 +27,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxVc2VySW5mby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Home/Privacy.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Admin/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Home/Service.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZXJ2aWNlLmNzaHRtbA==
+[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Admin/Service.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU2VydmljZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Home/Upsert.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxVcHNlcnQuY3NodG1s
+[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Admin/Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXBzZXJ0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Shared/Error.cshtml]
@@ -73,6 +73,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Shop/Product.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hvcFxQcm9kdWN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/Shop/Test2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hvcFxUZXN0Mi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Wojtek/source/repos/Serwis/Serwis/Views/_ViewImports.cshtml]

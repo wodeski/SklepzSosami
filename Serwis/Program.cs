@@ -16,7 +16,7 @@ builder.Services.AddAuthentication("CookieAuth").AddCookie("CookieAuth", options
 {
     options.Cookie.Name = "CookieAuth";//ustawienie  nazwy cookie
     options.LoginPath = "/Account/Login";//dosmylnie jest tak ustawione jesli chcemy dac w³asna sciezke wtedy trzeba ja sprecyzowac w³asnie w tym miejscu
-    options.AccessDeniedPath = "/Home/Index";
+    options.AccessDeniedPath = "/Admin/Index";
 
 });
 
@@ -61,7 +61,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Admin/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -86,6 +86,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Admin}/{action=Index}/{id?}");
 
 app.Run();

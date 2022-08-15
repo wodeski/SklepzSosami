@@ -34,13 +34,21 @@ namespace Serwis.Converters
                 orderPositionVM.Add(
                     new OrderPositionViewModel
                     {
+                        Quantity = 1,
                         Order = orderPosition.Order,
                         Product = orderPosition.Product,
+                        Id = orderPosition.Id,
+                        OrderId = orderPosition.OrderId,
+                        ProductId = orderPosition.ProductId
                     });
             }
 
             return orderPositionVM;
 
         }
+
+       
+
+
     }
 }

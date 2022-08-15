@@ -12,7 +12,7 @@
     //var amountOfMoney = Decimal.TryParse(sessionForWallet, out wallet) == true ? Decimal.Parse(sessionForWallet) : 0;
 }
 <div class="col-5">
-    <a asp-action="Index" asp-controller="Home" class="btn btn-info form-control">
+    <a asp-action="Index" asp-controller="Admin" class="btn btn-info form-control">
         Powrót
     </a>
 </div>
@@ -61,8 +61,8 @@
                 <td></td>
                 <td></td>
                 <td align="center" style="text-align:center;">
-                    <a asp-action="InvoiceOfOrder" asp-route-productId="@Model.Id" asp-route-userId="@sessionForUserId"
-                    class="btn btn-success">Dokonaj zakupu</a>
+                    <button onclick="PrepareInvoice('@Model.Id','@Model.Price')"
+                    class="btn btn-success">Dokonaj zakupu</button>
                 </td>
             </tr>
         </tbody>
@@ -98,6 +98,34 @@ else
     let new_quantity = parseInt(quantity.textContent);
     let new_price_value = parseFloat(price_value.textContent);
     let set_value;
+    
+    function PrepareInvoice(productId, priceValue)
+    {
+         if(!confirm("test"))
+                return;
+
+        $.ajax({
+           
+            type: "post",
+            url: "@Url.Action("BuySingleProduct", "Shop")",
+            data: {
+                productId:productId,
+                priceValue: sum_value.textContent
+            },
+            success: function(data){
+                 if (data.success) {
+                    toastr.success("dODANO ");
+                    window.location = data.redirectToUrl;
+                      //window.loaction.href = data.redirectToUrl;
+                 } else
+                 {
+                     
+                      toastr.error("Niepowodzenie operacji \n" + data.message);
+                 }
+            },
+            dataType: "json"
+        });
+    }
 
     $(document).ready(function () 
     {

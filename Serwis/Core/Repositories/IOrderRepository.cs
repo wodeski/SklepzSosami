@@ -8,5 +8,7 @@ namespace Serwis.Core.Repositories
         Task<string> UpdateOrderAsync(int OrderId);
         Task CreateOrderAsync(Order order);
         Task<Order> FindOrderByIdAsync(int orderId);
+        Task<Order> FindOrderByUserIdAsync(int userId);
+        Task DeleteOrder(int userId, int orderId);
     }
 }

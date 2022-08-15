@@ -13,34 +13,7 @@ namespace Serwis.Persistance.Repository
         {
             _serviceDbContext = serviceDbContext;
         }
-        public async Task AddPositionAsync(int UserId, int ProductId)
-        {
-            try
-            {
-
-                //zamówienie musi sie tworrzyc tylko raz podczas gdy pozycje do zamowienia mozna dolaczac ile chcemy dopóki zamowienie nie bedzie mialo statusu zrealizowane 
-
-                //sprawdzic czy sa jakies niezrealizowane zamowienia jesli tak dodawac do tych zamowien
-                var position = new OrderPosition
-                {
-                    OrderId = 1,
-                    UserId = UserId,
-                    ProductId = ProductId,
-                };
-                //warunek gdy nie ma zamówień
-                //warunek gdy nie ma uzytkownika
-                await _serviceDbContext.OrderPositions.AddAsync(position);
-                
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-
-            }
-        }
-
-
-        public async Task<IEnumerable<OrderPosition>> GetPositionsAsync()
+        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsAsync()
         {
             return await _serviceDbContext.OrderPositions
                  .Include(x => x.Product)
@@ -67,14 +40,14 @@ namespace Serwis.Persistance.Repository
             
         }
 
-        public async Task<IEnumerable<OrderPosition>> GetPositionsForUserAsync(int userId)
+        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int userId)
         {
             return await _serviceDbContext.OrderPositions
                  .Include(x => x.Product)
                  .Include(x => x.User)
                  .Include(x => x.Order)
                  .Where(x => x.UserId == userId && x.Order.IsCompleted == false)
-                 .ToListAsync();//zle
+                 .ToListAsync();
         }
 
         public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int orderId, int userId)
@@ -85,6 +58,16 @@ namespace Serwis.Persistance.Repository
                   .ToListAsync();
 
             return positions;
+        }
+
+        public Task CreateOrderPositionAsync(int productId, int userId, int orderId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> CountOrderPositions(int orderId, string userId)
+        {
+            return await _serviceDbContext.OrderPositions.Where(x => x.UserId == Convert.ToInt32(userId) && x.OrderId == orderId).CountAsync();
         }
     }
 }

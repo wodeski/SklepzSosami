@@ -20,7 +20,7 @@ namespace Serwis.Models.Domains
 
         [Required(ErrorMessage = "Pole Wartość musi zostac wypełnione")]
         [Display(Name = "Wartość")]
-        [Column(TypeName = "decimal(2,2)")]
+        [Column(TypeName = "decimal(5,2)")]
         [Range(1, 100)]
         public decimal Price { get; set; }
 
@@ -31,7 +31,6 @@ namespace Serwis.Models.Domains
 
         public string? ImageFileName { get; set; }
 
-        [Required(ErrorMessage = "Zdjęcie jest wymagane!")]
         [NotMapped]
         [Display(Name ="Dodaj zdjęcie")]
         public IFormFile? ImageFile { get; set; }

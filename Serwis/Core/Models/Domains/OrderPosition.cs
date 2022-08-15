@@ -5,8 +5,10 @@ namespace Serwis.Models.Domains
 {
     public class OrderPosition
     {
+        private int _quantity = 1;
         [Key]
         public int Id { get; set; }
+        public int Quantity { get;set; }
 
         [ForeignKey("Order")]
         public int OrderId { get; set; }
@@ -18,7 +20,6 @@ namespace Serwis.Models.Domains
         public int ProductId { get; set; }
         public ApplicationUser User { get; set; }
         public Order Order { get; set; }
-
         public Product Product { get; set; }
     }
 }

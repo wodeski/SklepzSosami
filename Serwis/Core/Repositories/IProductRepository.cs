@@ -10,5 +10,6 @@ namespace Serwis.Core.Repositories
         Task<Product> GetProductAsync(int id);
         Task UpdateProductAsync(Product product);
         Task<Product> FindProductByIdAsync(int id);
+        Task<decimal> CheckSumValueOfProducts(List<int> productId, List<int> quantity);
     }
 }

@@ -1,0 +1,341 @@
+﻿@model List<Serwis.Models.ViewModels.OrderPositionViewModel>
+
+@{
+    var lp = 0;
+    var index = 0;
+}
+
+<div class="col-5">
+    <a asp-action="Index" asp-controller="Admin" class="btn btn-info form-control">
+        Powrót
+    </a>
+
+    <button class="btn btn-info btn-lg form-control" onclick="Test()">TEST</button>
+</div>
+<div class="col-5 offset-2">
+</div>
+@if (Model != null && Model.Any())
+{
+    var orderId = Model.Select(x => x.OrderId).First();
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="text-align:center;">Lp.</th>
+                <th style="text-align:center;">Nazwa</th>
+                <th style="text-align:center;">Podgląd</th>
+                <td style="text-align:center;">Ilość</td>
+                <th style="text-align:center;">Cena</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var position in Model)
+            {
+                <span hidden class="productId">@position.Product.Id</span>
+
+                <tr>
+
+                    <td align="center" valign="middle" style="text-align:center;">@(lp = lp +1 )</td>
+                    <td align="center" valign="middle" style="text-align:center;">@position.Product.Name</td>
+                    <td align="center" valign="middle" style="text-align:center;">
+                        <img style="width:200px; height 140px;" src="~/images/@position.Product.ImageFileName" />
+                    </td>
+                    
+                    <td align="center" valign="middle" style="text-align:center;">
+                        <button id="btn_minus" class="btn btn-dark btn-sm mr-1">-</button>
+                        <span class ="quantityCl" id="quantity" style="margin-left: 2px; margin-right: 2px;">@position.Quantity</span>
+                        <button class="btn btn-dark btn-sm ml-1" id="btn_plus">+</button>
+                    </td>
+                    
+                    <td align="center" valign="middle" id="price_value" class="sum_of_all" style="text-align:center;">
+                        @position.Product.Price</td>
+                    <td align="center" valign="middle" style="text-align:center;">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button onclick="DeletePosition('@position.Product.Id', '@position.Order.Id', this)"
+                    class="btn btn-sm btn-danger">
+                                X
+                            </button>
+                            @lp
+                        }
+                        else
+                        {
+                            <button onclick="DeletePosition('@position.Product.Id', '@orderId', this)"
+                    class="btn btn-sm btn-danger">
+                                X
+                            </button>
+                            //zwiększenie indesku pola quantity
+                            index = index + 1;
+                        }
+                    </td>
+                </tr>
+
+            }
+            <tr class="parent_node">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td align="center" valign="middle">Suma: </td>
+                <td align="center" valign="middle" id="sum_value" style="text-align:center;"></td>
+            </tr>
+            <tr class="parent_node">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:center;">
+                    <button class="btn btn-success" onclick="PayForOrder()">
+                        Dokonaj zakupu
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}
+else
+{
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="text-align:center;">Lp.</th>
+                <th style="text-align:center;">Nazwa</th>
+                <th style="text-align:center;">Podgląd</th>
+                <th style="text-align:center;">Cena</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nie wybrano produktu</td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+@section scripts
+{
+<script type="text/javascript">
+    const btn_minus = document.getElementById("btn_minus");
+    const btn_plus = document.getElementById("btn_plus");
+
+    let quantity = document.getElementById("quantity");
+
+    let price_value = document.getElementById("price_value");
+    let sum_value = document.getElementById("sum_value");
+
+    let new_price_value = parseFloat(price_value.textContent);
+
+    let set_value;
+
+    const parent_node = document.getElementsByClassName("parent_node");
+    const sum_of_all = document.getElementsByClassName("sum_of_all");
+
+    let sum = 0
+
+    let quantityCl = document.getElementsByClassName("quantityCl");
+    const productId = document.getElementsByClassName('productId');
+
+
+        
+console.log(btn_plus.previousElementSibling.innerHTML);
+
+    for (let i = 0; i < sum_of_all.length; i++)
+    {
+        sum += parseInt(sum_of_all[i].textContent);
+    }
+    console.log(sum_of_all)
+    console.log(sum_of_all)
+
+    $(document).ready(function ()
+    {
+
+
+        sum_value.textContent = sum.toFixed(2)
+
+        const tablica = [];//deklaracja tablicy tak sadze
+
+        for (let i = 0; i < productId.length; i++)
+        {
+
+            tablica.push(productId[i].innerHTML, quantityCl[i].innerHTML)
+        }
+
+        console.log(tablica);
+
+    });
+
+
+function Test() {
+        const tablica = [];//deklaracja tablicy tak sadze
+
+     for (let i = 0; i < productId.length; i++)
+        {
+
+            tablica.push(productId[i].innerHTML, quantityCl[i].innerHTML)
+        }
+
+        console.log(tablica);
+}
+    let new_quantity;
+
+    console.log(sum.toFixed(2))
+    btn_plus.addEventListener("click", function ()
+    {
+        confirm("test")
+        new_quantity = parseInt(btn_plus.previousElementSibling.innerHTML)
+        
+        new_quantity++ //wartosc ilosci
+        set_value = new_quantity * new_price_value; // wartosc ogólna
+        sum_value.textContent = set_value.toFixed(2).replace(".", ",");
+    });
+
+    btn_minus.addEventListener("click", function ()
+    {
+        if (new_quantity === 1)
+        {
+            return;
+        }
+        new_quantity--
+        set_value = new_quantity * new_price_value;
+        sum_value.textContent = set_value.toFixed(2).replace(".", ",");
+        btn_plus.previousElementSibling.innerHTML = new_quantity
+        console.log("test2")
+
+    });
+
+    function DeletePosition(productId, orderId, btn)
+    {
+        swal({
+            title: "Usuwanie?",
+            text: "Jestes pewien ze chcesz usunac te pozycje?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true
+        }).then((willDelete) =>
+        {
+            if (willDelete)
+            {
+                $.ajax({
+                    type: "post",
+                    url: "@Url.Action("DeleteUserOrderPositionFromCart", "Shop")",
+                    data: {
+                        productId: productId,
+                        orderId: orderId
+                    },
+                    success: function (data)
+                    {
+                        if (data.success)
+                        {
+                            const row = btn.parentNode.parentNode;
+                            row.parentNode.removeChild(row);
+                            const tbody = parent_node[0].parentNode;
+
+                            if (sum_of_all.length < 1)
+                            {
+                                tbody.removeChild(parent_node[0]); //usuwa pierwszy dlatego trzeba znowu podawc 0 element
+                                tbody.removeChild(parent_node[0]);
+                            } else
+                            {
+                                let sum = 0;
+
+                                for (let i = 0; i < sum_of_all.length; i++)
+                                {
+                                    sum += parseInt(sum_of_all[i].textContent);
+                                }
+                                sum_value.textContent = sum.toFixed(2);
+                            }
+                            console.log("test3")
+
+
+                            let quantity = document.getElementsByClassName('cart-quantity')[0].textContent;
+                            quantity--;
+
+                            if (confirmMsg !== null)
+                            {
+                                document.cookie = `cart = ${quantity}; expires = ${data}; path=/`;
+                                let cookie_value = document.cookie.split(';');
+                                let cookie_value_split = cookie_value[0].split('=')
+                                let cart_quantity_cookie = cookie_value_split[1];
+
+                                document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity_cookie
+                            } else
+                            {
+
+                                sessionStorage.setItem('key', quantity.toString());
+                                let cart_quantity = sessionStorage.getItem('key');
+
+                                document.getElementsByClassName('cart-quantity')[0].textContent = cart_quantity;
+                            }
+
+                        } else
+                        {
+                            toastr.error("Niepowodzenie operacji \n" + data.message);
+                        }
+                    },
+                    dataType: "json"
+                });
+            }
+        });
+
+    }
+
+    function PayForOrder()
+    {
+        let sumValue = sum_value.textContent
+
+        if (!confirm("Test"))
+            return;
+
+        $.ajax({
+
+            type: "post",
+            url: "@Url.Action("Cart", "Shop")",
+            data: {
+                "sumValue": sumValue
+            },
+
+            success: function (data)
+            {
+                if (data.success)
+                {
+                    toastr.success("dODANO ");
+                    window.location = data.redirectToUrl;
+
+
+                } else
+                {
+
+                    toastr.error("Niepowodzenie operacji \n" + data.message);
+                }
+            },
+            dataType: "json"
+        });
+
+    }
+
+
+</script>
+}
+@* $.ajax({
+
+    type: "post",
+    url: "@Url.Action("Cart", "Shop")",
+    data: {
+    sumValue: sumValue
+    },
+
+    success: function(data) {
+    if (data.success) {
+    toastr.success("dODANO ");
+    window.location = data.redirectToUrl;
+    } else {
+
+    toastr.error("Niepowodzenie operacji \n" + data.message);
+    }
+    },
+    dataType: "json"
+    });*@

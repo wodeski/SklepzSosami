@@ -38,7 +38,7 @@ namespace Serwis.Controllers
         public IActionResult Register() //przekirowanie zrobic
         {
             if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Admin");
 
             RegisterVM = new RegisterViewModel(); // chyba najlepiej bedzie view model zrobic
             return View(RegisterVM);
@@ -115,7 +115,7 @@ namespace Serwis.Controllers
             var clasimsPrincipal = AddClaimsForUserFromLogin(user);
 
             await HttpContext.SignInAsync(Cookie, clasimsPrincipal);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Admin");
 
 
         }
@@ -142,7 +142,7 @@ namespace Serwis.Controllers
             HttpContext.Session.Remove(Id); // prawdopobonie to powinno byc w cookie
             HttpContext.Session.Remove(Wallet);
             await HttpContext.SignOutAsync(Cookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Admin");
         }
         private ClaimsPrincipal AddClaimsForUserFromLogin(ApplicationUser user)
         {

@@ -18,8 +18,7 @@ namespace Serwis.Converter
                 ImageFile = productVM.ImageFile,
                 Price = productVM.Price,
                 OrderPositions = productVM.OrderPositions,
-                CategoryId = productVM.CategoryId
-                
+                CategoryId = productVM.CategoryId,
             };
 
             return product;

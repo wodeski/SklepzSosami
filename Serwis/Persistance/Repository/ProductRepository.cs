@@ -50,5 +50,17 @@ namespace Serwis.Persistance.Repository
             }
             return findProduct;
         }
+
+        public async Task<decimal> CheckSumValueOfProducts(List<int> productId, List<int> quantity)
+        {
+            decimal sum = 0;
+            for (int i = 0; i < productId.Count; i++)
+            {
+                var produkt = await _serviceDbContext.Products.SingleAsync(x => x.Id == productId[i]);
+                sum = sum + (produkt.Price * quantity[i]);
+            }
+            return sum;
+
+        }
     }
 }

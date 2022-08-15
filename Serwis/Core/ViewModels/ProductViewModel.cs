@@ -22,7 +22,7 @@ namespace Serwis.Models.ViewModels
 
         [Required(ErrorMessage = "Pole Wartość musi zostac wypełnione")]
         [Display(Name = "Wartość")]
-        [Column(TypeName = "decimal(2,2)")]
+        [Column(TypeName = "decimal(5,2)")]
         [Range(1, 100)]
         public decimal Price { get; set; }
 
@@ -32,8 +32,7 @@ namespace Serwis.Models.ViewModels
 
         public string? ImageFileName { get; set; }
 
-        [Required(ErrorMessage = "Zdjęcie jest wymagane!")]
-        [Display(Name = "Dodaj zdjęcie")]
+       
 
         public int CategoryId { get; set; }
         
