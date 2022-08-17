@@ -1,0 +1,247 @@
+﻿@model Serwis.Models.ViewModels.ProductViewModel
+
+@{
+    var index = 0;
+
+}
+<div class="col-5">
+    <a asp-action="Index" asp-controller="Admin" class="btn btn-info form-control">
+        Powrót
+    </a>
+</div>
+
+<span hidden class="productId">@Model.Id</span>
+<table class=" table">
+    <thead>
+        <tr>
+            <th style="text-align:center;">Lp.</th>
+            <th style="text-align:center;">Nazwa</th>
+            <th style="text-align:center;">Podgląd</th>
+            <td style="text-align:center;">Ilość</td>
+            <th style="text-align:center;">Cena</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center" valign="middle" style="text-align:center;">1</td>
+            <td align="center" valign="middle" style="text-align:center;">@Model.Name</td>
+            <td align="center" valign="middle" style="text-align:center;">
+                <img style="width:200px; height 140px;" src="~/images/@Model.ImageFileName" />
+            </td>
+
+            <td align="center" valign="middle" style="text-align:center;" id=" @index">
+                <button onclick="BtnMinus('@index',this)" class="btn btn-dark btn-sm mr-1">-</button>
+                <span class="quantityCl" style="margin-left: 2px; margin-right: 2px;">1</span>
+                <button class="btn btn-dark btn-sm ml-1" onclick="BtnPlus('@index',this)">+</button>
+            </td>
+
+            <td align="center" valign="middle" id="price_value" class="sum_of_all" style="text-align:center;">
+                @Model.Price
+            </td>
+        </tr>
+
+
+        <tr class="parent_node">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td align="center" valign="middle">Suma: </td>
+            <td align="center" valign="middle" id="sum_value" style="text-align:center;"></td>
+        </tr>
+        <tr class="parent_node">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="text-align:center;">
+                <button class="btn btn-success" onclick="PayForOrder()">
+                    Dokonaj zakupu
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+@section scripts
+{
+<script type="text/javascript">
+
+    let price_value = document.getElementById('price_value');
+    let sum_value = document.getElementById('sum_value');
+
+    let set_value;
+
+    const parent_node = document.getElementsByClassName('parent_node');
+    const sum_of_all = document.getElementsByClassName('sum_of_all');
+
+    let sum = 0
+
+    let quantityCl = document.getElementsByClassName('quantityCl');
+    const productId = document.getElementsByClassName('productId');
+
+
+    $(document).ready(function ()
+    {
+
+        for (let i = 0; i < sum_of_all.length; i++)
+        {
+            sum += parseInt(sum_of_all[i].textContent);
+
+            sum_value.textContent = sum.toFixed(2)
+        }
+
+
+    });
+
+    function Test()
+    {
+        const tablica = [];
+
+        for (let i = 0; i < productId.length; i++)
+        {
+
+            tablica.push(productId[i].innerHTML, quantityCl[i].innerHTML)
+        }
+    }
+    let new_quantity;
+    let new_price_value;
+
+    function BtnMinus(index, btn)
+    {
+
+        let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie 
+
+        if (i !== parseInt(index))
+        {
+            toastr.error("Wystąpił problem przy walidacji danych");
+            return;
+        }
+
+        new_quantity = parseInt(quantityCl[i].innerHTML)
+        new_price_value = parseFloat(btn.parentNode.nextElementSibling.innerHTML) / parseInt(quantityCl[i].innerHTML); //wartosc produktu
+
+        if (new_quantity == 1)
+            return;
+
+        new_quantity--; //wartosc ilosci
+        set_value = new_quantity * new_price_value; // wartosc ogólna
+        sum_value.innerHTML = set_value.toFixed(2).replace(".", ",");
+
+        quantityCl[i].innerHTML = new_quantity
+
+        btn.parentNode.nextElementSibling.innerHTML = set_value.toFixed(2).replace(".", ",");
+
+        sum = 0; // wyzerowanie sumy 
+        for (let i = 0; i < sum_of_all.length; i++)
+        {
+            sum += parseInt(sum_of_all[i].textContent);
+
+            sum_value.textContent = sum.toFixed(2)
+        }
+    }
+
+    //zwiekszenie ilosci
+    function BtnPlus(index, btn)
+    {
+        let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie jest przypisany do kazdego wiersza 
+
+        if (i !== parseInt(index))
+        {
+            toastr.error("Wystąpił problem przy walidacji danych");
+            return;
+        }
+
+        new_price_value = parseFloat(btn.parentNode.nextElementSibling.innerHTML) / parseInt(quantityCl[i].innerHTML);
+        //wartosc produktu podzielenie przez ilosc aby operowac na wartosci bazowej
+
+        new_quantity = parseInt(quantityCl[i].innerHTML)
+
+        new_quantity++;
+        set_value = new_quantity * new_price_value; // wartosc ogólna
+        sum_value.innerHTML = set_value.toFixed(2).replace(".", ",");
+
+        quantityCl[i].innerHTML = new_quantity
+        btn.parentNode.nextElementSibling.innerHTML = set_value.toFixed(2).replace(".", ",");
+
+        sum = 0; // wyzerowanie wartosci ogólnej przed ponownym obliczaniem  
+        for (let i = 0; i < sum_of_all.length; i++)
+        {
+            sum += parseInt(sum_of_all[i].textContent);
+
+            sum_value.textContent = sum.toFixed(2)
+        }
+    }
+
+    function PayForOrder(orderId)
+    {
+
+
+
+
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+        ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+
+        if (!confirm("Test"))
+            return;
+        let sumValue = sum_value.textContent
+
+        var quantityOfPositions = []
+        for (let i = 0; i < productId.length; i++)
+        {
+            quantityOfPositions.push(productId[i].innerHTML, quantityCl[i].innerHTML)
+        }
+
+        console.log(quantityOfPositions)
+        if (!confirm("Test"))
+            return;
+
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("Cart", "Shop")",
+            data: {
+                "orderId": orderId,
+                "quantityOfPositions": quantityOfPositions
+            },
+            success: function (data)
+            {
+                if (data.success)
+                {
+                    toastr.success("Powodzenie operacji ");
+                    window.location = data.redirectToUrl;
+
+                } else
+                {
+
+                    toastr.error("Niepowodzenie operacji \n" + data.message);
+                }
+            },
+            dataType: "json"
+        });
+
+    }
+
+</script>
+}

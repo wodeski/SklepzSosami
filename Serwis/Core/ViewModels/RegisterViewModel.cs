@@ -4,23 +4,23 @@ namespace Serwis.Models.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage ="Nazwa uzytkownika jest wymagana")]
         [Display(Name = "Nazwa uzytkownika")]
         public string UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Nazwa uzytkownika jest wymagana")]
         [DataType(DataType.Password)]
         [Display(Name = "Hasło")]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Nazwa uzytkownika jest wymagana")]
         [Display(Name = "Powtórz hasło")]
         public string RepeatPassword { get; set; }
 
         [Display(Name = "Zapamietaj mnie")]
         public bool RememberMe { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Nazwa uzytkownika jest wymagana")]
         [EmailAddress]
         public string Email { get; set; }
 

@@ -2,6 +2,7 @@
 using Serwis.Core.Service;
 using Serwis.Models.Domains;
 using Serwis.Models.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace Serwis.Persistance.Service
 {
@@ -213,7 +214,7 @@ namespace Serwis.Persistance.Service
 
         public async Task<OrderViewModel> SetOrderForPosition(int userId, int orderId, int[] quantityOfPositions)
         {
-            var orderPositions = SetOrderPositions(orderId, quantityOfPositions);
+            var orderPositions = await SetOrderPositions(orderId, quantityOfPositions);
 
             List<int> productId, quantity;
             int[] qop;
@@ -239,36 +240,48 @@ namespace Serwis.Persistance.Service
 
         }
 
-        public List<OrderPosition> SetOrderPositions(int orderId, int[] quantityOfPositions)
+        public async  Task<List<OrderPosition>> SetOrderPositions(int orderId, int[] quantityOfPositions)
         {
             List<int> productId, quantity;
             int[] qop;
             SplitToLists(quantityOfPositions, out productId, out quantity, out qop);
 
             //Dla kazdego produktu trzeba znalesc cene z bazy danych nastepnie te cenen pomoznozyc przez ilosc 
-            List<OrderPosition> orderPositions = UpdateOrderPositionsAndAddToList(orderId, productId, quantity, qop);
+            List<OrderPosition> orderPositions = await UpdateOrderPositionsAndAddToList(orderId, productId, quantity, qop);
 
             return orderPositions;
         }
 
-        private static List<OrderPosition> UpdateOrderPositionsAndAddToList(int orderId, List<int> productId, List<int> quantity, int[] qop)
+        public async Task<List<OrderPosition>> UpdateOrderPositionsAndAddToList(int orderId, List<int> productId, List<int> quantity, int[] qop)
         {
-            List<OrderPosition> orderPositions = new List<OrderPosition>();
+            List<Product> products = await GetProductsById(productId);
 
+            List<OrderPosition> orderPositions = new List<OrderPosition>();
             for (int i = 0; i < (qop.Length / 2); i++)
             {
                 orderPositions.Add(new OrderPosition
                 {
                     ProductId = productId[i],
                     Quantity = quantity[i],
-                    OrderId = orderId
-
+                    OrderId = orderId,
+                    Product = products[i]
 
                 });
 
             }
 
             return orderPositions;
+        }
+
+        public async Task<List<Product>> GetProductsById(List<int> productId)
+        {
+            var products = new List<Product>();
+            foreach (var position in productId)
+            {
+                var productFrom = await _unitOfWork.Product.FindProductByIdAsync(position);
+                products.Add(productFrom);
+            }
+            return await Task.FromResult(products);
         }
         private static void SplitToLists(int[] quantityOfPositions, out List<int> productId, out List<int> quantity, out int[] qop)
         {
@@ -285,5 +298,6 @@ namespace Serwis.Persistance.Service
             }
         }
 
+    
     }
 }

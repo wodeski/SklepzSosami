@@ -5,7 +5,7 @@ namespace Serwis.Core.Service
 {
     public interface IService
     {
-        List<OrderPosition> SetOrderPositions(int orderId, int[] quantityOfPositions);
+        Task<List<OrderPosition>> SetOrderPositions(int orderId, int[] quantityOfPositions);
         Task<OrderViewModel> SetOrderForPosition(int userId, int orderId, int[] quantityOfPositions);
         Task<decimal> CheckSumValueOfProducts(List<int> productId, List<int> quantity);
         Task DeleteOrder(int userId, int orderId);

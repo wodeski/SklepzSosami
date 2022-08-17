@@ -21,7 +21,7 @@
                 <span>@item.Name</span>
                 <span>@item.Price zł</span>
                 <div style="display:block">
-                    <a asp-action="BuySingleProduct" asp-controller="Shop" asp-route-productId="@item.Id"
+                    <a asp-action="SingleProductPurchase" asp-controller="Shop" asp-route-productId="@item.Id"
                class=" mt-1 btn btn-sm btn-secondary"> Kupuj</a>
                     <button class=" mt-1 btn btn-sm btn-primary" style="display: inline"
                     onclick="AddPositionToCart('@item.Id', '@sessionForUserId')">

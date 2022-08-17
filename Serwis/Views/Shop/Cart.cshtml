@@ -3,6 +3,7 @@
 @{
     var lp = 0;
     var index = 0;
+    var orderId = Model.Select(x => x.OrderId).First();
 }
 
 <div class="col-5">
@@ -16,10 +17,10 @@
 </div>
 @if (Model != null && Model.Any())
 {
-    var orderId = Model.Select(x => x.OrderId).First();
 
 
-    <table class="table">
+
+    <table class=" table">
         <thead>
             <tr>
                 <th style="text-align:center;">Lp.</th>
@@ -33,8 +34,8 @@
         <tbody>
             @foreach (var position in Model)
             {
-                <span  class="productId">@position.Product.Id</span>
-                <span  id="orderId">@position.OrderId</span>
+                <span hidden class="productId">@position.Product.Id</span>
+                <span hidden id="orderId">@position.OrderId</span>
 
                 <tr>
 
@@ -44,10 +45,10 @@
                         <img style="width:200px; height 140px;" src="~/images/@position.Product.ImageFileName" />
                     </td>
 
-                    <td align="center" valign="middle" style="text-align:center;" id=" @index">
-                        <button onclick="BtnMinus(this)" class="btn btn-dark btn-sm mr-1">-</button>
-                        <span class="quantityCl" style="margin-left: 2px; margin-right: 2px;">1</span>
-                        <button class="btn btn-dark btn-sm ml-1" onclick="BtnPlus(this)">+</button>
+                    <td align="center" valign="middle" style="text-align:center;" id="@index">
+                        <button onclick="BtnMinus('@index',this)" class="btn btn-dark btn-sm mr-1">-</button>
+                        <span class="quantityCl" id="test" style="margin-left: 2px; margin-right: 2px;">1</span>
+                        <button class="btn btn-dark btn-sm ml-1" onclick="BtnPlus('@index',this)">+</button>
                     </td>
 
                     <td align="center" valign="middle" id="price_value" class="sum_of_all" style="text-align:center;">
@@ -122,6 +123,7 @@ else
 {
 <script type="text/javascript">
 
+    console.log(@index)
     let price_value = document.getElementById('price_value');
     let sum_value = document.getElementById('sum_value');
 
@@ -152,6 +154,7 @@ else
 
     });
 
+
     function Test()
     {
         const tablica = [];
@@ -165,17 +168,22 @@ else
     let new_quantity;
     let new_price_value;
 
-    function BtnMinus(btn)
+    function BtnMinus(index, btn)
     {
+        let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie
 
-        let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie 
+        if (i !== parseInt(index))
+        {
+            toastr.error("Wystąpił problem przy walidacji danych");
+            return;
+        }
 
         new_quantity = parseInt(quantityCl[i].innerHTML)
         new_price_value = parseFloat(btn.parentNode.nextElementSibling.innerHTML) / parseInt(quantityCl[i].innerHTML); //wartosc produktu
 
-        if (new_quantity == 1)
+        if (new_quantity <= 1) {
             return;
-
+        }
         new_quantity--; //wartosc ilosci
         set_value = new_quantity * new_price_value; // wartosc ogólna
         sum_value.innerHTML = set_value.toFixed(2).replace(".", ",");
@@ -184,7 +192,7 @@ else
 
         btn.parentNode.nextElementSibling.innerHTML = set_value.toFixed(2).replace(".", ",");
 
-        sum = 0; // wyzerowanie sumy 
+        sum = 0; // wyzerowanie sumy
         for (let i = 0; i < sum_of_all.length; i++)
         {
             sum += parseInt(sum_of_all[i].textContent);
@@ -194,9 +202,16 @@ else
     }
 
     //zwiekszenie ilosci
-    function BtnPlus(btn)
+    function BtnPlus(index, btn)
     {
-        let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie jest przypisany do kazdego wiersza 
+
+        let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie jest przypisany do kazdego wiersza
+
+        if (i !== parseInt(index))
+        {
+            toastr.error("Wystąpił problem przy walidacji danych");
+            return;
+        }
 
         new_price_value = parseFloat(btn.parentNode.nextElementSibling.innerHTML) / parseInt(quantityCl[i].innerHTML);
         //wartosc produktu podzielenie przez ilosc aby operowac na wartosci bazowej
@@ -210,7 +225,7 @@ else
         quantityCl[i].innerHTML = new_quantity
         btn.parentNode.nextElementSibling.innerHTML = set_value.toFixed(2).replace(".", ",");
 
-        sum = 0; // wyzerowanie wartosci ogólnej przed ponownym obliczaniem  
+        sum = 0; // wyzerowanie wartosci ogólnej przed ponownym obliczaniem
         for (let i = 0; i < sum_of_all.length; i++)
         {
             sum += parseInt(sum_of_all[i].textContent);
@@ -219,26 +234,17 @@ else
         }
     }
 
-   
-     
-    
-
-
     function PayForOrder(orderId)
     {
-        if (!confirm("Test"))
-            return;
-        let sumValue = sum_value.textContent
 
         var quantityOfPositions = []
-         for (let i = 0; i < productId.length; i++) {
-         quantityOfPositions.push(productId[i].innerHTML, quantityCl[i].innerHTML)
+        for (let i = 0; i < productId.length; i++)
+        {
+            quantityOfPositions.push(productId[i].innerHTML, quantityCl[i].innerHTML)
         }
 
-        console.log(quantityOfPositions)
         if (!confirm("Test"))
             return;
-
         $.ajax({
             type: "post",
             url: "@Url.Action("Cart", "Shop")",
@@ -263,6 +269,34 @@ else
         });
 
     }
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
+    ////WALIDACJA WSZYSTKICH RZECZY PRZEKAZYWANYCH ZE STRONY
 
 
     function DeletePosition(productId, orderId, btn)
