@@ -57,12 +57,15 @@ namespace Serwis.Converter
         }
         public static Order  ConvertToOrder(this OrderViewModel orderVM) // obracowac klase dla view modeli
         {
+
+            //nie mozemy tworzyc nowego zamowienia jesli 
             var order = new Order
             {
-                Id = orderVM.Id,
                 Title = orderVM.Title,
                 UserId = orderVM.UserId,
-                OrderPositions = orderVM.OrderPositions
+                FullPrice = orderVM.FullPrice,
+                IsCompleted = true
+                
             };
 
             return order;

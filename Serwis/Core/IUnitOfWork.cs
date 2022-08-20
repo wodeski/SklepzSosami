@@ -1,4 +1,6 @@
-﻿using Serwis.Core.Repositories;
+﻿using Serwis.Core.Models;
+using Serwis.Core.Repositories;
+using Serwis.Models;
 
 namespace Serwis.Core
 {
@@ -9,6 +11,10 @@ namespace Serwis.Core
         IProductRepository Product { get; set; }
         ICategoryRepository ProductCategory { get; set; }
         IUserRepository User { get; set; }
+        IAuthRepository AuthRepository { get; set; }
+        IEmailSender EmailSender { get; set; }
+        IReportRepository ReportRepository { get; set; }
+        IGenarateHtmlEmail GenerateHtmlEmail{ get; set; }
 
         void Complete();
     }

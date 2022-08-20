@@ -2,24 +2,25 @@
 using System.ServiceProcess;
 using System;
 using Serwis.Models.Extensions;
+using Serwis.Core.Models;
+using Serwis.Models.ViewModels;
+using Serwis.Core.Service;
+using Serwis.Persistance;
 
 namespace Serwis.Models
 {
-    public class EmailSender
+    public class EmailSender : IEmailSender
     {
-
-        private ReportRepository _reportRepository;
-        private readonly GenarateHtmlEmail genarateHtmlEmail;
+        private readonly IService _service;
+        private readonly IReportRepository _reportRepository;
         private Email _email;
-        private GenarateHtmlEmail _genarateHtmlEmail;
-        //private StringCipher _stringCipher = new StringCipher("6AD15A5C-2E1E-434A-9193-E5AF43E2D013");
+        //private StringCipher _str ingCipher = new StringCipher("6AD15A5C-2E1E-434A-9193-E5AF43E2D013");
 
-            
-        
-        public EmailSender(ReportRepository reportRepository, GenarateHtmlEmail genarateHtmlEmail)
+
+
+        public EmailSender(IReportRepository reportRepository)
         {
             _reportRepository = reportRepository;
-            _genarateHtmlEmail = genarateHtmlEmail;
             try
             {
                 _email = new Email(new EmailParams
@@ -37,33 +38,38 @@ namespace Serwis.Models
                 throw new Exception(ex.Message);
             }
         }
+
+        
+
         //private string DecryptSenderEmailPassword()
         //{
         //    var encryptedPassword = "fjwowpepjgtnkjcf"; 
         //    return _stringCipher.Decrypt(encryptedPassword);
         //}
 
-        public async void SendMail(string emailReciever, IEnumerable<OrderPosition> orderPositionsFromCart) // przesyla email usera oraz liste produktów z koszyka
+        public async void SendMail(string emailReciever, OrderViewModel order) // przesyla email usera oraz liste produktów z koszyka
         {
+            //ToString mozna skrócic
             try
             {
-                    await SendReportAsync(emailReciever, orderPositionsFromCart);
+                await SendReportAsync(emailReciever, order);
             }
             catch (Exception ex)
             {
 
                 throw new Exception(ex.Message);
             }
-
-
         }
-        private async Task SendReportAsync(string emailReceiver, IEnumerable<OrderPosition> orderPositionsFromCart)
+
+        private async Task SendReportAsync(string emailReceiver, OrderViewModel order)
         {
-            if (orderPositionsFromCart == null)
-                return;
-          var orderTitle = await _reportRepository.ReportSentAsync(orderPositionsFromCart);//zmiana statusu zamówienia
-            
-            await _email.Send("Informacje o zakupie", _genarateHtmlEmail.GenerateInvoice(orderPositionsFromCart, orderTitle), emailReceiver);
+            // List<OrderPosition> orderPosition = new List<OrderPosition>();//zeby bledu nie wywalilo 
+            //  await _reportRepository.ReportSentAsync(orderPosition);//zmiana statusu zamówienia
+            GenarateHtmlEmail genarateHtmlEmail = new();
+
+            var body = genarateHtmlEmail.GenerateInvoice(order);
+
+            await _email.Send("Informacje o zamówieniu",body , emailReceiver);
 
         }
     }

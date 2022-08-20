@@ -5,8 +5,18 @@ namespace Serwis.Core.Service
 {
     public interface IService
     {
+        IEnumerable<Product> Get(int categoryId = 0, string? name = null);
+        string GenerateInvoice(OrderViewModel order);
+        Task UpdateOrderPositionAsync(OrderPosition orderPosition, Order order);
+        //string GenerateInvoice(Order order);
+        //Task<string> ReportSentAsync(IEnumerable<OrderPosition> orderPositions);
+        void SendMail(string emailReciever, OrderViewModel order);
+        Task CreateUser(ApplicationUser user);
+        Task<ApplicationUser> FindUserWithLoginCredentials(string userName, string password);
+        Task<ApplicationUser> GetUser(string userName);
+        Task<bool> IsUserNameFromRegisterValid(string userName);
         Task<List<OrderPosition>> SetOrderPositions(int orderId, int[] quantityOfPositions);
-        Task<OrderViewModel> SetOrderForPosition(int userId, int orderId, int[] quantityOfPositions);
+        Task<OrderViewModel> SetOrderForPosition(int orderId, int[] quantityOfPositions);
         Task<decimal> CheckSumValueOfProducts(List<int> productId, List<int> quantity);
         Task DeleteOrder(int userId, int orderId);
         Task CreateOrderPositionAsync(int productId, int userId, int orderId);

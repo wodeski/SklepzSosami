@@ -9,8 +9,9 @@
         Powrót
     </a>
 </div>
-
-<span hidden class="productId">@Model.Id</span>
+@if (Model != null)
+{
+    <span hidden class="productId">@Model.Id</span>
 <table class=" table">
     <thead>
         <tr>
@@ -61,7 +62,29 @@
             </td>
         </tr>
     </tbody>
-</table>
+    </table>
+}
+else
+{
+ <table class="table">
+        <thead>
+            <tr>
+                <th style="text-align:center;">Lp.</th>
+                <th style="text-align:center;">Nazwa</th>
+                <th style="text-align:center;">Podgląd</th>
+                <th style="text-align:center;">Cena</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nie wybrano produktu</td>
+            </tr>
+        </tbody>
+    </table>
+
+}
+
 
 
 @section scripts
@@ -213,8 +236,6 @@
         {
             quantityOfPositions.push(productId[i].innerHTML, quantityCl[i].innerHTML)
         }
-
-        console.log(quantityOfPositions)
         if (!confirm("Test"))
             return;
 
@@ -234,7 +255,6 @@
 
                 } else
                 {
-
                     toastr.error("Niepowodzenie operacji \n" + data.message);
                 }
             },

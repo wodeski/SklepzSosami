@@ -13,7 +13,7 @@ namespace Serwis.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly EmailSender _emailSender;
+        private readonly IEmailSender _emailSender;
         private readonly ILogger<AdminController> _logger;
         private readonly IService _service;
         private readonly IWebHostEnvironment _hostEnviroment;
@@ -21,7 +21,7 @@ namespace Serwis.Controllers
         [BindProperty]
         public ProductViewModel Product { get; set; }
 
-        public AdminController(ILogger<AdminController> logger, IService service, IWebHostEnvironment hostEnviroment, EmailSender emailSender)
+        public AdminController(ILogger<AdminController> logger, IService service, IWebHostEnvironment hostEnviroment, IEmailSender emailSender)
         {
             _logger = logger;
             _service = service;
@@ -130,25 +130,7 @@ namespace Serwis.Controllers
             return Json(new { success = true });
         }
 
-        [AllowAnonymous]
-        public async Task<IActionResult> Index()
-        {
-            var isCategoryListEmpty = await _service.IsProductCategoryListEmpty();
-            if (isCategoryListEmpty)
-            {
-                await _service.CreateListOfCategories();
-            }
-            var products = await _service.GetProductsAsync();
-            if (products.Count() == 0)
-            { 
-                var emptyListOfProducts = new List<ProductViewModel>();
-                return View(emptyListOfProducts);
-            }
-
-            var productsVM = products.ProductsIEnumerableToList();
-
-            return View(productsVM);
-        }
+       
 
         [Authorize(Policy = "User")] // jesli ma obaj maja miec mozliwosc wejscia trzeba dac roles
         public IActionResult Privacy()

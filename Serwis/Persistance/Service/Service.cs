@@ -1,22 +1,22 @@
-﻿using Serwis.Core;
+﻿using Microsoft.AspNetCore.Http;
+using Serwis.Core;
 using Serwis.Core.Service;
 using Serwis.Models.Domains;
 using Serwis.Models.ViewModels;
 using System.Collections.ObjectModel;
 
+
 namespace Serwis.Persistance.Service
 {
     public class Service : IService
     {
+        private IHttpContextAccessor _contextAccessor;
         private readonly IUnitOfWork _unitOfWork;
-        private List<ProductCategory> _categories;
-        public Service(IUnitOfWork unitOfWork)
+        public Service(IHttpContextAccessor contextAccessor, IUnitOfWork unitOfWork)
         {
+            _contextAccessor = contextAccessor;
             _unitOfWork = unitOfWork;
-
         }
-
-
         public async Task CreateListOfCategories()
         {
             await _unitOfWork.ProductCategory.CreateListOfCategories();
@@ -42,12 +42,12 @@ namespace Serwis.Persistance.Service
                 await CreateNewOrder(userId);
                 userIncompleteOrder = await _unitOfWork.Order.FindOrderByUserIdAsync(userId);
             }
-            
+
             var orderPosition = PrepareOrderPosition(userId, productId, userIncompleteOrder);
-            
+
             try
             {
-                await _unitOfWork.OrderPosition.CreateOrderPositionAsync(orderPosition);
+               //s await _unitOfWork.OrderPosition.CreateOrderPositionAsync(orderPosition);
                 _unitOfWork.Complete();
 
             }
@@ -87,8 +87,8 @@ namespace Serwis.Persistance.Service
 
         public async Task CreateOrderPositionAsync(OrderPosition orderPosition)
         {
-            await _unitOfWork.OrderPosition.CreateOrderPositionAsync(orderPosition);
-            _unitOfWork.Complete();
+            //await _unitOfWork.OrderPosition.CreateOrderPositionAsync(orderPosition);
+            //_unitOfWork.Complete();
 
         }
 
@@ -151,11 +151,11 @@ namespace Serwis.Persistance.Service
         {
             await _unitOfWork.Product.UpdateProductAsync(product);
             _unitOfWork.Complete();
-
         }
         public async Task<Product> GetProductAsync(int id)
         {
-            return await _unitOfWork.Product.GetProductAsync(id);
+            var find = await _unitOfWork.Product.GetProductAsync(id);
+            return find;
         }
 
         public async Task<Product> FindProductByIdAsync(int id)
@@ -184,14 +184,13 @@ namespace Serwis.Persistance.Service
 
         public async Task CreateOrderPositionAsync(int productId, int userId, int orderId)
         {
-                var orderPosition = new OrderPosition
-                {
-                    OrderId = orderId,
-                    UserId = userId,
-                    ProductId = productId
-
-                };
-            await _unitOfWork.OrderPosition.CreateOrderPositionAsync(orderPosition);
+            var orderPosition = new OrderPosition
+            {
+                OrderId = orderId,
+                UserId = userId,
+                ProductId = productId
+            };
+            
             _unitOfWork.Complete();
         }
 
@@ -211,9 +210,11 @@ namespace Serwis.Persistance.Service
             return _unitOfWork.Product.CheckSumValueOfProducts(productId, quantity);
         }
 
-
-        public async Task<OrderViewModel> SetOrderForPosition(int userId, int orderId, int[] quantityOfPositions)
+        public async Task<OrderViewModel> SetOrderForPosition( int orderId, int[] quantityOfPositions)
         {
+            var userId = _contextAccessor.HttpContext?.Session.GetString("Id"); //pobranie z sesji /nie dziala nwm czemu
+            if (userId == null) //sprawdzenie
+                userId = "10"; // inaczej opracowac
             var orderPositions = await SetOrderPositions(orderId, quantityOfPositions);
 
             List<int> productId, quantity;
@@ -229,10 +230,9 @@ namespace Serwis.Persistance.Service
                 FullPrice = sumvalue,
                 OrderPositions = orderPositions,
                 Id = orderId,
-                UserId = userId,
+                UserId = Convert.ToInt32(userId),
                 IsCompleted = false,
-                Title = $"fak/{userId}/{DateTime.Now.ToString("dd-mm-yyyy-mm-ss")}{rnd}"
-
+                Title = $"fak/{userId}/{DateTime.Now.ToString("dd-MM-yyyy-mm-ss")}{rnd}"
             };
 
             return ordervm;
@@ -240,7 +240,7 @@ namespace Serwis.Persistance.Service
 
         }
 
-        public async  Task<List<OrderPosition>> SetOrderPositions(int orderId, int[] quantityOfPositions)
+        public async Task<List<OrderPosition>> SetOrderPositions(int orderId, int[] quantityOfPositions)
         {
             List<int> productId, quantity;
             int[] qop;
@@ -298,6 +298,59 @@ namespace Serwis.Persistance.Service
             }
         }
 
-    
+        public async Task CreateUser(ApplicationUser user)
+        {
+            await _unitOfWork.AuthRepository.CreateUser(user);
+            _unitOfWork.Complete();
+        }
+
+        public async Task<ApplicationUser> FindUserWithLoginCredentials(string userName, string password)
+        {
+            return await _unitOfWork.AuthRepository.FindUserWithLoginCredentials(userName, password);
+        }
+
+        public async Task<ApplicationUser> GetUser(string userName)
+        {
+            return await _unitOfWork.AuthRepository.GetUser(userName);
+        }
+
+        public async Task<bool> IsUserNameFromRegisterValid(string userName)
+        {
+            return await _unitOfWork.AuthRepository.IsUserNameFromRegisterValid(userName);
+        }
+
+        public string GenerateInvoice(OrderViewModel order)
+        {
+            return _unitOfWork.GenerateHtmlEmail.GenerateInvoice(order);
+        }
+
+        //public async Task ReportSentAsync(Order order)
+        //{
+        //    await _unitOfWork.ReportRepository.ReportSentAsync(order);
+        //}
+
+        public void SendMail(string emailReciever, OrderViewModel order)
+        {
+
+            _unitOfWork.EmailSender.SendMail(emailReciever, order);
+        }
+
+        public async Task UpdateOrderPositionAsync(OrderPosition orderPosition, Order order)
+        {
+            await _unitOfWork.OrderPosition.UpdateOrderPositionAsync(orderPosition, order); // zmieniec
+            _unitOfWork.Complete();
+        }
+
+        public IEnumerable<Product> Get(int categoryId = 0, string? name = null)
+        {
+
+          return _unitOfWork.Product.Get(categoryId, name);
+
+        }
+
+        //Task<string> IService.ReportSentAsync(IEnumerable<OrderPosition> orderPositions)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

@@ -38,7 +38,7 @@ namespace Serwis.Models.ViewModels
         
         public ProductCategory? Categories { get; set; }
 
-        public ICollection<ProductCategory> CategoriesList { get; set; } 
+        public IEnumerable<ProductCategory> CategoriesList { get; set; } //bylo icollection
 
         public IFormFile? ImageFile { get; set; }
 

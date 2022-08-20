@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 using Serwis.Converter;
 using Serwis.Models.ViewModels;
 using Serwis.Repository;
+using Serwis.Core.Service;
 
 namespace Serwis.Controllers
 {
     public class AccountController : Controller
     {
 
-        private readonly AuthRepository _accountAuth;
+        private readonly IService _service;
         public const string SessionKeyName = "Login";
         private const string UserNotFound = "Nie znaleziono użytkownika!";
         private const string IsAdmin = "admin";
@@ -25,9 +26,9 @@ namespace Serwis.Controllers
         private const string Validation = "Walidacja";
         private const string True = "true";
 
-        public AccountController(AuthRepository accountAuth)
+        public AccountController(IService service)
         {
-            _accountAuth = accountAuth;
+            _service = service;
         }
         public RegisterViewModel RegisterVM { get; set; }
         public IActionResult Login()
@@ -38,7 +39,7 @@ namespace Serwis.Controllers
         public IActionResult Register() //przekirowanie zrobic
         {
             if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Index", "Admin");
+                return RedirectToAction("Index", "Shop");
 
             RegisterVM = new RegisterViewModel(); // chyba najlepiej bedzie view model zrobic
             return View(RegisterVM);
@@ -46,7 +47,7 @@ namespace Serwis.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(RegisterViewModel registerVM)
+        public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
             registerVM.CreatedDate = DateTime.Now;
             if (!ModelState.IsValid)
@@ -59,8 +60,8 @@ namespace Serwis.Controllers
             }
 
             var usernameFromRegister = registerVM.UserName.ToLower();
-
-            if (!IsUserNameFromRegisterViewModelValid(usernameFromRegister))
+            var isUserValid = await IsUserNameFromRegisterViewModelValid(usernameFromRegister);
+            if (!isUserValid)
             {
                 TempData[Validation] = "Uzytkownik o podanej nazwie juz istnieje";
                 return View(registerVM);
@@ -70,7 +71,7 @@ namespace Serwis.Controllers
             {
                 var user = registerVM.ConvertToApplicationUserFromRegisterViewModel();
 
-                _accountAuth.CreateUser(user);
+                _service.CreateUser(user);
             }
             catch (Exception ex)
             {
@@ -80,9 +81,9 @@ namespace Serwis.Controllers
             return RedirectToAction("Login", "Account");
 
         }
-        private bool IsUserNameFromRegisterViewModelValid(string username)
+        private async Task<bool> IsUserNameFromRegisterViewModelValid(string username)
         {
-            var isValid = _accountAuth.IsUserNameFromRegisterValid(username);
+            var isValid = await _service.IsUserNameFromRegisterValid(username);
             if (isValid)
             {
                 return true;
@@ -103,7 +104,7 @@ namespace Serwis.Controllers
 
             var user = userVM.ConvertToApplicationUser();
 
-            var userFromLoginCredentials = UserFromLogin(user.UserName, user.Password);
+            var userFromLoginCredentials = await UserFromLogin(user.UserName, user.Password);
 
             if (userFromLoginCredentials == null)
             {
@@ -115,7 +116,7 @@ namespace Serwis.Controllers
             var clasimsPrincipal = AddClaimsForUserFromLogin(user);
 
             await HttpContext.SignInAsync(Cookie, clasimsPrincipal);
-            return RedirectToAction("Index", "Admin");
+            return RedirectToAction("Index", "Shop");
 
 
         }
@@ -130,9 +131,9 @@ namespace Serwis.Controllers
             //ustawic dla uzytkownka mozliwosc nie wylogowywania
         }
 
-        private ApplicationUser UserFromLogin(string userName, string password)
+        private async Task<ApplicationUser> UserFromLogin(string userName, string password)
         {
-            return _accountAuth.FindUserWithLoginCredentials(userName, password);
+            return await _service.FindUserWithLoginCredentials(userName, password);
         }
 
         public async Task<IActionResult> Logout()
@@ -142,7 +143,7 @@ namespace Serwis.Controllers
             HttpContext.Session.Remove(Id); // prawdopobonie to powinno byc w cookie
             HttpContext.Session.Remove(Wallet);
             await HttpContext.SignOutAsync(Cookie);
-            return RedirectToAction("Index", "Admin");
+            return RedirectToAction("Index", "Shop");
         }
         private ClaimsPrincipal AddClaimsForUserFromLogin(ApplicationUser user)
         {
@@ -174,11 +175,11 @@ namespace Serwis.Controllers
         }
 
         [Authorize]
-        public IActionResult UserInfo()
+        public async Task<IActionResult> UserInfo()
         {
             var sessionUser = HttpContext.Session.GetString(SessionKeyName);
 
-            var user = _accountAuth.GetUser(sessionUser);
+            var user = await _service.GetUser(sessionUser);
 
             var userVM = user.PrepareApplicationUserViewModel();
             return View(userVM);

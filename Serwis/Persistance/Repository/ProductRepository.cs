@@ -36,8 +36,6 @@ namespace Serwis.Persistance.Repository
         public async Task<Product> GetProductAsync(int id)
         {
             var find = await _serviceDbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-            if (find == null)
-                return null;
             return find;
         }
 
@@ -61,6 +59,28 @@ namespace Serwis.Persistance.Repository
             }
             return sum;
 
+        }
+
+        public IEnumerable<Product> Get(int categoryId = 0, string? name = null)
+        {
+            IQueryable<Product> products;
+            products = _serviceDbContext.Products
+          .Include(x => x.Categories);
+
+            if (categoryId != 0)
+            {
+               products = products.Where(x => x.CategoryId == categoryId);
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                products = products.Where(x=>x.Name.Contains(name));
+            }
+
+
+            var productsToDisplay = products.OrderBy(x => x.Name).ToList();
+
+            return productsToDisplay;
         }
     }
 }

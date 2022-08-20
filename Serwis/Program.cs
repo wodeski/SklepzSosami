@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Serwis.Core;
+using Serwis.Core.Models;
 using Serwis.Core.Repositories;
 using Serwis.Core.Service;
 using Serwis.Models;
@@ -16,7 +17,7 @@ builder.Services.AddAuthentication("CookieAuth").AddCookie("CookieAuth", options
 {
     options.Cookie.Name = "CookieAuth";//ustawienie  nazwy cookie
     options.LoginPath = "/Account/Login";//dosmylnie jest tak ustawione jesli chcemy dac w³asna sciezke wtedy trzeba ja sprecyzowac w³asnie w tym miejscu
-    options.AccessDeniedPath = "/Admin/Index";
+    options.AccessDeniedPath = "/Shop/Index";
 
 });
 
@@ -36,16 +37,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultContext")));
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IService, Service>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddTransient<AuthRepository, AuthRepository>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 builder.Services.AddTransient<IOrderPositionRepository, OrderPositionRepository>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddScoped<EmailSender, EmailSender>();
-builder.Services.AddScoped<GenarateHtmlEmail, GenarateHtmlEmail>();
-builder.Services.AddTransient<ReportRepository, ReportRepository>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IGenarateHtmlEmail, GenarateHtmlEmail>();
+builder.Services.AddTransient<IReportRepository, ReportRepository>();
 builder.Services.AddSingleton<List<OrderPositionViewModel>, List<OrderPositionViewModel>>();
 
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); // POZWALA NA WIDZENIE ZMIAN PO ODSWIEZENIU STRONY
@@ -78,14 +79,8 @@ app.UseAuthentication();//  BEZ TEGO NIE ZADZIA£A AUTORYZACJA
 
 app.UseAuthorization();
 
-
-
-//app.MapGet("/Service", () => "Hello World!")
-//    .RequireAuthorization("AtLeast21");
-
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Admin}/{action=Index}/{id?}");
+    pattern: "{controller=Shop}/{action=Index}/{id?}");
 
 app.Run();

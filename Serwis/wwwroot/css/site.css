@@ -17,21 +17,27 @@ body {
     margin-bottom: 60px;
 }
 
-.bookItem {
+.products {
     display: grid;
     width:100%;
-    margin-left:4rem;
+    margin-left:3rem;
+    
+}
+
+#filterForm {
+    margin-left:26rem;
 }
 
 @media screen and (min-width:1200px) {
-    .bookItem {
-        grid-template-columns: repeat(3, 30%) !important;
+    .products {
+        grid-template-columns: repeat(3, 30%);
+        column-gap: 3rem;
     }
 }
 
 img {
     width: 350px;
-    margin-bottom: 10px;
+    height: 200px;
 }
 
 .blok {
@@ -49,14 +55,14 @@ img {
     position: relative;
     font-size: 2rem;
     cursor: pointer;
-    margin: 1em 4em 0 0;
+    margin: 2rem 2rem 0 0;
 }
 .cart-quantity {
     color: white;
     background-color: rgb(43, 131, 151);
     padding: .2em .3em;
     position: absolute;
-    margin: .8em 7.5em 0 0;
+    margin: .8em 1.5em 0 0;
     right: 0;
     border: solid 2px rgb(43, 131, 151);
     border-radius: 15px;

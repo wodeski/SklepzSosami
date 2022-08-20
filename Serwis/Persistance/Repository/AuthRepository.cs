@@ -1,9 +1,11 @@
-﻿using Serwis.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using Serwis.Core;
+using Serwis.Core.Repositories;
 using Serwis.Models.Domains;
 
 namespace Serwis.Repository
 {
-    public class AuthRepository
+    public class AuthRepository : IAuthRepository
     {
         private readonly IApplicationDbContext _applicationDbContext;
         public AuthRepository(IApplicationDbContext applicationDbContext)
@@ -11,10 +13,10 @@ namespace Serwis.Repository
             _applicationDbContext = applicationDbContext;
         }
 
-        public ApplicationUser FindUserWithLoginCredentials(string userName, string password)
+        public async Task<ApplicationUser> FindUserWithLoginCredentials(string userName, string password)
         {
-            var find = _applicationDbContext.Credentials
-                .SingleOrDefault(x => x.UserName == userName && x.Password == password);
+            var find = await _applicationDbContext.Credentials
+                .SingleOrDefaultAsync(x => x.UserName == userName && x.Password == password);
             if (find == null)
             {
                 return null;
@@ -22,10 +24,10 @@ namespace Serwis.Repository
             return find;
         }
 
-        public bool IsUserNameFromRegisterValid(string userName)
+        public async Task<bool> IsUserNameFromRegisterValid(string userName)
         {
-            var find = _applicationDbContext.Credentials
-                .SingleOrDefault(x => x.UserName == userName);
+            var find = await _applicationDbContext.Credentials
+                .SingleOrDefaultAsync(x => x.UserName == userName);
             if (find == null)
             {
                 return true;
@@ -33,10 +35,10 @@ namespace Serwis.Repository
             return false;
         }
 
-        public ApplicationUser GetUser(string userName)
+        public async Task<ApplicationUser> GetUser(string userName)
         {
-            var find = _applicationDbContext.Credentials
-                .SingleOrDefault(x => x.UserName == userName);
+            var find = await _applicationDbContext.Credentials
+                .SingleOrDefaultAsync(x => x.UserName == userName);
             if (find == null)
             {
                 throw new ArgumentNullException();
@@ -44,10 +46,9 @@ namespace Serwis.Repository
             return find;
         }
 
-        public void CreateUser(ApplicationUser user)
+        public async Task CreateUser(ApplicationUser user)
         {
-            _applicationDbContext.Credentials.Add(user);
-            _applicationDbContext.SaveChanges();
+            await _applicationDbContext.Credentials.AddAsync(user);
         }
     }
 }

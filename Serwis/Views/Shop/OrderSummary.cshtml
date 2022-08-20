@@ -9,15 +9,7 @@
 
 
 
-    @*@foreach(var pos in test)
-    {
-    <div form-group row>
-    <div class=" col-6">
-    <input readonly type="text" value="@pos" class="form-control">
-    </div>
 
-    </div>
-    }*@
 
     <div class=" border">
 
@@ -63,8 +55,8 @@
     </div>
 
 </div>
-<div form-group row>
-    <div class=" mt-1 col-6">
+<div id="accept_back" >
+    <div class=" mt-1 col-6" >
         <button onclick="ConfirmInvoiceOrder()"
                 value="Kupuję"
                 class="btn btn-primary mt-3  form-control">
@@ -75,47 +67,49 @@
         <a type="button" class="btn btn-secondary form-control mt-1" asp-action="Index" asp-controller="Admin">Rezygnuję</a>
     </div>
 </div>
+<div id="back">
+    <div class="col-6">
+        <a type="button" class="btn btn-secondary form-control mt-1" asp-action="Index" asp-controller="Admin">Powrót</a>
+    </div>
+</div>
+
 
 @section scripts{
     <script type="text/javascript">
 
+        $(document).ready(function() {
+            $('#back').css("display", "none");
 
+        });
         let testVal = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
         let email;
 
+        function ConfirmInvoiceOrder(email) {
+            email = document.getElementById("email").value;
 
-        function ValidateEmail(email)
-        {
-            if ((testVal.test(email))===true) {
-               toastr.success("Poprawne dane");
+            if ((testVal.test(email)) === true) {
+
+
             } else {
                 toastr.error("Email jest niepoprawny");
-            }
-        }
-
-        function ConfirmInvoiceOrder(productId, userId, orderId, email) {
-            email = document.getElementById("email").value;
-            ValidateEmail(email)
-            return;
-            if (!confirm("test"))
                 return;
+            }
 
             $.ajax({
                 type: "post",
                 url: "@Url.Action("OrderSummary","Shop")",
                 data: {
-                    productId: productId,
-                    userId: userId,
-                    orderId: orderId,
                     email: email
                 },
                 success: function(data) {
                     if (data.success) {
                         toastr.success("Gratuluje zakupu!")
-                    } else {
+                            $('#back').css("display", "");
+                            $('#accept_back').css("display", "none");
+                            
+                        } else {
                         toastr.error("Niestety coś poszło nie tak :(")
-
                     }
                 },
                 dataType: "json"

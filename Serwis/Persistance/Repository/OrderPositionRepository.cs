@@ -59,15 +59,44 @@ namespace Serwis.Persistance.Repository
 
             return positions;
         }
-
-        public Task CreateOrderPositionAsync(int productId, int userId, int orderId)
+        //dla anonimowego uzytkownika
+        public async Task UpdateOrderPositionAsync(OrderPosition orderPosition, Order order)//utworzyc metode ktora zaktualizuje wszystkie elementy z lity
         {
-            throw new NotImplementedException();
+            OrderPosition findOrderPositionToUpdate;
+
+            try
+            {
+                var findOrderId = await _serviceDbContext.Orders.SingleAsync(x => x.Title == order.Title && x.UserId == order.UserId);
+
+                findOrderPositionToUpdate = new OrderPosition
+                {
+                    OrderId = findOrderId.Id,
+                    ProductId = orderPosition.ProductId,
+                    Quantity = orderPosition.Quantity,
+                    UserId = order.UserId
+                };
+
+
+                await _serviceDbContext.OrderPositions.AddAsync(findOrderPositionToUpdate);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+
         }
 
         public async Task<int> CountOrderPositions(int orderId, string userId)
         {
-            return await _serviceDbContext.OrderPositions.Where(x => x.UserId == Convert.ToInt32(userId) && x.OrderId == orderId).CountAsync();
+            return await _serviceDbContext.OrderPositions
+                .Where(x => x.UserId == Convert.ToInt32(userId) && x.OrderId == orderId)
+                .CountAsync();
+        }
+
+        public Task CreateOrderPositionAsync(int productId, int userId, int orderId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
