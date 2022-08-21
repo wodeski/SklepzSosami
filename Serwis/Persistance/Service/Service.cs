@@ -33,7 +33,7 @@ namespace Serwis.Persistance.Service
             return await _unitOfWork.ProductCategory.IsProductCategoryListEmpty();
         }
 
-        public async Task AddOrderPositionAsync(int userId, int productId)
+        public async Task AddOrderPositionAsync(Guid userId, int productId)
         {
             var userIncompleteOrder = await _unitOfWork.Order.FindOrderByUserIdAsync(userId);
             //sprawdza czy jest jakies zamowienie nieukonczone
@@ -58,7 +58,7 @@ namespace Serwis.Persistance.Service
 
         }
 
-        private static OrderPosition PrepareOrderPosition(int userId, int productId, Order userIncompleteOrder)
+        private static OrderPosition PrepareOrderPosition(Guid userId, int productId, Order userIncompleteOrder)
         {
             return new OrderPosition
             {
@@ -68,7 +68,7 @@ namespace Serwis.Persistance.Service
             };
         }
 
-        private async Task CreateNewOrder(int userId)
+        private async Task CreateNewOrder(Guid userId)
         {
             var newOrder = new Order
             {
@@ -92,19 +92,19 @@ namespace Serwis.Persistance.Service
 
         }
 
-        public async Task DeleteOrderPositionAsync(int orderId, int userId, int productId)
+        public async Task DeleteOrderPositionAsync(int orderId, Guid userId, int productId)
         {
             await _unitOfWork.OrderPosition.DeleteOrderPositionAsync(orderId, userId, productId);
             _unitOfWork.Complete();
 
         }
 
-        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int userId)
+        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(Guid userId)
         {
             return await _unitOfWork.OrderPosition.GetOrderPositionsForUserAsync(userId);
         }
 
-        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int orderId, int userId)
+        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int orderId, Guid userId)
         {
             return await _unitOfWork.OrderPosition.GetOrderPositionsForUserAsync(orderId, userId);
         }
@@ -126,7 +126,7 @@ namespace Serwis.Persistance.Service
             return title;
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersForUserAsync(int userId)
+        public async Task<IEnumerable<Order>> GetOrdersForUserAsync(Guid userId)
         {
             return await _unitOfWork.Order.GetOrdersForUserAsync(userId);
         }
@@ -167,22 +167,23 @@ namespace Serwis.Persistance.Service
         {
             return await _unitOfWork.User.FindUserAsync(userName);
         }
-        public async Task<ApplicationUser> FindUserByIdAsync(int userId)
+        public async Task<ApplicationUser> FindUserByIdAsync(Guid userId)
         {
             return await _unitOfWork.User.FindUserByIdAsync(userId);
         }
 
-        public async Task<bool> UserHasAnIncompleteOrder(int userId)
+        public async Task<bool> UserHasAnIncompleteOrder(Guid userId)
         {
             return await _unitOfWork.User.UserHasAnIncompleteOrder(userId);
         }
 
-        public async Task<Order> FindOrderByUserIdAsync(int userId)
+        public async Task<Order> FindOrderByUserIdAsync(Guid orderId)
         {
-            return await _unitOfWork.Order.FindOrderByIdAsync(userId);
+            //return await _unitOfWork.Order.FindOrderByIdAsync(orderId);
+            return null;
         }
 
-        public async Task CreateOrderPositionAsync(int productId, int userId, int orderId)
+        public async Task CreateOrderPositionAsync(int productId, Guid userId, int orderId)
         {
             var orderPosition = new OrderPosition
             {
@@ -194,12 +195,12 @@ namespace Serwis.Persistance.Service
             _unitOfWork.Complete();
         }
 
-        public async Task<int> CountOrderPositions(int orderId, string userId)
+        public async Task<int> CountOrderPositions(int orderId, Guid userId)
         {
             return await _unitOfWork.OrderPosition.CountOrderPositions(orderId, userId);
         }
 
-        public async Task DeleteOrder(int userId, int orderId)
+        public async Task DeleteOrder(Guid userId, int orderId)
         {
             await _unitOfWork.Order.DeleteOrder(userId, orderId);
             _unitOfWork.Complete();
@@ -212,9 +213,16 @@ namespace Serwis.Persistance.Service
 
         public async Task<OrderViewModel> SetOrderForPosition( int orderId, int[] quantityOfPositions)
         {
-            var userId = _contextAccessor.HttpContext?.Session.GetString("Id"); //pobranie z sesji /nie dziala nwm czemu
-            if (userId == null) //sprawdzenie
-                userId = "10"; // inaczej opracowac
+            Guid userId;
+            var sessionId = _contextAccessor.HttpContext?.Session.GetString("Id");
+            if (sessionId == null)
+            {  //sprawdzenie
+                userId = new Guid("00000000-0000-0000-0000-000000000000"); // inaczej opracowac
+            }
+            else
+            {
+                userId = new Guid(sessionId);
+            }
             var orderPositions = await SetOrderPositions(orderId, quantityOfPositions);
 
             List<int> productId, quantity;
@@ -230,9 +238,9 @@ namespace Serwis.Persistance.Service
                 FullPrice = sumvalue,
                 OrderPositions = orderPositions,
                 Id = orderId,
-                UserId = Convert.ToInt32(userId),
+                UserId = userId,
                 IsCompleted = false,
-                Title = $"fak/{userId}/{DateTime.Now.ToString("dd-MM-yyyy-mm-ss")}{rnd}"
+                Title = $"ORD/{rnd}-{DateTime.Now.ToString("ddMMyyyymmss")}"
             };
 
             return ordervm;

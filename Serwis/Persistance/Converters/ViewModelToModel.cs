@@ -28,7 +28,7 @@ namespace Serwis.Converter
         {
             var user = new ApplicationUser
             {
-                //moze sie srac o brak id
+                Id = Guid.NewGuid(),
                 Password = registerVM.Password,
                 UserName = registerVM.UserName,
                 CreatedDate = registerVM.CreatedDate,

@@ -11,7 +11,7 @@ namespace Serwis.Models.ViewModels
             Orders = new Collection<Order>();
         }
 
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [Display(Name = "Nazwa uzytkownika")]

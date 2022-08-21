@@ -33,12 +33,12 @@ namespace Serwis.Persistance.Repository
 
         }
 
-        public Task<IEnumerable<Order>> GetOrdersForUserAsync(int userId)
+        public Task<IEnumerable<Order>> GetOrdersForUserAsync(Guid userId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Order> FindOrderByUserIdAsync(int userId)
+        public async Task<Order> FindOrderByUserIdAsync(Guid userId)
         {
             var order = await _serviceDbContext.Orders.Where(x => x.UserId == userId && x.IsCompleted == false).FirstOrDefaultAsync();
             if (order == null)
@@ -46,7 +46,7 @@ namespace Serwis.Persistance.Repository
             return order;
         }
 
-        public async Task DeleteOrder(int userId, int orderId)
+        public async Task DeleteOrder(Guid userId, int orderId)
         {
             var findOrderToDelete = await _serviceDbContext.Orders.SingleAsync(x => x.UserId == userId && x.Id == orderId);
              _serviceDbContext.Orders.Remove(findOrderToDelete);

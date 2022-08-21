@@ -120,9 +120,9 @@ namespace Testy
             return new()
             {
                 Id = 0,
-                OrderId =1,
+                OrderId = 1,
                 ProductId = 1,
-                UserId = 1
+                UserId = new Guid("7C57B0DE - C98D - 417A - A842 - 67D77CFCCBE5")
             };
         }
     }

@@ -28,7 +28,7 @@ namespace Serwis.Persistance.Repository
             
         }
 
-        public async Task DeleteOrderPositionAsync(int orderId, int userId, int productId)
+        public async Task DeleteOrderPositionAsync(int orderId, Guid userId, int productId)
         {
             var orderPositionToDelete = await _serviceDbContext.OrderPositions
                 .FirstAsync(x => x.OrderId == orderId && x.ProductId == productId && x.UserId == userId);
@@ -40,7 +40,7 @@ namespace Serwis.Persistance.Repository
             
         }
 
-        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int userId)
+        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(Guid userId)
         {
             return await _serviceDbContext.OrderPositions
                  .Include(x => x.Product)
@@ -50,7 +50,7 @@ namespace Serwis.Persistance.Repository
                  .ToListAsync();
         }
 
-        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int orderId, int userId)
+        public async Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int orderId, Guid userId)
         {
             var positions = await _serviceDbContext.OrderPositions
                   .Include(x => x.Product)
@@ -87,14 +87,14 @@ namespace Serwis.Persistance.Repository
 
         }
 
-        public async Task<int> CountOrderPositions(int orderId, string userId)
+        public async Task<int> CountOrderPositions(int orderId, Guid userId)
         {
             return await _serviceDbContext.OrderPositions
-                .Where(x => x.UserId == Convert.ToInt32(userId) && x.OrderId == orderId)
+                .Where(x => x.UserId == userId && x.OrderId == orderId)
                 .CountAsync();
         }
 
-        public Task CreateOrderPositionAsync(int productId, int userId, int orderId)
+        public Task CreateOrderPositionAsync(int productId, Guid userId, int orderId)
         {
             throw new NotImplementedException();
         }

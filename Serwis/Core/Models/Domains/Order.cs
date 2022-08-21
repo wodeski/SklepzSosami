@@ -21,7 +21,7 @@ namespace Serwis.Models.Domains
         public decimal FullPrice { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public ApplicationUser User { get; set; } // klucz obcy
         public ICollection<OrderPosition> OrderPositions { get; set; } //zamówienie moze miec wiele pozycji
     }

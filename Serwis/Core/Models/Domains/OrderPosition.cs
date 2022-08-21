@@ -14,7 +14,7 @@ namespace Serwis.Models.Domains
         public int OrderId { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [ForeignKey("Product")]
         public int ProductId { get; set; }

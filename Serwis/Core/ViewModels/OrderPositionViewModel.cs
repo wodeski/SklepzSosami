@@ -8,7 +8,7 @@ namespace Serwis.Models.ViewModels
 
         public int OrderId { get; set; }
         public int Quantity { get; set; }
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public int ProductId { get; set; }
         public ApplicationUser User { get; set; }
         public Order Order { get; set; }

@@ -14,7 +14,7 @@ using System.Text.Json;
 
 namespace Serwis.ShopControllers
 {
-    public class ShopController : Controller
+    public class ShopController : Controller // dodaje wsparcie dla widoków
     {
         private readonly IService _service;
         private List<OrderPositionViewModel> _orderPositions;
@@ -90,9 +90,10 @@ namespace Serwis.ShopControllers
             return true;
         }
 
-        public async Task<IActionResult> Cart(int userId)
+        public async Task<IActionResult> Cart(Guid userId)
         {
-            if (userId == 0)
+
+            if (userId == null || userId == Guid.Empty)
             {
                 //anonimowy uzytkownik
                 var data = HttpContext.Session.GetComplexData<List<OrderPositionViewModel>>(AnonymousCart);
@@ -184,7 +185,7 @@ namespace Serwis.ShopControllers
 
         public async Task<IActionResult> DeleteUserOrderPositionFromCart(string productId, int orderId)
         {
-            var userId = HttpContext.Session.GetString(Id);
+            var userId = new Guid(HttpContext.Session.GetString(Id));
 
             if (userId == null)
             {
@@ -192,13 +193,13 @@ namespace Serwis.ShopControllers
                 return Json(new { Success = true });
             }
 
-            await _service.DeleteOrderPositionAsync(orderId, Convert.ToInt32(userId), Convert.ToInt32(productId));
+            await _service.DeleteOrderPositionAsync(orderId, userId, Convert.ToInt32(productId));
 
             var listOfOrderPositions = await _service.CountOrderPositions(orderId, userId);
 
             if (listOfOrderPositions == 0) // usun zamowienie jesli nie ma w nim zadnych pozycji
             {
-                await _service.DeleteOrder(Convert.ToInt32(userId), orderId);
+                await _service.DeleteOrder(userId, orderId);
 
             }
 
@@ -250,13 +251,13 @@ namespace Serwis.ShopControllers
 
 
         [HttpPost]
-        public async Task<ActionResult> AddPositionToCart(int productId, string userId)
+        public async Task<ActionResult> AddPositionToCart(int productId, Guid userId)
         {
-            if (userId == null) // jesli uzytkownik jest niezalogowany 
+            if (userId == null || userId == Guid.Empty) // jesli uzytkownik jest niezalogowany 
                 return await AddAnonymousPositionToCart(productId);
             try
             {
-                await _service.AddOrderPositionAsync(Convert.ToInt32(userId), productId);
+                await _service.AddOrderPositionAsync(userId, productId);
             }
             catch (Exception ex)
             {

@@ -22,7 +22,7 @@ namespace Serwis.Persistance.Repository
             }
             return findUser;
         }
-        public async Task<ApplicationUser> FindUserByIdAsync(int userId)
+        public async Task<ApplicationUser> FindUserByIdAsync(Guid userId)
         {
             var findUser = await _serviceDbContext.Credentials.Where(x => x.Id == userId).FirstAsync();
             if (findUser == null)
@@ -32,7 +32,7 @@ namespace Serwis.Persistance.Repository
             return findUser;
         }
 
-        public async Task<bool> UserHasAnIncompleteOrder(int userId)
+        public async Task<bool> UserHasAnIncompleteOrder(Guid userId)
         {
             return await _serviceDbContext.Orders.AnyAsync(x => x.UserId == userId && x.IsCompleted == false); ;
         }

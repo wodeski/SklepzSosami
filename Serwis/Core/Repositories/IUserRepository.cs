@@ -4,9 +4,9 @@ namespace Serwis.Core.Repositories
 {
     public interface IUserRepository
     {
-        Task<bool> UserHasAnIncompleteOrder(int userId);
+        Task<bool> UserHasAnIncompleteOrder(Guid userId);
 
         Task<ApplicationUser> FindUserAsync(string userName);
-        Task<ApplicationUser> FindUserByIdAsync(int userId);
+        Task<ApplicationUser> FindUserByIdAsync(Guid userId);
     }
 }

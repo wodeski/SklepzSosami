@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Serwis.Models.Domains
 {
 
-    public class ApplicationUser : IApplicationUser
+    public class ApplicationUser
     {
 
         public ApplicationUser()
@@ -14,7 +14,7 @@ namespace Serwis.Models.Domains
         }
 
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [Display(Name = "Nazwa uzytkownika")]

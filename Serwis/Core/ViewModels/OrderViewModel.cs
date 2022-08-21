@@ -19,7 +19,7 @@ namespace Serwis.Models.ViewModels
 
         [Display(Name = "Łączna wartość zamówienia")]
         public decimal FullPrice { get; set; }
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public ApplicationUser User { get; set; } // klucz obcy
         public ICollection<OrderPosition> OrderPositions { get; set; }
     }
