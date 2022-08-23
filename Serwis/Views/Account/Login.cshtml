@@ -1,51 +1,50 @@
 ﻿@model Serwis.Models.ViewModels.ApplicationUserViewModel
-<div class="container border" style="padding:20px">
+<section class="container border" style="padding:20px">
     <form method="post" asp-action="Login" asp-controller="Account">
         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
-        
-        <div form-group row>
-            <div class="col-3">
+
+        <article form-group row>
+            <aside class="col-3">
                 <label asp-for="UserName"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-5">
-                 <input type="text" asp-for="UserName" class="form-control">
-                 <span class="text-danger" asp-validation-for="UserName"></span>
-            </div>
-        </div>
-         <div form-group row>
-            <div class="col-3">
+            </aside>
+            <aside class=" col-5">
+                <input type="text" asp-for="UserName" class="form-control">
+                <span class="text-danger" asp-validation-for="UserName"></span>
+            </aside>
+        </article>
+        <article form-group row>
+            <aside class="col-3">
                 <label asp-for="Password"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-5">
-                 <input type="password" asp-for="Password" class="form-control">
-                 <span class="text-danger" asp-validation-for="Password"></span>
-            </div>
-            <div class="row form-check mb-2 mt-2">
+            </aside>
+            <aside class=" col-5">
+                <input type="password" asp-for="Password" class="form-control">
+                <span class="text-danger" asp-validation-for="Password"></span>
+            </aside>
+            <aside class="row form-check mb-2 mt-2">
                 <div class="col-2 ">
                     <input type="checkbox" asp-for="RememberMe" class="form-check-input" />
                     <label asp-for="RememberMe" class="form-check-label"></label>
                 </div>
-            </div>
-             <div form-group row>
-                 <span style="color:#df2c14">@TempData["UserNotFound"]</span>
-            <div class="col-4">
+            </aside>
+        </article>
+        <article form-group row>
+            <span style="color:#df2c14">@TempData["UserNotFound"]</span>
+            <aside class="col-4">
                 <input onclick="ClearSession()" type="submit" value="Login" class="btn btn-primary mt-3  " />
-            </div>
-            <span><a  asp-action="Register" asp-controller="Account">Rejestracja</a></span>
-            <div class=" col-4">
-            </div>
-        </div>
-        </div>
+            </aside>
+            <span><a asp-action="Register" asp-controller="Account">Rejestracja</a></span>
+
+        </article>
     </form>
-</div>
+</section>
 @section scripts{
     <script type="text/javascript">
 
-function ClearSession() {
-    if (!confirm)
-        return;
-    sessionStorage.removeItem('key');
-    document.getElementsByClassName('cart-quantity')[0].textContent = 0;
-}
-        </script>
+        function ClearSession() {
+            if (!confirm)
+                return;
+            sessionStorage.removeItem('key');
+            document.getElementsByClassName('cart-quantity')[0].textContent = 0;
+        }
+    </script>
 }

@@ -1,82 +1,80 @@
 ﻿@model Serwis.Models.ViewModels.RegisterViewModel
-<div class="container border" style="padding:20px">
+<section class="container" style="padding:20px">
     <form method="post" asp-action="Register" asp-controller="Account">
         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
 
-        <div form-group row>
-            <div class="col-3">
+        <article form-group row>
+            <aside class="col-3">
                 <label asp-for="UserName"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-5">
+            </aside>
+            <aside class=" col-5">
                 <input type="text" asp-for="UserName" class="form-control">
                 <span class="text-danger" asp-validation-for="UserName"></span>
-            </div>
-        </div>
-        <div form-group row>
-            <div class="col-3">
+            </aside>
+        </article>
+        <article form-group row>
+            <aside class="col-3">
                 <label asp-for="Password"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-            </div>
-            <div class=" col-5">
+            </aside>
+            <aside class=" col-5">
                 <input type="password" asp-for="Password" id="password" class="form-control">
                 <span class="text-danger" asp-validation-for="Password"></span>
-            </div>
-            <div form-group row>
-                <div class="col-3">
-                    <label asp-for="RepeatPassword"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-                </div>
-                <div class=" col-5">
-                    <input type="password" asp-for="RepeatPassword" id="repeat_password" class="form-control">
-                    <span class="text-danger" asp-validation-for="RepeatPassword"></span>
-                </div>
-            </div>
-            <div form-group row>
-                <div class="col-3">
-                    <label asp-for="Email"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-                </div>
-                <div class=" col-5">
-                    <input id="email" asp-for="Email" class="form-control">
-                    <span class="text-danger" asp-validation-for="Email"></span>
-                </div>
-            </div>
-            <div form-group row>
-                <span style="color:#df2c14">@TempData["Walidacja"]</span>
-                <div class="col-4">
-                    <input type="submit" id="submit" value="Zarejestru" class="btn btn-primary mt-3  " />
-                </div>
-                <div class=" col-4">
-                </div>
-            </div>
-        </div>
+            </aside>
+        </article>
+        <article form-group row>
+            <aside class="col-3">
+                <label asp-for="RepeatPassword"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+            </aside>
+            <aside class=" col-5">
+                <input type="password" asp-for="RepeatPassword" id="repeat_password" class="form-control">
+                <span class="text-danger" asp-validation-for="RepeatPassword"></span>
+            </aside>
+        </article>
+        <article form-group row>
+            <aside class="col-3">
+                <label asp-for="Email"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+            </aside>
+            <aside class=" col-5">
+                <input id="email" asp-for="Email" class="form-control">
+                <span class="text-danger" asp-validation-for="Email"></span>
+            </aside>
+        </article>
+        <article form-group row>
+            <span style="color:#df2c14">@TempData["Walidacja"]</span>
+            <aside class="col-4">
+                <input type="submit" id="submit" value="Zarejestruj" class="btn btn-primary mt-3  " />
+            </aside>
+            <aside class=" col-4">
+            </aside>
+        </article>
     </form>
-</div>
+</section>
 @section scripts{
     <script type="text/javascript">
 
-let email = document.getElementById("email").textContent;
-const submit = document.getElementById("submit");
-const password = document.getElementById("password");
-const repeat_password = document.getElementById("repeat_password");
+        let email = document.getElementById("email").textContent;
+        const submit = document.getElementById("submit");
+        const password = document.getElementById("password");
+        const repeat_password = document.getElementById("repeat_password");
 
-let testVal = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+        let testVal = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 
-        function ValidateEmail()
-        {
+        function ValidateEmail() {
             email = document.getElementById("email").textContent;
-            if ((testVal.test(email))===true) {
-               toastr.success("Poprawne dane");
+            if ((testVal.test(email)) === true) {
+                toastr.success("Poprawne dane");
             } else {
                 toastr.error("Email jest niepoprawny");
                 return;
             }
         }
 
-        function ValidatePassowrd()
-        {
+        function ValidatePassowrd() {
             password = document.getElementById("password");
             repeat_password = document.getElementById("repeat_password");
-            if (((repeat_password.value).test(password.value))===true) {
-               toastr.success("Poprawne dane");
+            if (((repeat_password.value).test(password.value)) === true) {
+                toastr.success("Poprawne dane");
             } else {
                 toastr.error("Hasła się nie zgadzają");
                 return;
@@ -84,7 +82,7 @@ let testVal = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)
         }
 
         submit.addEventListener("click", function() {
-            
+
             ValidatePassowrd(password, repeat_password)
             ValidateEmail(email)
         })

@@ -9,7 +9,7 @@ namespace Serwis.Core.Repositories
         Task<IEnumerable<OrderPosition>> GetOrderPositionsAsync();
         Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(Guid userId);
         Task<IEnumerable<OrderPosition>> GetOrderPositionsForUserAsync(int orderId, Guid userId);
-        Task CreateOrderPositionAsync(int productId, Guid userId, int orderId);
+        Task CreateOrderPositionAsync(OrderPosition orderPosition);
         Task<int> CountOrderPositions(int orderId, Guid userId);
     }
 }

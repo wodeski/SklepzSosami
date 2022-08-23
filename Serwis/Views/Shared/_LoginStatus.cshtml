@@ -1,15 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Http;
+@using Serwis.Controllers
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
-    var sessionLogin = @HttpContextAccessor.HttpContext?.Session.GetString("Login");
-    var sessionWallet = @HttpContextAccessor.HttpContext?.Session.GetString("Wallet");
+    //var sessionLogin = @HttpContextAccessor.HttpContext?.Session.GetString(AccountController.SessionKeyName);
 }
 @if (User.Identity.IsAuthenticated)
 {
-    <span>Masz aktualnie na koncie @sessionWallet zł</span>
-    <span>Witaj @sessionLogin</span>
     <form method="post" class="form-inline" asp-action="Logout" asp-controller="Account">
-    <button onclick="setCart()" type="submit" class="btn btn-link ml-2">Wyloguj</button>
+    <button onclick="setCart()" type="submit" class="btn btn-outline-light ml-2">Wyloguj</button>
 
     </form>
 

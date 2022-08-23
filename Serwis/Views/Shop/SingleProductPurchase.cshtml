@@ -4,15 +4,17 @@
     var index = 0;
 
 }
-<div class="col-5">
-    <a asp-action="Index" asp-controller="Admin" class="btn btn-info form-control">
+<section class="container">
+
+<article class="col-5">
+    <a asp-action="Index" asp-controller="Shop" class="btn btn-light mb-1 form-control">
         Powrót
     </a>
-</div>
+</article>
 @if (Model != null)
 {
     <span hidden class="productId">@Model.Id</span>
-<table class=" table">
+<table class="table table-dark table-striped">
     <thead>
         <tr>
             <th style="text-align:center;">Lp.</th>
@@ -20,7 +22,6 @@
             <th style="text-align:center;">Podgląd</th>
             <td style="text-align:center;">Ilość</td>
             <th style="text-align:center;">Cena</th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -56,17 +57,18 @@
             <td></td>
             <td></td>
             <td style="text-align:center;">
-                <button class="btn btn-success" onclick="PayForOrder()">
+                <button class="btn btn-outline-success" onclick="PayForOrder()">
                     Dokonaj zakupu
                 </button>
             </td>
+
         </tr>
     </tbody>
     </table>
 }
 else
 {
- <table class="table">
+ <table class="table table-dark table-striped">
         <thead>
             <tr>
                 <th style="text-align:center;">Lp.</th>
@@ -84,7 +86,7 @@ else
     </table>
 
 }
-
+</section>
 
 
 @section scripts

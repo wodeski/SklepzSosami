@@ -1,26 +1,24 @@
 ﻿@model List<Serwis.Models.ViewModels.OrderPositionViewModel>
 
 @{
+    int orderId=0;
     var lp = 0;
     var index = 0;
-    var orderId = Model.Select(x => x.OrderId).First();
+    @if(Model !=null && Model.Any()){
+    orderId = Model.Select(x => x.OrderId).First();
+    }
 }
 
-<div class="col-5">
-    <a asp-action="Index" asp-controller="Admin" class="btn btn-info form-control">
+<aside class="col-5">
+    <a asp-action="Index" asp-controller="Shop" class="btn btn-light mb-1 form-control">
         Powrót
     </a>
-
-    <button class="btn btn-info btn-lg form-control" onclick="Test()">TEST</button>
-</div>
-<div class="col-5 offset-2">
-</div>
+</aside>
+<aside class="col-5 offset-2">
+</aside>
 @if (Model != null && Model.Any())
 {
-
-
-
-    <table class=" table">
+    <table class="table table-dark table-striped">
         <thead>
             <tr>
                 <th style="text-align:center;">Lp.</th>
@@ -42,13 +40,13 @@
                     <td align="center" valign="middle" style="text-align:center;">@(lp = lp +1 )</td>
                     <td align="center" valign="middle" style="text-align:center;">@position.Product.Name</td>
                     <td align="center" valign="middle" style="text-align:center;">
-                        <img style="width:200px; height 140px;" src="~/images/@position.Product.ImageFileName" />
+                        <img style="width:250px; height 70px;" src="~/images/@position.Product.ImageFileName" />
                     </td>
 
                     <td align="center" valign="middle" style="text-align:center;" id="@index">
-                        <button onclick="BtnMinus('@index',this)" class="btn btn-dark btn-sm mr-1">-</button>
+                        <button onclick="BtnMinus('@index',this)" class="btn btn-light btn-sm mr-1">-</button>
                         <span class="quantityCl" id="test" style="margin-left: 2px; margin-right: 2px;">1</span>
-                        <button class="btn btn-dark btn-sm ml-1" onclick="BtnPlus('@index',this)">+</button>
+                        <button class="btn btn-light btn-sm ml-1" onclick="BtnPlus('@index',this)">+</button>
                     </td>
 
                     <td align="center" valign="middle" id="price_value" class="sum_of_all" style="text-align:center;">
@@ -59,7 +57,7 @@
                         {
                             <button onclick="DeletePosition('@position.Product.Id', '@position.Order.Id', this)"
                     class="btn btn-sm btn-danger">
-                                X
+                               <b>X</b> 
                             </button>
                             index = index + 1;
                         }
@@ -67,7 +65,7 @@
                         {
                             <button onclick="DeletePosition('@position.Product.Id', '@orderId', this)"
                     class="btn btn-sm btn-danger">
-                                X
+                               <b>X</b> 
                             </button>
                             //zwiększenie indesku pola quantity
                             index = index + 1;
@@ -82,6 +80,7 @@
                 <td></td>
                 <td align="center" valign="middle">Suma: </td>
                 <td align="center" valign="middle" id="sum_value" style="text-align:center;"></td>
+                <td></td>
             </tr>
             <tr class="parent_node">
                 <td></td>
@@ -89,10 +88,11 @@
                 <td></td>
                 <td></td>
                 <td style="text-align:center;">
-                    <button class="btn btn-success" onclick="PayForOrder('@orderId')">
+                    <button class="btn btn-outline-success" onclick="PayForOrder('@orderId')">
                         Dokonaj zakupu
                     </button>
                 </td>
+                <td></td>
             </tr>
         </tbody>
     </table>
@@ -101,7 +101,7 @@ else
 {
 
 
-    <table class="table">
+    <table class="table table-dark table-striped">
         <thead>
             <tr>
                 <th style="text-align:center;">Lp.</th>
@@ -113,7 +113,7 @@ else
         </thead>
         <tbody>
             <tr>
-                <td>Nie wybrano produktu</td>
+                <td colspan="5">Nie wybrano produktu</td>
             </tr>
         </tbody>
     </table>
@@ -123,7 +123,6 @@ else
 {
 <script type="text/javascript">
 
-    console.log(@index)
     let price_value = document.getElementById('price_value');
     let sum_value = document.getElementById('sum_value');
 
@@ -154,17 +153,6 @@ else
 
     });
 
-
-    function Test()
-    {
-        const tablica = [];
-
-        for (let i = 0; i < productId.length; i++)
-        {
-
-            tablica.push(productId[i].innerHTML, quantityCl[i].innerHTML)
-        }
-    }
     let new_quantity;
     let new_price_value;
 
@@ -206,7 +194,7 @@ else
     function BtnPlus(index, btn)
     {
 
-        let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie jest przypisany do kazdego wiersza
+        let i = parseInt(btn.parentNode.getAttribute("id")); // i jest przypisany do kazdego wiersza
 
         if (i !== parseInt(index))
         {
@@ -244,8 +232,6 @@ else
             quantityOfPositions.push(productId[i].innerHTML, quantityCl[i].innerHTML)
         }
 
-        if (!confirm("Test"))
-            return;
         $.ajax({
             type: "post",
             url: "@Url.Action("Cart", "Shop")",
@@ -257,7 +243,7 @@ else
             {
                 if (data.success)
                 {
-                    toastr.success("dODANO ");
+                    toastr.success("Już blisko ");
                     window.location = data.redirectToUrl;
 
                 } else
@@ -277,7 +263,7 @@ else
             title: "Usuwanie?",
             text: "Jestes pewien ze chcesz usunac te pozycje?",
             icon: "warning",
-            buttons: true,
+            buttons: ["Anuluj", "Ok"],
             dangerMode: true
         }).then((willDelete) =>
         {

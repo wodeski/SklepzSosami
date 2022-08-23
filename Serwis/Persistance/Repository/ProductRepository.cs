@@ -29,9 +29,13 @@ namespace Serwis.Persistance.Repository
         }
         public async Task UpdateProductAsync(Product product)
         {
-            var findItem = _serviceDbContext.Products.Single(o => o.Id == product.Id);
+            var findItem = await _serviceDbContext.Products.SingleAsync(o => o.Id == product.Id);
             findItem.Name = product.Name;
             findItem.ImageFileName = product.ImageFileName;
+            findItem.Description = product.Description;
+            findItem.CategoryId = product.CategoryId;
+            findItem.Price = product.Price;
+            _serviceDbContext.Products.Update(findItem);
         }
         public async Task<Product> GetProductAsync(int id)
         {

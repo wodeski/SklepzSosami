@@ -23,7 +23,7 @@ builder.Services.AddAuthentication("CookieAuth").AddCookie("CookieAuth", options
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("User",
+    options.AddPolicy("UserOnly",
         policy => policy
         .RequireClaim("User"));
 

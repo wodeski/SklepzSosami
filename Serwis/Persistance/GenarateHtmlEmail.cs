@@ -14,35 +14,78 @@ namespace Serwis.Persistance
 
             if (order.OrderPositions != null && order.OrderPositions.Any())
             {
-                html += @"<table border = 1 cellpadding=5 cellspacing=1>
-                        <tr>
-                            <td align = center bgcolor= lightgrey>Produkt</td>
-                            <td align = center bgcolor= lightgrey>Ilość</td>
-                            <td align = center bgcolor= lightgrey>Cena</td>
-                        </tr>";
+                html += @"<table style='border-collapse: collapse; width: 100%;' border='1'>
+                            <thead>
+                                <tr style='background-color: #7A7A7A; color: white'>
+                                    <td style='width: 33.3333%; text-align: center;'>
+                                        <h4 style='text-align: center;'>Produkt</h4>
+                                    </td>
+                                    <td style='width: 33.3333%; text-align: center;'>
+                                        <h4>Ilość</h4>
+                                    </td>
+                                    <td style='width: 33.3333%; text-align: center;'>
+                                        <h4>Cena</h4>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>";
+
                 foreach (var position in order.OrderPositions)
                 {
                     html += $@"<tr>
-                            <td aling = center>{position.Product.Name}</td>
-                            <td align = center>{position.Quantity}</td>
-                            <td align = center>{(position.Product.Price * position.Quantity).ToString("0.00")}</td>
+                                    <td style='width: 33.3333%; text-align: center;'>{position.Product.Name}</td>
+                                    <td style='width: 33.3333%; text-align: center;'>{position.Quantity}</td>
+                                    <td style='width: 33.3333%; text-align: center;'>{(position.Product.Price * position.Quantity).ToString("0.00")}</td>
                             </tr>";
 
 
                 }
-                html += $@"<tr>
-                            <td colspan='2' aling = center>Cena za wszystko</td>
-                            <td aling = center>{order.FullPrice.ToString("0.00")}</td>
-                            </tr> 
-               </table>";
+                    html += $@"
+                           <tr>
+                                <td style='width: 66%; text-align: right;' colspan='2' ><strong>Cena za wszystko</strong></td>
+                                <td style='width: 33.3333%; text-align: center;'><strong>{order.FullPrice.ToString("0.00")}</strong></td>
+                            </tr>
+                            </tbody>
+                    </table>";
             }
-            else
-                html += " --brak widomości do wyświetlenia";
+            
 
 
 
             html += @"<br /> <br /> Wiadomosc wysłana z sklepu internetowego.";
             return html;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 }

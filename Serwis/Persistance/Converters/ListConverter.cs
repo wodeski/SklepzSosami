@@ -47,7 +47,25 @@ namespace Serwis.Converters
 
         }
 
-       
+        public static List<OrderViewModel> OrderIEnumerableToList(this IEnumerable<Order> orders)
+        {
+            var ordersVM = new List<OrderViewModel>();
+            foreach (var position in orders)
+            {
+                ordersVM.Add(
+                    new OrderViewModel
+                    {
+                        FullPrice = position.FullPrice,
+                        OrderPositions = position.OrderPositions,
+                        Title = position.Title,
+                        UserId = position.UserId,
+                        Id = position.Id
+                    });
+            }
+
+            return ordersVM;
+
+        }
 
 
     }

@@ -1,20 +1,97 @@
-﻿@model Serwis.Models.ViewModels.ApplicationUserViewModel
-<div class="container border" style="padding:20px">
-    <form method="post" asp-action="Register" asp-controller="Account">
-        <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+﻿@using Microsoft.AspNetCore.Http
+@using Serwis.Controllers
+@model List<Serwis.Models.ViewModels.OrderViewModel>
+@inject IHttpContextAccessor httpContextAccessor;
+@{
+    var sessionUserName = httpContextAccessor.HttpContext.Session.GetString(AccountController.SessionKeyName);
+    var sessionPassword = httpContextAccessor.HttpContext.Session.GetString(AccountController.Password);
+    int lp = 0;
+}
 
-        <div form-group row>
-            <div class="col-3">
-                <label asp-for="UserName"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-                @Model.UserName
+<div class="container row" id="product_display" style="padding:20px">
+
+    <div class="col-5">
+        <div class="form-group row">
+            <div>
+                <label>Login</label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+                <input readonly class="form-control" value="@sessionUserName" />
             </div>
         </div>
-        <div form-group row>
-            <div class="col-3">
-                <label asp-for="Password"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
-                @Model.Password
-
+        <div class=" form-group row">
+            <div>
+                <label> Hasło</label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
+                <input type="text" id="password" class="form-control" readonly value="@sessionPassword" />
+                <p style="cursor: pointer;" id="show">Pokaż</p>
             </div>
         </div>
-    </form>
+    </div>
+    <div class="col-6 offset-1 ">
+        <h5>Zrealizowane zamówienia</h5>
+        <table class="table table-dark table-striped">
+            <thead class="table-dark ">
+                <tr>
+                    <th align="center" valign="middle" class="text-center">Lp.</th>
+                    <th align="center" valign="middle" class="text-center">Zamówienie</th>
+                    <th align="center" valign="middle" class="text-center">Wartość</th>
+                </tr>
+            </thead>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var position in Model)
+                {
+                    <tr>
+                        <td align="center" valign="middle">@(lp = lp +1)</td>
+                        <td align="center" valign="middle">@position.Title</td>
+                        <td align="center" valign="middle">@position.FullPrice</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td align="center" colspan="3" valign="middle" class="text-center">Nie masz zadnych zrealizowanych zamówień</td>
+
+                </tr>
+            }
+
+        </table>
+    </div>
 </div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        const passwordDisplay = document.getElementById('password');
+        const password = document.getElementById('password').value;
+        const show = document.getElementById('show');
+
+        $(document).ready(Hash())
+
+        show.addEventListener("click", function() {
+
+            if (show.textContent === "Ukryj") {
+                Hash();
+                return;
+            }
+            passwordDisplay.value = '@sessionPassword';
+            show.textContent = "Ukryj";
+
+        })
+
+        function Hash() {
+            let lenPassword = password.length;
+
+            let hashPassword = "";
+
+            for (let i = 0; i < lenPassword; i++) {
+                hashPassword += "*";
+            }
+
+            passwordDisplay.value = hashPassword;
+
+            show.textContent = "Pokaż";
+
+        }
+
+    </script>
+                }

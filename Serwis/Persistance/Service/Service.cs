@@ -3,6 +3,7 @@ using Serwis.Core;
 using Serwis.Core.Service;
 using Serwis.Models.Domains;
 using Serwis.Models.ViewModels;
+using Serwis.ShopControllers;
 using System.Collections.ObjectModel;
 
 
@@ -47,7 +48,7 @@ namespace Serwis.Persistance.Service
 
             try
             {
-               //s await _unitOfWork.OrderPosition.CreateOrderPositionAsync(orderPosition);
+                await _unitOfWork.OrderPosition.CreateOrderPositionAsync(orderPosition);
                 _unitOfWork.Complete();
 
             }
@@ -149,8 +150,15 @@ namespace Serwis.Persistance.Service
         }
         public async Task UpdateProductAsync(Product product)
         {
-            await _unitOfWork.Product.UpdateProductAsync(product);
-            _unitOfWork.Complete();
+            try
+            {
+                await _unitOfWork.Product.UpdateProductAsync(product);
+                _unitOfWork.Complete();
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
         public async Task<Product> GetProductAsync(int id)
         {
@@ -213,11 +221,12 @@ namespace Serwis.Persistance.Service
 
         public async Task<OrderViewModel> SetOrderForPosition( int orderId, int[] quantityOfPositions)
         {
+           
             Guid userId;
             var sessionId = _contextAccessor.HttpContext?.Session.GetString("Id");
             if (sessionId == null)
             {  //sprawdzenie
-                userId = new Guid("00000000-0000-0000-0000-000000000000"); // inaczej opracowac
+                userId = new Guid(ShopController.AnonymousId); // inaczej opracowac
             }
             else
             {
@@ -345,8 +354,14 @@ namespace Serwis.Persistance.Service
 
         public async Task UpdateOrderPositionAsync(OrderPosition orderPosition, Order order)
         {
-            await _unitOfWork.OrderPosition.UpdateOrderPositionAsync(orderPosition, order); // zmieniec
-            _unitOfWork.Complete();
+            try
+            {
+                await _unitOfWork.OrderPosition.UpdateOrderPositionAsync(orderPosition, order); // zmieniec
+                _unitOfWork.Complete();
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public IEnumerable<Product> Get(int categoryId = 0, string? name = null)

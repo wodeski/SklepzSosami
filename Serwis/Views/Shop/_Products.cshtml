@@ -4,36 +4,32 @@
 @{
     var sessionForUserId = HttpContextAccessor.HttpContext?.Session.GetString("Id");
 }
-
-
-
-    @if (Model != null || !Model.Any())
+@if (Model != null && Model.Any())
+{
+    @foreach (var item in Model)
     {
-        @foreach (var item in Model)
-        {
-            <div style="margin-left:10px;">
-                <a style="cursor: pointer;" asp-action="Product" asp-controller="Shop" asp-route-productId="@item.Id">
+        <article class="form-group row" id="products_display">
+            <aside class="form-group row">
+                <a style="cursor: pointer; padding: 2rem;" asp-action="Product" asp-controller="Shop" asp-route-productId="@item.Id">
                     <img src="~/images/@item.ImageFileName" />
                 </a>
+            </aside>
+            <aside class="form-group row">
                 <span>@item.Name</span>
                 <span>@item.Price zł</span>
-                <div style="display:block" class="mb-2">
-                <a asp-action="SingleProductPurchase" asp-controller="Shop" asp-route-productId="@item.Id"
-           class=" mt-1 btn btn-sm btn-secondary">
-                    Kupuj
-                </a>
-                <button class=" mt-1 btn btn-sm btn-primary"
+            </aside>
+            <aside class="form-control-sm m-1 row">
+                <button class=" mt-1 btn btn-sm btn-dark"
                 onclick="AddPositionToCart('@item.Id', '@sessionForUserId')">
                     Dodaj do koszyka
                 </button>
-                </div>
-            </div>
-        }
-
+            </aside>
+        </article>
     }
-    else
-    {
-        <h2>Brak pozycji do wyswietlenia</h2>
-    }
+}
+else
+{
+    <h2>Brak pozycji do wyswietlenia</h2>
+}
 
 

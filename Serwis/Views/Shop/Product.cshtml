@@ -1,11 +1,38 @@
 ﻿@model Serwis.Models.ViewModels.ProductViewModel
 <h2>Informacje dla @Model.Name</h2>
 
-<div class="container row border" >
+<section class="container row" id="product_display">
+    <article class="col-5" style="height:400px;">
+        <aside style="background-image:
+            linear-gradient(rgba(33,37,41, 0.1), rgba(43, 44, 46, 0.4 ), rgba(81,81,81, 1)),
+            url('/images/@Model.ImageFileName');" id="product_info" />
+    </article>
+    <article class="col-5 offset-2">
+        <aside class="form-group row">
+            <span>@Model.Description</span>
+        </aside>
+        <aside class=" form-group row">
+            <div>
+                <span>@Model.Price</span>
+            </div>
+        </aside>
+        <aside class=" form-group row">
+            <div>
+            Skala ostrości
+            @for (var i = 0; i < Model.CategoryId; i++)
+            {
+                <i style="color:orangered" class="fa-solid fa-fire"></i>
+            }
+            </div>
+        </aside>
+        <aside class=" form-group row">
+            <div>
+                <a asp-action="SingleProductPurchase" asp-controller="Shop" asp-route-productId="@Model.Id"
+           class="btn btn-outline-warning mt-3">
+                    Kupuj
+                </a>
+            </div>
+        </aside>
+    </article>
+</section>
 
-    <img src="~/images/@Model.ImageFileName" />
-    <span>@Model.Description</span>
-    <span>@Model.Price</span>
-    <span>@Model.CategoryId</span>
-
-</div>

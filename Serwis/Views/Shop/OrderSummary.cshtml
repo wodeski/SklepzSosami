@@ -5,13 +5,8 @@
     var sessionForUserEmail = HttpContextAccessor.HttpContext?.Session.GetString("Email");
 }
 
-<div class="container border" style="padding:20px">
-
-
-
-
-
-    <div class=" border">
+<section class="container" style="padding:20px" id="summary_display">
+    <article id="products_list">
 
         <label style="font-weight: bold;" class="col-1 offset-1 text-center">Ilość</label><label class="col-1 offset-1"></label> <label style="font-weight: bold;" class="col-3 text-center">Nazwa</label><label class="col-1"></label> <label style="font-weight: bold;" text-center">Produkt</label>
         <label class="col-12"></label>
@@ -19,60 +14,62 @@
         {
             //var maciek = Model.OrderPositions.Where(x => x.ProductId == pos.ProductId).Select(x => x.Product.Name);
 
-            <div form-group>
-                <div style="padding:2px">
-                    <label class="col-1 offset-1 text-center">@pos.Quantity</label> <label class="text-center col-1 offset-1"> X </label> <label class="col-3 text-center">@pos.Product.Name</label> <label class="col-1 offset-"></label><img style="width:75px; height: 50px;" src="~/images/@pos.Product.ImageFileName" />
-                </div>
-            </div>
+            <aside form-group style="padding:2px">
+                <label class="col-1 offset-1 text-center">@pos.Quantity</label>
+                <label class="text-center col-1 offset-1"> X </label>
+                <label class="col-3 text-center">@pos.Product.Name</label>
+                <label class="col-1 offset-"></label>
+                <img style="width:75px; height: 50px;" src="~/images/@pos.Product.ImageFileName" />
+            </aside>
         }
-    </div>
+    </article>
 
-    <div style="padding:2px" class="border-1">
-        <div form-group row>
+    <article style="padding:2px" class="border-1">
+        <aside form-group row>
             <div class="col-5 mt-1">
                 <label style="font-weight: bold;" asp-for="Title"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
             </div>
             <div>
                 <label class="col-5 mt-1">@Model.Title </label>
             </div>
-        </div>
-        <div form-group row>
+        </aside>
+        <aside form-group row>
             <div class="col-5 mt-1">
                 <label style="font-weight: bold;" asp-for="FullPrice"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
             </div>
             <div class=" mt-1">
                 <label class="col-5 mt-1">@Model.FullPrice zł</label>
             </div>
-        </div>
-        <div form-group row>
+        </aside>
+        <aside form-group row>
             <div class="col-5 mt-1">
                 <label style="font-weight: bold;">Mail</label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
             </div>
             <div class=" mt-1 col-7">
                 <input type="text" id="email" value="@sessionForUserEmail" class="form-control">
             </div>
-        </div>
-    </div>
+        </aside>
+    </article>
 
-</div>
-<div id="accept_back" >
-    <div class=" mt-1 col-6" >
-        <button onclick="ConfirmInvoiceOrder()"
-                value="Kupuję"
-                class="btn btn-primary mt-3  form-control">
-            Kupuję
-        </button>
-    </div>
-    <div class=" col-6">
-        <a type="button" class="btn btn-secondary form-control mt-1" asp-action="Index" asp-controller="Admin">Rezygnuję</a>
-    </div>
-</div>
-<div id="back">
-    <div class="col-6">
-        <a type="button" class="btn btn-secondary form-control mt-1" asp-action="Index" asp-controller="Admin">Powrót</a>
-    </div>
-</div>
 
+    <article id="accept_back">
+        <aside class=" mt-1 col-6">
+            <button onclick="ConfirmInvoiceOrder()"
+                    value="Kupuję"
+                    class="btn btn-dark mt-3  form-control">
+                Kupuję
+            </button>
+        </aside>
+        <aside class=" col-6">
+            <a type="button" class="btn btn-light form-control mt-1" asp-action="Index" asp-controller="Shop">Rezygnuję</a>
+        </aside>
+    </article>
+    <article id="back">
+        <aside class="col-6">
+            <a type="button" class="btn btn-light form-control mt-1" asp-action="Index" asp-controller="Shop">Powrót</a>
+        </aside>
+    </article>
+</section>
 
 @section scripts{
     <script type="text/javascript">
@@ -105,10 +102,10 @@
                 success: function(data) {
                     if (data.success) {
                         toastr.success("Gratuluje zakupu!")
-                            $('#back').css("display", "");
-                            $('#accept_back').css("display", "none");
-                            
-                        } else {
+                        $('#back').css("display", "");
+                        $('#accept_back').css("display", "none");
+
+                    } else {
                         toastr.error("Niestety coś poszło nie tak :(")
                     }
                 },

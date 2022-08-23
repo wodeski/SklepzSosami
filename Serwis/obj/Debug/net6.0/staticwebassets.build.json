@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ujZKsH/pDLXnsqi0SHo31bY8YpPFKoxZFKwBKUVaY2Y=",
+  "Hash": "Nj/aCWmGR/UZaEo8JJcWnnrk3m7UQbPL6Xf7SciWnBg=",
   "Source": "Serwis",
   "BasePath": "_content/Serwis",
   "Mode": "Default",
@@ -457,6 +457,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\wiewiorka2208205200.png"
+    },
+    {
+      "Identity": "C:\\Users\\Wojtek\\source\\repos\\Serwis\\Serwis\\wwwroot\\images\\wizyta2208230348.png",
+      "SourceId": "Serwis",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Wojtek\\source\\repos\\Serwis\\Serwis\\wwwroot\\",
+      "BasePath": "_content/Serwis",
+      "RelativePath": "images/wizyta2208230348.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\wizyta2208230348.png"
     },
     {
       "Identity": "C:\\Users\\Wojtek\\source\\repos\\Serwis\\Serwis\\wwwroot\\js\\site.js",

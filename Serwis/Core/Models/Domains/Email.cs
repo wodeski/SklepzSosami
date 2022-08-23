@@ -8,6 +8,61 @@ namespace Serwis.Models.Domains
 {
     public class Email
     {
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
+        //mailkit
             private SmtpClient _smtp;
             private MailMessage _mail;
 

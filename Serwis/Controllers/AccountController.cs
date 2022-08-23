@@ -8,6 +8,7 @@ using Serwis.Converter;
 using Serwis.Models.ViewModels;
 using Serwis.Repository;
 using Serwis.Core.Service;
+using Serwis.Converters;
 
 namespace Serwis.Controllers
 {
@@ -22,7 +23,7 @@ namespace Serwis.Controllers
         private const string IsUser = "User";
         private const string Email = "Email";
         private const string Id = "Id";
-        private const string Wallet = "Wallet";
+        public const string Password = "Password";
         private const string Validation = "Walidacja";
         private const string True = "true";
 
@@ -71,11 +72,10 @@ namespace Serwis.Controllers
             {
                 var user = registerVM.ConvertToApplicationUserFromRegisterViewModel();
 
-                _service.CreateUser(user);
+                await _service.CreateUser(user);
             }
             catch (Exception ex)
             {
-                //logowanie do pliku
                 throw new Exception(ex.Message);
             }
             return RedirectToAction("Login", "Account");
@@ -95,40 +95,42 @@ namespace Serwis.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState
-                    .Where(x => x.Value.Errors.Count > 0)
-                    .Select(x => new { x.Key, x.Value.Errors })
-                    .ToArray();
+                //var errors = ModelState
+                //    .Where(x => x.Value.Errors.Count > 0)
+                //    .Select(x => new { x.Key, x.Value.Errors })
+                //    .ToArray();
                 return View(userVM);
             }
 
             var user = userVM.ConvertToApplicationUser();
 
-            var userFromLoginCredentials = await UserFromLogin(user.UserName, user.Password);
+            var userFromLogin = await UserFromLogin(user.UserName, user.Password);
 
-            if (userFromLoginCredentials == null)
+            if (userFromLogin == null)
             {
                 TempData["UserNotFound"] = UserNotFound;
-                return View(userVM); //dac info ze nie ma takiego 
+                return View(userVM);  
             }
-            AddSessionForUserFrom(userFromLoginCredentials);
+            AddSessionForUserFrom(userFromLogin);
 
             var clasimsPrincipal = AddClaimsForUserFromLogin(user);
 
-            await HttpContext.SignInAsync(Cookie, clasimsPrincipal);
+            var authentication = new AuthenticationProperties
+            {
+                IsPersistent = userVM.RememberMe,
+            };
+
+            await HttpContext.SignInAsync(Cookie, clasimsPrincipal, authentication);
             return RedirectToAction("Index", "Shop");
 
 
         }
         private void AddSessionForUserFrom(ApplicationUser credential)
         {
-            HttpContext.Session.SetString(SessionKeyName, credential.UserName); // zoabczyc co tu sie stanie w tej sytuacji nie wyswietla sie w narozniku
-            HttpContext.Session.SetString(Email, credential.Email);// prawdopobonie to powinno byc w cookie
-            HttpContext.Session.SetString(Id, (credential.Id).ToString()); // prawdopobonie to powinno byc w cookie
-            HttpContext.Session.SetString(Wallet, (credential.Wallet).ToString()); // prawdopobonie to powinno byc w cookie
-            //poniewaz po wylaczeniu przegladarki uzytkownik badac dalej zalogowanym 
-            // nie bedzie widzial tych pozycji mozliwe problemy pozniej
-            //ustawic dla uzytkownka mozliwosc nie wylogowywania
+            HttpContext.Session.SetString(SessionKeyName, credential.UserName); 
+            HttpContext.Session.SetString(Email, credential.Email);
+            HttpContext.Session.SetString(Id, (credential.Id).ToString()); 
+            HttpContext.Session.SetString(Password, credential.Password); 
         }
 
         private async Task<ApplicationUser> UserFromLogin(string userName, string password)
@@ -141,7 +143,7 @@ namespace Serwis.Controllers
             HttpContext.Session.Remove(SessionKeyName); // zoabczyc co tu sie stanie w tej sytuacji nie wyswietla sie w narozniku
             HttpContext.Session.Remove(Email);// prawdopobonie to powinno byc w cookie
             HttpContext.Session.Remove(Id); // prawdopobonie to powinno byc w cookie
-            HttpContext.Session.Remove(Wallet);
+            HttpContext.Session.Remove(Password);
             await HttpContext.SignOutAsync(Cookie);
             return RedirectToAction("Index", "Shop");
         }
@@ -177,12 +179,12 @@ namespace Serwis.Controllers
         [Authorize]
         public async Task<IActionResult> UserInfo()
         {
-            var sessionUser = HttpContext.Session.GetString(SessionKeyName);
-
-            var user = await _service.GetUser(sessionUser);
-
-            var userVM = user.PrepareApplicationUserViewModel();
-            return View(userVM);
+            var sessionUserId = HttpContext.Session.GetString(Id);
+            
+            //sprawdizic czy jest mozlwiosc pustej sesji
+            var orders = await _service.GetOrdersForUserAsync(new Guid(sessionUserId));
+            var ordersVM = orders.OrderIEnumerableToList();
+            return View(ordersVM);
         }
     }
 }

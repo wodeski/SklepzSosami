@@ -1,42 +1,42 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @model Serwis.Core.ViewModels.ProductsViewModel;
 
-<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+<nav id="search_engine_nav" class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow mb-3 text-center">
     <form id="filterForm">
-        <div class="form-group row mt-3">
-            <div class="col-5">
+        <article class="form-group row mt-3">
+            <aside class="col-5">
                 <input asp-for="FilterProducts.Name" class=" form-control mb-2" , placeholder="Nazwa produktu" />
-            </div>
-            <div class="col-auto">
-                <select class="form-control"
+            </aside>
+            <aside class="col-auto" >
+                <select class="form-select" style="cursor:pointer;"
                         asp-for="FilterProducts.CategoryId"
                         asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
-                    <option value="">Wybierz kategorię</option>
+                    <option value="">Wszystkie</option>
                 </select>
-            </div>
-            <div class="col-1">
-                <button type="submit" class="btn btn-primary mb-2">Szukaj</button>
-            </div>
-        </div>
+            </aside>
+            <aside class="col-1">
+                <button type="submit" class="btn btn-outline-light mt-1 mb-2">Szukaj</button>
+            </aside>
+        </article>
     </form>
 </nav>
 
-<div class="products">
-    <partial name="_Products" model="Model.Products" />
-</div>
+<section class="products">
+    <partial name="_Products" model="@Model.Products"/>
+</section>
 @section scripts{
     <script type="text/javascript">
         const element = document.getElementById("products");
         $(document).ready(function() {
             $('#filterForm').submit(function() {
-
+                
                 $.ajax({
                     type: "POST",
                     url: "@Url.Action("Products", "Shop")",
                     data: $(this).serialize(), // przekazanie z formualrza zserializowane dane
                     success: function(data) {
 
-                        $('div.products').html(data);
+                        $('section.products').html(data);
 
                     },
                     error: function(data) {
@@ -54,7 +54,7 @@
                 title: "Dododawanie produktu do koszyka",
                 text: "Jestes pewien ze chcesz dodac te pozycję do koszyka?",
                 icon: "info",
-                buttons: true,
+                buttons: ["Anuluj", "Ok"],
             }).then((willAdd) => {
                 if (willAdd) {
                     $.ajax({
@@ -66,15 +66,7 @@
                             userId: userId
                         },
                         success: function(data) {
-                            if (data.success) { // musza byc male litery i tu i tu
-
-                                // function closePrivacyPolicy()
-                                //{
-
-                                //  $.cookie("privacyPolicyCookie", "ciastko", { path: "/", expires: 365 });
-
-                                // }
-                                console.log(confirmMsg);
+                            if (data.success) { 
 
                                 let quantity = document.getElementsByClassName('cart-quantity')[0].textContent
                                 quantity++;

@@ -33,9 +33,12 @@ namespace Serwis.Persistance.Repository
 
         }
 
-        public Task<IEnumerable<Order>> GetOrdersForUserAsync(Guid userId)
+        public async Task<IEnumerable<Order>> GetOrdersForUserAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            return await _serviceDbContext.Orders
+                .Include(x=>x.OrderPositions)
+                .Where(x => x.UserId == userId && x.IsCompleted == true)
+                .ToListAsync();
         }
 
         public async Task<Order> FindOrderByUserIdAsync(Guid userId)

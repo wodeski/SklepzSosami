@@ -1,11 +1,18 @@
-﻿@model Serwis.Models.ViewModels.ProductViewModel
+﻿@using Serwis.Models.Domains
+@model Serwis.Models.ViewModels.ProductViewModel
 
-
-<div class="container">
-
-    <h2>@(Model.Id == 0 ? "Dodawanie nowego zamówienia" : "Aktualizowanie zamowienia")</h2>
-
-    <span></span>
+@{
+    ProductCategory category = null;
+    var productCategoryId = Model.CategoryId;
+    if (productCategoryId != 0)
+    {
+        category = Model.CategoriesList.Single(x => x.Id == productCategoryId);
+    }
+}
+<section class="container">
+    <article>
+    <h2>@(Model.Id == 0 ? "Dodawanie nowego produktu" : "Aktualizowanie produktu")</h2>
+    </article>
     <form method="post" asp-action="Upsert" asp-controller="Admin" enctype="multipart/form-data">
 
         @if (Model.Id != 0)
@@ -64,10 +71,15 @@
                 <label>Kategorie</label>
             </div>
             <div class="col-6">
-                <select class="form-control"
+                <select class="form-control" style="cursor:pointer"
                         asp-for="CategoryId"
                         asp-items="@(new SelectList(Model.CategoriesList, "Id", "Name"))">
-                    <option value="">Wybierz kategorię</option>
+                        @if(Model.Id == 0){
+                             <option value="">Wybierz rodzaj ostrości</option>
+                        }else{
+                             <option value="@category.Name">@category.Name</option>
+
+                        }
                 </select>
             </div>
         </div>
@@ -80,14 +92,14 @@
 
         <div class="form-group row mt-3">
             <div class="col-6">
-                <input type="submit" class=" btn btn-primary form-control" value="Zatwierdź" />
+                <input type="submit" class=" btn btn-dark form-control" value="Zatwierdź" />
             </div>
             <div class="col-6">
-                <a type="button" class="btn btn-secondary form-control" asp-action="Service">Powrót</a>
+                <a type="button" class="btn btn-light form-control" asp-action="Service">Powrót</a>
             </div>
         </div>
     </form>
-</div>
+</section>
 @section scripts{
     <script type="text/javascript">
         const input = document.getElementById('imageFile');

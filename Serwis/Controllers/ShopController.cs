@@ -18,7 +18,7 @@ namespace Serwis.ShopControllers
     {
         private readonly IService _service;
         private List<OrderPositionViewModel> _orderPositions;
-        private const int AnonymousId = 10;
+        public static string AnonymousId = "00000000-0000-0000-0000-000000000000";
         private const string AnonymousCart = "AnonyomousCart";
         private const string OrderSession = "OrderSession";
         public const string Id = "Id";
@@ -93,7 +93,7 @@ namespace Serwis.ShopControllers
         public async Task<IActionResult> Cart(Guid userId)
         {
 
-            if (userId == null || userId == Guid.Empty)
+            if (userId == Guid.Empty)
             {
                 //anonimowy uzytkownik
                 var data = HttpContext.Session.GetComplexData<List<OrderPositionViewModel>>(AnonymousCart);
@@ -147,11 +147,67 @@ namespace Serwis.ShopControllers
             return View(orderVM);
         }
 
+
+
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+        //dodac opcje autoinkrementacji !!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> OrderSummary(string email)
         {
             var orderVM = HttpContext.Session.GetComplexData<OrderViewModel>(OrderSession);
-            var order = orderVM.ConvertToOrder(); // order powinien byc guidem
+            var order = orderVM.ConvertToOrder(); // czy view model jest bez id uzytkownika?
 
             // poki co wysylanie maila dla anonima
             await _service.CreateOrderAsync(order); // zapisanie zamówienia do bazy zmienic na zapisywanie zamowienia gotowego
@@ -169,7 +225,7 @@ namespace Serwis.ShopControllers
                         throw new Exception(ex.Message);
                     }
                 }
-
+                
 
                 _service.SendMail(email, orderVM);
 
@@ -185,13 +241,14 @@ namespace Serwis.ShopControllers
 
         public async Task<IActionResult> DeleteUserOrderPositionFromCart(string productId, int orderId)
         {
-            var userId = new Guid(HttpContext.Session.GetString(Id));
+            var sessionUserId = HttpContext.Session.GetString(Id);
 
-            if (userId == null)
-            {
+            if (sessionUserId == null)
+            {   
                 await RemoveAnonymousPositionFromCart(Convert.ToInt32(productId));
                 return Json(new { Success = true });
             }
+            var userId = new Guid(sessionUserId);
 
             await _service.DeleteOrderPositionAsync(orderId, userId, Convert.ToInt32(productId));
 
@@ -253,7 +310,7 @@ namespace Serwis.ShopControllers
         [HttpPost]
         public async Task<ActionResult> AddPositionToCart(int productId, Guid userId)
         {
-            if (userId == null || userId == Guid.Empty) // jesli uzytkownik jest niezalogowany 
+            if (userId == Guid.Empty) // jesli uzytkownik jest niezalogowany 
                 return await AddAnonymousPositionToCart(productId);
             try
             {
@@ -266,17 +323,6 @@ namespace Serwis.ShopControllers
             }
             return Json(new { Success = true });
         }
-
-        //[HttpPost] //partial 
-        //public IActionResult Products(ProductsViewModel productsVM)
-        //{
-
-        //    var products = _service.Get(productsVM.FilterProducts.CategoryId,
-        //    productsVM.FilterProducts.Name
-        //    );
-
-        //    return PartialView("_TasksTable", products);
-        //}
 
         public async Task<IActionResult> Products()
         {
@@ -291,19 +337,18 @@ namespace Serwis.ShopControllers
                 var emptyListOfProducts = new List<ProductViewModel>();
                 return View(emptyListOfProducts);
             }
-
             var productsVM = products.ProductsIEnumerableToList();
             return View(productsVM);
-
         }
 
         [HttpPost] //partial 
         public IActionResult Products(ProductsViewModel productsVM)
         {
 
-            var products = _service.Get(productsVM.FilterProducts.CategoryId,
-            productsVM.FilterProducts.Name
-            );
+            var products = _service.Get(productsVM.FilterProducts.CategoryId, productsVM.FilterProducts.Name);
+            //tak nie powinno byc, do zmiany
+            var productListVM = products.ProductsIEnumerableToList();
+            //proba przekazani anowego viewmodelu do index
 
             return PartialView("_Products", products);
         }

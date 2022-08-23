@@ -2,135 +2,127 @@
 
 <br />
 
-<div class="container row">
+<section class="container row">
 
-    <div class="col-5">
+        <aside class="col-5">
 
-        <h2 class="text-dark">Produkty</h2>
-    </div>
-    <div class="col-5 offset-2">
-        <a asp-action="Upsert" asp-controller="Admin" class="btn btn-info form-control">
-            Dodaj nowe
-        </a>
-    </div>
+            <h2 class="text-light">Produkty</h2>
+        </aside>
+        <aside class="col-5 offset-2">
+            <a asp-action="Upsert" asp-controller="Admin" class="btn btn-dark form-control">
+                Dodaj nowe
+            </a>
+        </aside>
 
+        <table id="orders" class="table table-dark table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center">Id</th>
+                    <th class="text-center">Nazwa</th>
+                    <th class="text-center">Opis</th>
+                    <th class="text-center">Cena(zł)</th>
+                    <th class="text-center">Data dodania</th>
+                    <th class="text-center">Obrazek</th>
+                    <th class="text-center">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
 
-    <table id="orders" class="table table-bordered">
-        <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Nazwa</th>
-                <th scope="col">Opis</th>
-                <th scope="col">Cena(zł)</th>
-                <th scope="col">Data dodania</th>
-                <th scope="col">Obrazek</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-
-            @if (Model != null && Model.Any())
-            {
-                @foreach (var item in Model)
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td align="center" valign="middle">@item.Id</td>
+                            <td align="center" valign="middle">@item.Name</td>
+                            <td align="center" valign="middle">@item.Description</td>
+                            <td align="center" valign="middle">@item.Price</td>
+                            <td align="center" valign="middle">@item.CreatedDate</td>
+                            <td align="center" valign="middle">
+                                <img src="~/images/@item.ImageFileName" />
+                            </td>
+                            <td align="center" valign="middle">
+                                <button onclick="removeRow('@item.Id', this)" class=" btn btn-outline-danger">Usuń</button>
+                                <a asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-outline-warning">Aktualizuj</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td align="center" valign="middle">@item.Id</td>
-                        <td align="center" valign="middle">@item.Name</td>
-                        <td align="center" valign="middle">@item.Description</td>
-                        <td align="center" valign="middle">@item.Price</td>
-                        <td align="center" valign="middle">@item.CreatedDate</td>
-                        <td align="center" valign="middle">
-                            <img src="~/images/@item.ImageFileName" />
-                        </td>
-                        <td align="center" valign="middle" >
-                            <button onclick="removeRow('@item.Id', this)" class=" btn btn-danger">Usuń</button>
-                            <a asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-info">Aktualizuj</a>
+                        <td colspan="5" class="text-center">
+                            Brak produktów
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="5" class="text-center">
-                        Brak produktów
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+
+</section>
 @section Scripts
-{
-<script type="text/javascript">
-
-
-
-
-    function removeRow(id, btn)
     {
-        swal({
-            title: "Usuwanie?",
-            text: "Jestes pewien ze chcesz usunac te pozycje?",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true
-        }).then((willDelete) =>
-        {
-            if (willDelete)
-            {
-                $.ajax({
-                    type: 'POST',
-                    url: "@Url.Action("Delete", "Admin")",
-                    data:
-                    {
-                        id: id,
-                    },
-                    success: function (data)
-                    {
-                        if (data.success)
-                        { // musza byc male litery i tu i tu
-                            //usuwanie w html
-                            const table = document.getElementById("orders");
-
-                            const row = btn.parentNode.parentNode;
-
-                            //pierwszy parentNode to <td> drugi parentNode dotyczy <tr> - cały wiersz
-                            row.parentNode.removeChild(row);
-                            //kolejny parentNode tyczy sie <tbody> po wywolaniu nastepuje usuwanie wiersza
-
-                            let tbodyRowCount = table.tBodies[0].rows.length;
-
-                            if (tbodyRowCount === 0)
-                            {
-
-                                let row = table.insertRow(1);
-
-                                let cell1 = row.insertCell(0);
+    <script type="text/javascript">
 
 
-                                cell1.innerHTML = "Brak zaplanowanych zadan";
-                            }
 
-                            toastr.success("Operacja się powiodła");
-                        } else
+
+        function removeRow(id, btn) {
+            swal({
+                title: "Usuwanie?",
+                text: "Jestes pewien ze chcesz usunac te pozycje?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "@Url.Action("Delete", "Admin")",
+                        data:
                         {
-                            toastr.error("Niepowodzenie operacji \n" + data.message);
-                        }
-                    },
-                    error: function (data)
-                    {
-                        alert(data.message);
-                    },
-                    dataType: 'json'
+                            id: id,
+                        },
+                        success: function(data) {
+                            if (data.success) { // musza byc male litery i tu i tu
+                                //usuwanie w html
+                                const table = document.getElementById("orders");
 
-                });
-            }
+                                const row = btn.parentNode.parentNode;
 
-        });
-    }
+                                //pierwszy parentNode to <td> drugi parentNode dotyczy <tr> - cały wiersz
+                                row.parentNode.removeChild(row);
+                                //kolejny parentNode tyczy sie <tbody> po wywolaniu nastepuje usuwanie wiersza
+
+                                let tbodyRowCount = table.tBodies[0].rows.length;
+
+                                if (tbodyRowCount === 0) {
+
+                                    let row = table.insertRow(1);
+
+                                    let cell1 = row.insertCell(0);
+
+
+                                    cell1.innerHTML = "Brak zaplanowanych zadan";
+                                }
+
+                                toastr.success("Operacja się powiodła");
+                            } else {
+                                toastr.error("Niepowodzenie operacji \n" + data.message);
+                            }
+                        },
+                        error: function(data) {
+                            alert(data.message);
+                        },
+                        dataType: 'json'
+
+                    });
+                }
+
+            });
+        }
 
 
 
-</script>
+    </script>
 }

@@ -94,9 +94,5 @@ namespace Serwis.Persistance.Repository
                 .CountAsync();
         }
 
-        public Task CreateOrderPositionAsync(int productId, Guid userId, int orderId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
