@@ -1,8 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Http;
+@using Serwis.Controllers
 
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
-    var sessionForUserId = @HttpContextAccessor.HttpContext?.Session.GetString("Id");
+    var sessionForUserId = @HttpContextAccessor.HttpContext?.Session.GetString(AccountController.Id);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +35,7 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        
+
                         <li class="nav-item">
                             <a style="color:#ffffff" class="nav-link" asp-area="" asp-controller="Admin"
                                asp-action="Privacy">O Autorze</a>
@@ -73,7 +74,7 @@
 
     <footer class="footer text-muted">
         <div class="container">
-            &copy; 2022 - Sklep z ostrymi sosami - <a asp-area="" asp-controller="Admin" asp-action="Privacy">Privacy</a>
+            &copy; 2022 - Strona stworzona na własny użytek - wszystkie opisy produktów oraz zdjęcia pochodzą ze strony https://ostrakuchnia.pl<a asp-area="" asp-controller="Admin" asp-action="Privacy">O Autorze</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -105,11 +106,8 @@
             }
             return decodeURI(dc.substring(begin + prefix.length, end));
 
-
         }
-
         $(document).ready(function() {
-
 
 
             if (confirmMsg !== null) {

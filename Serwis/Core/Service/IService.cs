@@ -5,6 +5,12 @@ namespace Serwis.Core.Service
 {
     public interface IService
     {
+        Task<bool> DbHasAnyProducts();
+        Task InsertProducts();
+        Task CreateAdmin();
+        Task CreateAnonymous();
+        Task<bool> IsAnonymousCreated();
+        Task<bool> IsAdminCreated();
         IEnumerable<Product> Get(int categoryId = 0, string? name = null);
         string GenerateInvoice(OrderViewModel order);
         Task UpdateOrderPositionAsync(OrderPosition orderPosition, Order order);

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\images\asfa.PNG" />
+    <Content Remove="wwwroot\images\UserRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>

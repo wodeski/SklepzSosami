@@ -105,9 +105,8 @@ img {
 }
 
 #product_info {
-    background-repeat: no-repeat;
-    width: 400px !important;
-    height: 225px !important;
+    width: 450px !important;
+    height: 700px !important;
     margin-top: 1rem;
 }
 .blok {
@@ -142,4 +141,19 @@ a {
     border: solid 2px #685656;
     border-radius: 15px;
     font-weight: bolder;
+}
+
+.privacyPolicyInfo {
+    font-size: 11px;
+    position: fixed;
+    bottom: 0;
+    background-color: #4a4141;
+    width: 100%;
+    text-align: center;
+    padding: 5px 0;
+    color: white;
+}
+
+.privacyPolicyBtn {
+    font-size: 12px;
 }

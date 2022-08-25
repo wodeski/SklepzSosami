@@ -19,7 +19,7 @@
                 <label class="text-center col-1 offset-1"> X </label>
                 <label class="col-3 text-center">@pos.Product.Name</label>
                 <label class="col-1 offset-"></label>
-                <img style="width:75px; height: 50px;" src="~/images/@pos.Product.ImageFileName" />
+                <img style="width:50px; height: 75px;" src="~/images/@pos.Product.ImageFileName" />
             </aside>
         }
     </article>
@@ -104,6 +104,12 @@
                         toastr.success("Gratuluje zakupu!")
                         $('#back').css("display", "");
                         $('#accept_back').css("display", "none");
+                        sessionStorage.removeItem('key');
+
+                        document.cookie = 'cart =; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+
+                        document.getElementsByClassName('cart-quantity')[0].textContent = 0;
 
                     } else {
                         toastr.error("Niestety coś poszło nie tak :(")

@@ -4,6 +4,8 @@ namespace Serwis.Core.Repositories
 {
     public interface IProductRepository
     {
+        Task<bool> DbHasAnyProducts();
+        Task InsertProducts();
         IEnumerable<Product> Get(int categoryId = 0, string? name = null);
         Task CreateProductAsync(Product product);
         Task DeleteProductAsync(int id);

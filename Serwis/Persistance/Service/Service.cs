@@ -371,6 +371,40 @@ namespace Serwis.Persistance.Service
 
         }
 
+        public async Task CreateAdmin()
+        {
+            await _unitOfWork.User.CreateAdmin();
+            _unitOfWork.Complete();
+        }
+
+        public async Task CreateAnonymous()
+        {
+            await _unitOfWork.User.CreateAnonymous();
+            _unitOfWork.Complete();
+
+        }
+
+        public async Task<bool> IsAnonymousCreated()
+        {
+            return await _unitOfWork.User.IsAnonymousCreated();
+        }
+
+        public async Task<bool> IsAdminCreated()
+        {
+            return await _unitOfWork.User.IsAdminCreated();
+        }
+
+        public async Task InsertProducts()
+        {
+            await _unitOfWork.Product.InsertProducts();
+            _unitOfWork.Complete();
+        }
+
+        public async Task<bool> DbHasAnyProducts()
+        {
+            return await _unitOfWork.Product.DbHasAnyProducts();
+        }
+
         //Task<string> IService.ReportSentAsync(IEnumerable<OrderPosition> orderPositions)
         //{
         //    throw new NotImplementedException();

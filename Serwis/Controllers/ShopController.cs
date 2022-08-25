@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serwis.Controllers;
 using Serwis.Converter;
 using Serwis.Converters;
 using Serwis.Core.Models;
@@ -18,7 +19,8 @@ namespace Serwis.ShopControllers
     {
         private readonly IService _service;
         private List<OrderPositionViewModel> _orderPositions;
-        public static string AnonymousId = "00000000-0000-0000-0000-000000000000";
+        public static string AnonymousId = "";
+        public string Anonymous = "anonim";
         private const string AnonymousCart = "AnonyomousCart";
         private const string OrderSession = "OrderSession";
         public const string Id = "Id";
@@ -36,21 +38,37 @@ namespace Serwis.ShopControllers
 
             try
             {
+                var adminCreated = await _service.IsAdminCreated();
+                var anonymousCreated = await _service.IsAnonymousCreated();
+
+                var dbHasproducts = await _service.DbHasAnyProducts();
+
+                if (dbHasproducts == false)
+                    await _service.InsertProducts();
+
+                if (adminCreated == false)
+                    await _service.CreateAdmin();
+                
+                if (anonymousCreated == false)
+                    await _service.CreateAnonymous();
+
+                var anonymous = await _service.FindUserAsync(Anonymous);
+                AnonymousId = anonymous.Id.ToString();
                 var products = await _service.GetProductsAsync();
 
                 var categories = await _service.GetListOfProductCategories();
-                 productsViewModel = new ProductsViewModel
+                productsViewModel = new ProductsViewModel
                 {
                     FilterProducts = new FilterProducts(),
                     Products = products,
                     Categories = categories
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            
+
             return View(productsViewModel);
         }
 
@@ -92,7 +110,6 @@ namespace Serwis.ShopControllers
 
         public async Task<IActionResult> Cart(Guid userId)
         {
-
             if (userId == Guid.Empty)
             {
                 //anonimowy uzytkownik
@@ -101,7 +118,7 @@ namespace Serwis.ShopControllers
             }
             var orderPositions = await _service.GetOrderPositionsForUserAsync(userId);//usuwa wszystkue te ktore mg byc false i byc ich wiecej kak jedno
 
-            var orderPositionsVm = orderPositions.OrderPositionsIEnumerableToList(); // tu jest błąd
+            var orderPositionsVm = orderPositions.OrderPositionsIEnumerableToList(); // tu jest błąd??? jaki.>??
             return View(orderPositionsVm);
         }
 
@@ -120,19 +137,6 @@ namespace Serwis.ShopControllers
             return View(productVM);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> SingleProductPurchase(int productId, string priceValue)//do zmiany nazwa
-        //{
-        //    var product = await _service.GetProductAsync(productId);
-        //    var productVM = product.PrepareProductViewModel();
-        //    var userId = HttpContext.Session.GetString("Id");
-        //    if (userId == null)
-        //        userId = "7";
-        //    var orderVM = _service.SetOrderForPosition(Convert.ToInt32(userId), Convert.ToDecimal(priceValue));
-        //    return Json(new { success = true, redirectToUrl = Url.Action("OrderSummary", "Shop") });//, orderVM) }); // działa!
-        //}
-
-
         public async Task<IActionResult> OrderSummary()
         {
             var test = HttpContext.Session.GetComplexData<OrderViewModel>(OrderSession); // na wypadek gdyby ktos przeładował strone zabezpiecznie przed null 
@@ -147,62 +151,6 @@ namespace Serwis.ShopControllers
             return View(orderVM);
         }
 
-
-
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-        //dodac opcje autoinkrementacji !!!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> OrderSummary(string email)
         {
@@ -214,26 +162,47 @@ namespace Serwis.ShopControllers
 
             try
             {
-                foreach(var position in orderVM.OrderPositions)
+                foreach (var position in orderVM.OrderPositions)
                 {
                     try
                     {
                         await _service.UpdateOrderPositionAsync(position, order);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         throw new Exception(ex.Message);
                     }
                 }
-                
+
 
                 _service.SendMail(email, orderVM);
+
+                if (HttpContext.Session.GetString(Id) == null)
+                {
+                    var data = HttpContext.Session.GetComplexData<List<OrderPositionViewModel>>(AnonymousCart);
+                    foreach (var position in data)
+                    {
+                        await RemoveAnonymousPositionFromCart(position.ProductId);
+                    }
+                }
+                else
+                {
+                    var orderPositions = await _service.GetOrderPositionsForUserAsync(new Guid(HttpContext.Session.GetString(Id)));//usuwa wszystkue te ktore mg byc false i byc ich wiecej kak jedno
+
+                    var orderPositionsVm = orderPositions.OrderPositionsIEnumerableToList();
+
+                    foreach (var position in orderPositionsVm)
+                    {
+                        await DeleteUserOrderPositionFromCart(position.ProductId.ToString(), position.OrderId);
+                    }
+                }
 
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
             }
+
             return Json(new { success = true }); // zrobic przekierwoanie do strony głownej
 
         }
@@ -244,7 +213,7 @@ namespace Serwis.ShopControllers
             var sessionUserId = HttpContext.Session.GetString(Id);
 
             if (sessionUserId == null)
-            {   
+            {
                 await RemoveAnonymousPositionFromCart(Convert.ToInt32(productId));
                 return Json(new { Success = true });
             }
@@ -263,39 +232,27 @@ namespace Serwis.ShopControllers
             return Json(new { Success = true });
 
         }
-        private OrderPositionViewModel SetOrderPositionViewModelForInvoice(Order order, ApplicationUser user, Product product)
-        {
-            return new OrderPositionViewModel
-            {
-                Order = order,
-                User = user,
-                Product = product,
+        //private OrderPositionViewModel SetOrderPositionViewModelForInvoice(Order order, ApplicationUser user, Product product)
+        //{
+        //    return new OrderPositionViewModel
+        //    {
+        //        Order = order,
+        //        User = user,
+        //        Product = product,
 
-            };
-        }
+        //    };
+        //}
 
-        private OrderPositionViewModel SetOrderPositionViewModelForProduct(Product product, Order order, ApplicationUser user)
-        {
-            var orderPositionVM = new OrderPositionViewModel
-            {
-                Product = product,
-                User = user,
-                Order = order
-            };
-            return orderPositionVM;
-        }
-
-
-
-
-
-
-
-
-
-
-        //        [HttpGet]
-
+        //private OrderPositionViewModel SetOrderPositionViewModelForProduct(Product product, Order order, ApplicationUser user)
+        //{
+        //    var orderPositionVM = new OrderPositionViewModel
+        //    {
+        //        Product = product,
+        //        User = user,
+        //        Order = order
+        //    };
+        //    return orderPositionVM;
+        //}
 
         public async Task<IActionResult> Product(int productId)
         {
@@ -364,7 +321,8 @@ namespace Serwis.ShopControllers
                 Id = id,
                 OrderId = 1,
                 Product = produkt,
-                Quantity = 1
+                Quantity = 1,
+                ProductId = productId
             };
 
             data.Add(obj);

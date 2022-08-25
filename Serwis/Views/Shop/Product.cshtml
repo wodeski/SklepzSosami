@@ -1,28 +1,29 @@
 ﻿@model Serwis.Models.ViewModels.ProductViewModel
 <h2>Informacje dla @Model.Name</h2>
 
-<section class="container row" id="product_display">
-    <article class="col-5" style="height:400px;">
-        <aside style="background-image:
-            linear-gradient(rgba(33,37,41, 0.1), rgba(43, 44, 46, 0.4 ), rgba(81,81,81, 1)),
-            url('/images/@Model.ImageFileName');" id="product_info" />
+<section class="container row" id="product_display" style="height:900px;">
+    <article class="col-5">
+                <aside>
+                    <img id="product_info" src="/images/@Model.ImageFileName"/>
+                </aside>
     </article>
-    <article class="col-5 offset-2">
+    <article class="col-5 offset-2" style="width:400px;">
         <aside class="form-group row">
-            <span>@Model.Description</span>
+            <span style="text-align:justify; margin-top:1rem;">@Model.Description</span>
         </aside>
-        <aside class=" form-group row">
-            <div>
-                <span>@Model.Price</span>
-            </div>
-        </aside>
-        <aside class=" form-group row">
+        <aside class=" form-group row" style="margin-top:1rem;">
             <div>
             Skala ostrości
             @for (var i = 0; i < Model.CategoryId; i++)
             {
                 <i style="color:orangered" class="fa-solid fa-fire"></i>
             }
+            </div>
+        </aside>
+
+        <aside class=" form-group row" style="margin-top:1rem;">
+            <div>
+                <span>@Model.Price zł</span>
             </div>
         </aside>
         <aside class=" form-group row">

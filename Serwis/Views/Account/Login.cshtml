@@ -20,12 +20,12 @@
                 <input type="password" asp-for="Password" class="form-control">
                 <span class="text-danger" asp-validation-for="Password"></span>
             </aside>
-            <aside class="row form-check mb-2 mt-2">
+           @* <aside class="row form-check mb-2 mt-2">
                 <div class="col-2 ">
                     <input type="checkbox" asp-for="RememberMe" class="form-check-input" />
                     <label asp-for="RememberMe" class="form-check-label"></label>
                 </div>
-            </aside>
+            </aside>*@
         </article>
         <article form-group row>
             <span style="color:#df2c14">@TempData["UserNotFound"]</span>
@@ -39,6 +39,7 @@
 </section>
 @section scripts{
     <script type="text/javascript">
+<partial name="_validationScriptsPartial" /> 
 
         function ClearSession() {
             if (!confirm)

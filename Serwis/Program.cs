@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Serwis.Controllers;
 using Serwis.Core;
 using Serwis.Core.Models;
 using Serwis.Core.Repositories;
@@ -10,17 +11,22 @@ using Serwis.Persistance;
 using Serwis.Persistance.Repository;
 using Serwis.Persistance.Service;
 using Serwis.Repository;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication("CookieAuth").AddCookie("CookieAuth", options => // pierwsze jest nazwa schematu autentykacji nie ze nazwa cookie  
+builder.Services.AddAuthentication(AccountController.Cookie).AddCookie(AccountController.Cookie, options => // pierwsze jest nazwa schematu autentykacji nie ze nazwa cookie  
 {
     options.Cookie.Name = "CookieAuth";//ustawienie  nazwy cookie
     options.LoginPath = "/Account/Login";//dosmylnie jest tak ustawione jesli chcemy dac w³asna sciezke wtedy trzeba ja sprecyzowac w³asnie w tym miejscu
     options.AccessDeniedPath = "/Shop/Index";
 
 });
-
+var newCulture = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone(); // klon biezacej Culute Info
+newCulture.NumberFormat.NumberDecimalSeparator = ".";
+CultureInfo.DefaultThreadCurrentCulture = newCulture;
+CultureInfo.DefaultThreadCurrentUICulture = newCulture;
+Console.WriteLine(newCulture.NumberFormat.ToString());
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("UserOnly",

@@ -35,15 +35,15 @@
                         <tr>
                             <td align="center" valign="middle">@item.Id</td>
                             <td align="center" valign="middle">@item.Name</td>
-                            <td align="center" valign="middle">@item.Description</td>
+                            <td class="description" align="center" valign="middle">@item.Description</td>
                             <td align="center" valign="middle">@item.Price</td>
                             <td align="center" valign="middle">@item.CreatedDate</td>
                             <td align="center" valign="middle">
-                                <img src="~/images/@item.ImageFileName" />
+                                <img src="~/images/@item.ImageFileName" style="width:140px; height 200px;"/>
                             </td>
                             <td align="center" valign="middle">
-                                <button onclick="removeRow('@item.Id', this)" class=" btn btn-outline-danger">Usuń</button>
-                                <a asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-outline-warning">Aktualizuj</a>
+                                <button onclick="removeRow('@item.Id', this)" class=" btn mb-1 btn-outline-danger">Usuń</button>
+                                <a asp-action="Upsert" asp-route-id="@item.Id" class="btn mb-1 btn-outline-warning">Aktualizuj</a>
                             </td>
                         </tr>
                     }
@@ -64,7 +64,20 @@
     {
     <script type="text/javascript">
 
-
+    const description = document.getElementsByClassName("description");
+    
+    console.log(description);
+    $(document).ready(function() {
+    
+        for (let i = 0; i < description.length; i++) {
+        if (description[i].textContent.length > 17) {
+            let short_description = description[i].textContent.substring(0,16);
+            console.log(short_description);
+            short_description += "(...)";
+            description[i].innerHTML = short_description;
+        }
+    }
+    });
 
 
         function removeRow(id, btn) {

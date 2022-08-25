@@ -8,23 +8,22 @@ namespace Serwis.Models.ViewModels
         [Display(Name = "Nazwa uzytkownika")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage ="Nazwa uzytkownika jest wymagana")]
+        [Required(ErrorMessage ="Hasło jest wymagane")]
         [DataType(DataType.Password)]
         [Display(Name = "Hasło")]
         public string Password { get; set; }
 
-        [Required(ErrorMessage ="Nazwa uzytkownika jest wymagana")]
+        [Required(ErrorMessage ="Powtórzenie hasla jest wymagane")]
         [Display(Name = "Powtórz hasło")]
         public string RepeatPassword { get; set; }
 
         [Display(Name = "Zapamietaj mnie")]
         public bool RememberMe { get; set; }
 
-        [Required(ErrorMessage = "Nazwa uzytkownika jest wymagana")]
+        [Required(ErrorMessage = "Mail jest wymagany")]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
         public decimal Wallet { get; set; }
         
         public DateTime CreatedDate { get; set; }

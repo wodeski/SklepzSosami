@@ -2,7 +2,6 @@
 <section class="container" style="padding:20px">
     <form method="post" asp-action="Register" asp-controller="Account">
         <div class="text-danger" asp-validation-summary="ModelOnly"></div>
-
         <article form-group row>
             <aside class="col-3">
                 <label asp-for="UserName"></label> <!--wazne aby własciwosci mialy odpowiedni poziom dostepu-->
@@ -51,8 +50,9 @@
 </section>
 @section scripts{
     <script type="text/javascript">
+        <partial name="_validationScriptsPartial" />
 
-        let email = document.getElementById("email").textContent;
+            let email = document.getElementById("email").textContent;
         const submit = document.getElementById("submit");
         const password = document.getElementById("password");
         const repeat_password = document.getElementById("repeat_password");

@@ -92,6 +92,7 @@ else
 @section scripts
 {
 <script type="text/javascript">
+        let testVal = /[0-9]/;
 
     let price_value = document.getElementById('price_value');
     let sum_value = document.getElementById('sum_value');
@@ -138,6 +139,16 @@ else
 
         let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie 
 
+
+
+            if ((testVal.test(quantityCl[i].innerHTML)) === false) {
+
+                quantityCl[i].innerHTML = 1;
+                toastr.error("Nie zmieniaj danych!");
+
+                return;
+            } 
+
         if (i !== parseInt(index))
         {
             toastr.error("Wystąpił problem przy walidacji danych");
@@ -171,6 +182,15 @@ else
     function BtnPlus(index, btn)
     {
         let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie jest przypisany do kazdego wiersza 
+
+
+
+            if ((testVal.test(quantityCl[i].innerHTML)) === false) {
+
+                quantityCl[i].innerHTML = 1;
+                toastr.error("Nie zmieniaj danych!");
+                return;
+            } 
 
         if (i !== parseInt(index))
         {
@@ -236,6 +256,12 @@ else
         var quantityOfPositions = []
         for (let i = 0; i < productId.length; i++)
         {
+            if ((testVal.test(quantityCl[i].innerHTML)) === false) {
+
+                quantityCl[i].innerHTML = 1;
+                toastr.error("Nie zmieniaj danych!");
+                return;
+            } 
             quantityOfPositions.push(productId[i].innerHTML, quantityCl[i].innerHTML)
         }
         if (!confirm("Test"))

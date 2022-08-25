@@ -40,7 +40,7 @@
                     <td align="center" valign="middle" style="text-align:center;">@(lp = lp +1 )</td>
                     <td align="center" valign="middle" style="text-align:center;">@position.Product.Name</td>
                     <td align="center" valign="middle" style="text-align:center;">
-                        <img style="width:250px; height 70px;" src="~/images/@position.Product.ImageFileName" />
+                        <img style="width:150px; height 200px;" src="~/images/@position.Product.ImageFileName" />
                     </td>
 
                     <td align="center" valign="middle" style="text-align:center;" id="@index">
@@ -123,6 +123,8 @@ else
 {
 <script type="text/javascript">
 
+        let testVal = /[0-9]/;
+
     let price_value = document.getElementById('price_value');
     let sum_value = document.getElementById('sum_value');
 
@@ -160,6 +162,16 @@ else
     {
         let i = parseInt(btn.parentNode.getAttribute("id")); // i to jest indeks on nie ulega zmianie
 
+
+
+            if ((testVal.test(quantityCl[i].innerHTML)) === false) {
+
+                quantityCl[i].innerHTML = 1;
+                toastr.error("Nie zmieniaj danych!");
+
+                return;
+            } 
+
         if (i !== parseInt(index))
         {
             toastr.error("Wystąpił problem przy walidacji danych");
@@ -193,8 +205,20 @@ else
     //zwiekszenie ilosci
     function BtnPlus(index, btn)
     {
+        
+         
 
         let i = parseInt(btn.parentNode.getAttribute("id")); // i jest przypisany do kazdego wiersza
+
+
+
+            if ((testVal.test(quantityCl[i].innerHTML)) === false) {
+
+                quantityCl[i].innerHTML = 1;
+                toastr.error("Nie zmieniaj danych!");
+              
+                return;
+            } 
 
         if (i !== parseInt(index))
         {
@@ -226,9 +250,19 @@ else
     function PayForOrder(orderId)
     {
 
+
         var quantityOfPositions = []
         for (let i = 0; i < productId.length; i++)
         {
+
+
+            if ((testVal.test(quantityCl[i].innerHTML)) === false) {
+
+                quantityCl[i].innerHTML = 1;
+                toastr.error("Nie zmieniaj danych!");
+              
+                return;
+            } 
             quantityOfPositions.push(productId[i].innerHTML, quantityCl[i].innerHTML)
         }
 

@@ -69,12 +69,15 @@ namespace Serwis.Controllers
         [HttpPost]
         public async Task<IActionResult> Upsert(ProductViewModel productVM)
         {
-            //var errors = ModelState
-            //    .Where(x => x.Value.Errors.Count > 0)
-            //    .Select(x => new { x.Key, x.Value.Errors })
-            //    .ToArray();
+            var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToArray();
             if (!ModelState.IsValid)
+            {
+                productVM.CategoriesList = await _service.GetListOfProductCategories();
                 return View(productVM);
+            }
 
             var product = productVM.ConvertToProduct();
 
@@ -99,7 +102,6 @@ namespace Serwis.Controllers
                 product.ImageFile.CopyTo(fileStream);
             }
         }
-
         private string AddPathToImage(Product product)
         {
             var wwwRootPath = _hostEnviroment.WebRootPath;
@@ -130,9 +132,7 @@ namespace Serwis.Controllers
             return Json(new { success = true });
         }
 
-       
-
-        [Authorize(Policy = "User")] // jesli ma obaj maja miec mozliwosc wejscia trzeba dac roles
+        [Authorize(Policy = AccountController.UserOnly)] 
         public IActionResult Privacy()
         {
             return View();

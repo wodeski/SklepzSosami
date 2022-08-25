@@ -13,11 +13,11 @@ namespace Serwis.Models.ViewModels
 
         public Guid Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Pole login musi zostac wypełnione")]
         [Display(Name = "Nazwa uzytkownika")]
         public string UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Pole hasło musi zostac wypełnione")]
         [DataType(DataType.Password)]
         [Display(Name = "Hasło")]
         public string Password { get; set; }

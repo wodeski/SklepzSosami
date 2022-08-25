@@ -40,7 +40,7 @@ namespace Testy
             Product product = CreateRandomProduct();
             _repositoryStub.Setup(x => x.Product.FindProductByIdAsync(It.IsAny<int>())).ReturnsAsync(product);
 
-            var service = new Service(_contextAccessor, _repositoryStub.Object); //jedno polaczenie z baza danych
+            var service = new Service(_contextAccessor, _repositoryStub.Object); 
 
             var result = await service.GetProductsById(lista);
 

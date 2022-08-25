@@ -20,26 +20,30 @@ namespace Serwis.Models.ViewModels
         [Display(Name = "Nazwa")]
         public string Name { get; set; }
 
+        [RegularExpression(@"^\d+\.\d{2}$")]
         [Required(ErrorMessage = "Pole Wartość musi zostac wypełnione")]
         [Display(Name = "Wartość")]
         [Column(TypeName = "decimal(5,2)")]
-        [Range(1, 100)]
+        [Range(1,100, ErrorMessage =  "Pole musi miescic sie w przedziale od 1 do 100")]
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "Pole Opis musi zostac wypełnione")]
         [Display(Name = "Opis")]
+        [MaxLength(250,ErrorMessage ="Podanny opis jest za długi!")]
         public string Description { get; set; }
 
         public string? ImageFileName { get; set; }
 
-       
 
+        [Required(ErrorMessage ="Wybierz kategorię!")]
+        [Display(Name = "Kategoria")]
         public int CategoryId { get; set; }
         
         public ProductCategory? Categories { get; set; }
 
         public IEnumerable<ProductCategory> CategoriesList { get; set; } //bylo icollection
 
+        [Display(Name="Plik zdjęciowy")]
         public IFormFile? ImageFile { get; set; }
 
         public DateTime CreatedDate { get; set; }
