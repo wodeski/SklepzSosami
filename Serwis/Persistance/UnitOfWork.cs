@@ -10,7 +10,6 @@ namespace Serwis.Persistance
     public class UnitOfWork : IUnitOfWork
     {
         private readonly IApplicationDbContext _applicationDbContext;
-        private readonly IReportRepository _reportRepository;
         private readonly IGenarateHtmlEmail _genarateHtmlEmail;
 
         public UnitOfWork(IApplicationDbContext serviceDbContext)
@@ -22,7 +21,7 @@ namespace Serwis.Persistance
             Order = new OrderRepository(serviceDbContext);
             OrderPosition = new OrderPositionRepository(serviceDbContext);
             AuthRepository = new AuthRepository(serviceDbContext);
-            EmailSender = new EmailSender(_reportRepository);
+            EmailSender = new EmailSender();
             GenerateHtmlEmail = new GenarateHtmlEmail();
            // ReportRepository = new ReportRepository();
         }
@@ -35,7 +34,6 @@ namespace Serwis.Persistance
         public IOrderPositionRepository OrderPosition { get; set; }
         public IAuthRepository AuthRepository { get; set; }
         public IEmailSender EmailSender { get; set; }
-        public IReportRepository ReportRepository { get; set; }
         public IGenarateHtmlEmail GenerateHtmlEmail { get; set; }
 
         public void Complete()

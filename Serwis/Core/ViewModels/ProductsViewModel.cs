@@ -1,5 +1,5 @@
-﻿using Serwis.Core.Models;
-using Serwis.Models.Domains;
+﻿using Serwis.Models.Domains;
+using Serwis.Persistance;
 
 namespace Serwis.Core.ViewModels
 {

@@ -11,21 +11,18 @@ namespace Serwis.Models.Domains
             OrderPositions = new Collection<OrderPosition>();
         }
         [Key]
-        [Display(Name = "Identyfikator")]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Pole Nazwa musi zostac wypełnione")]
-        [Display(Name = "Nazwa")]
+        [Required]
+        [MaxLength(50)]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Pole Wartość musi zostac wypełnione")]
-        [Display(Name = "Wartość")]
+        [Required]
         [Column(TypeName = "decimal(5,2)")]
         [Range(1, 100)]
         public decimal Price { get; set; }
 
-        [Required(ErrorMessage = "Pole Opis musi zostac wypełnione")]
-        [Display(Name = "Opis")]
+        [Required]
         [MaxLength(250)]
         public string Description { get; set; }
 

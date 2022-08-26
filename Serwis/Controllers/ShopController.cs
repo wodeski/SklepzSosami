@@ -10,6 +10,7 @@ using Serwis.Models;
 using Serwis.Models.Domains;
 using Serwis.Models.Extensions;
 using Serwis.Models.ViewModels;
+using Serwis.Persistance;
 using Serwis.Repository;
 using System.Text.Json;
 
@@ -38,6 +39,13 @@ namespace Serwis.ShopControllers
 
             try
             {
+                var isCategoryListEmpty = await _service.IsProductCategoryListEmpty();
+                if (isCategoryListEmpty)
+                {
+                    await _service.CreateListOfCategories();
+                }
+                var categories = await _service.GetListOfProductCategories();
+
                 var adminCreated = await _service.IsAdminCreated();
                 var anonymousCreated = await _service.IsAnonymousCreated();
 
@@ -56,7 +64,6 @@ namespace Serwis.ShopControllers
                 AnonymousId = anonymous.Id.ToString();
                 var products = await _service.GetProductsAsync();
 
-                var categories = await _service.GetListOfProductCategories();
                 productsViewModel = new ProductsViewModel
                 {
                     FilterProducts = new FilterProducts(),
@@ -283,11 +290,7 @@ namespace Serwis.ShopControllers
 
         public async Task<IActionResult> Products()
         {
-            var isCategoryListEmpty = await _service.IsProductCategoryListEmpty();
-            if (isCategoryListEmpty)
-            {
-                await _service.CreateListOfCategories();
-            }
+            
             var products = await _service.GetProductsAsync();
             if (products.Count() == 0)
             {

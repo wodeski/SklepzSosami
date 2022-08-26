@@ -18,12 +18,12 @@ namespace Serwis.Models.ViewModels
 
         [Required(ErrorMessage = "Pole Nazwa musi zostac wypełnione")]
         [Display(Name = "Nazwa")]
+        [MaxLength(50, ErrorMessage ="Nazwa jest za długa!")]
         public string Name { get; set; }
 
         [RegularExpression(@"^\d+\.\d{2}$")]
         [Required(ErrorMessage = "Pole Wartość musi zostac wypełnione")]
         [Display(Name = "Wartość")]
-        [Column(TypeName = "decimal(5,2)")]
         [Range(1,100, ErrorMessage =  "Pole musi miescic sie w przedziale od 1 do 100")]
         public decimal Price { get; set; }
 

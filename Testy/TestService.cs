@@ -5,9 +5,9 @@ using Moq;
 using Serwis.Core;
 using Serwis.Core.Repositories;
 using Serwis.Core.Service;
-using Serwis.Models;
 using Serwis.Models.Domains;
 using Serwis.Models.ViewModels;
+using Serwis.Persistance;
 using Serwis.Persistance.Service;
 using Serwis.ShopControllers;
 
@@ -18,7 +18,7 @@ namespace Testy
         private readonly Mock<IUnitOfWork> _repositoryStub = new();
         private readonly Mock<IService> _serviceStub = new();
         private readonly Mock<IOrderPositionRepository> _orderPositionRepositoryStub = new();
-        private readonly EmailSender _emailSender; // klasy nie moga byc mockowane to jest tylko na uzytek testu
+        private readonly EmailSender _emailSender; 
         private readonly List<OrderPositionViewModel> _orderPositions;
         private IHttpContextAccessor _contextAccessor;
 

@@ -13,7 +13,6 @@ namespace Serwis.Core
         IUserRepository User { get; set; }
         IAuthRepository AuthRepository { get; set; }
         IEmailSender EmailSender { get; set; }
-        IReportRepository ReportRepository { get; set; }
         IGenarateHtmlEmail GenerateHtmlEmail{ get; set; }
 
         void Complete();

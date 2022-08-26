@@ -1,13 +1,15 @@
 ﻿@model Serwis.Models.ViewModels.ProductViewModel
 <h2>Informacje dla @Model.Name</h2>
 
-<section class="container row" id="product_display" style="height:900px;">
+<section class="container row" id="product_display">
     <article class="col-5">
                 <aside>
-                    <img id="product_info" src="/images/@Model.ImageFileName"/>
+                    <img id="product_info" src="~/images/@Model.ImageFileName"/>
                 </aside>
     </article>
-    <article class="col-5 offset-2" style="width:400px;">
+    <article class="col-auto offset-1">
+    </article>
+    <article class="col-5" style="width:400px;">
         <aside class="form-group row">
             <span style="text-align:justify; margin-top:1rem;">@Model.Description</span>
         </aside>

@@ -55,6 +55,11 @@ namespace Serwis.Controllers
             registerVM.CreatedDate = DateTime.Now;
             if (!ModelState.IsValid)
                 return View(registerVM);
+            if(registerVM.UserName != IsAnonymous)
+            {
+                TempData[Validation] = "Logowanie niemożliwe";
+                return View(registerVM);
+            }
 
             if (registerVM.Password != registerVM.RepeatPassword)
             {

@@ -38,7 +38,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // do obs³ugi sesji po stronie view w tym wypadku oczywiscie ma tez inne zastosowanie 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // do obs³ugi sesji po stronie view( w tym wypadku oczywiscie ma tez inne zastosowanie )
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultContext")));
 builder.Services.AddControllersWithViews();
@@ -52,7 +52,6 @@ builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IGenarateHtmlEmail, GenarateHtmlEmail>();
-builder.Services.AddTransient<IReportRepository, ReportRepository>();
 builder.Services.AddSingleton<List<OrderPositionViewModel>, List<OrderPositionViewModel>>();
 
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); // POZWALA NA WIDZENIE ZMIAN PO ODSWIEZENIU STRONY
