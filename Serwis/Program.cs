@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(AccountController.Cookie).AddCookie(AccountController.Cookie, options => // pierwsze jest nazwa schematu autentykacji nie ze nazwa cookie  
 {
-    options.Cookie.Name = "CookieAuth";//ustawienie  nazwy cookie
+    options.Cookie.Name = AccountController.Cookie;//ustawienie  nazwy cookie
     options.LoginPath = "/Account/Login";//dosmylnie jest tak ustawione jesli chcemy dac w³asna sciezke wtedy trzeba ja sprecyzowac w³asnie w tym miejscu
     options.AccessDeniedPath = "/Shop/Index";
 
