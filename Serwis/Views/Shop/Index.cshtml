@@ -96,13 +96,13 @@ function AddPositionToCart(productId, userId) {
                         }
                         toastr.success("Dodano do koszyka");
                     } else {
-                        toastr.error("Niepowodzenie operacji \n" + data.message);
+                        toastr.error("Niepowodzenie operacji tutaj \n" + data.message);
                     }
 
                 },
 
                 error: function (data) {
-                    toastr.error("Niepowodzenie operacji \n" + data.message);
+                    toastr.error("Niepowodzenie operacji jednak tutaj \n" + data.message);
                 },
                 dataType: 'json'
 

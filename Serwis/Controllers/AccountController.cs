@@ -12,6 +12,7 @@ using Serwis.Converters;
 
 namespace Serwis.Controllers
 {
+    [AutoValidateAntiforgeryToken]
     public class AccountController : Controller
     {
 
@@ -49,17 +50,12 @@ namespace Serwis.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
             registerVM.CreatedDate = DateTime.Now;
             if (!ModelState.IsValid)
                 return View(registerVM);
-            if(registerVM.UserName != IsAnonymous)
-            {
-                TempData[Validation] = "Logowanie niemożliwe";
-                return View(registerVM);
-            }
+            
 
             if (registerVM.Password != registerVM.RepeatPassword)
             {
@@ -98,7 +94,6 @@ namespace Serwis.Controllers
             return false;
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
 
         public async Task<IActionResult> Login(ApplicationUserViewModel userVM)
         {
@@ -108,6 +103,12 @@ namespace Serwis.Controllers
                 //    .Where(x => x.Value.Errors.Count > 0)
                 //    .Select(x => new { x.Key, x.Value.Errors })
                 //    .ToArray();
+                return View(userVM);
+            }
+
+            if (userVM.UserName == IsAnonymous)
+            {
+                TempData[Validation] = "Logowanie niemożliwe";
                 return View(userVM);
             }
 

@@ -4,6 +4,7 @@
 @inject IHttpContextAccessor HttpContextAccessor;
 @{
     var sessionForUserId = @HttpContextAccessor.HttpContext?.Session.GetString(AccountController.Id);
+    var sessionForUsername = @HttpContextAccessor.HttpContext?.Session.GetString(AccountController.SessionKeyName);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +41,7 @@
                             <a style="color:#ffffff" class="nav-link" asp-area="" asp-controller="Admin"
                                asp-action="About">O Autorze</a>
                         </li>
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity.IsAuthenticated && @sessionForUsername == "admin")
                         {
                             <li class="nav-item">
                                 <a style="color: #ffffff" class="nav-link" asp-area="" asp-controller="Admin" asp-action="Service">

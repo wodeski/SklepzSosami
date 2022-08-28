@@ -78,20 +78,27 @@ namespace Serwis.Controllers
                 productVM.CategoriesList = await _service.GetListOfProductCategories();
                 return View(productVM);
             }
-
             var product = productVM.ConvertToProduct();
+
 
             if (product.Id == 0)
             {
                 product.CreatedDate = DateTime.Now;
                 AddImageToDirectory(product);
                 await _service.CreateProductAsync(product);
+                return RedirectToAction("Service");
             }
-            else
+
+            if (product.ImageFile != null)
             {
                 await _service.UpdateProductAsync(product);
+                AddImageToDirectory(product);
             }
+            await _service.UpdateProductAsync(product);
+
             return RedirectToAction("Service");
+
+
         }
 
         private void AddImageToDirectory(Product product)
