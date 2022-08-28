@@ -11,6 +11,8 @@ using System.Diagnostics;
 
 namespace Serwis.Controllers
 {
+    [AutoValidateAntiforgeryToken]
+
     public class AdminController : Controller
     {
         private readonly IEmailSender _emailSender;
@@ -80,17 +82,23 @@ namespace Serwis.Controllers
             }
 
             var product = productVM.ConvertToProduct();
+            
+          
 
             if (product.Id == 0)
             {
                 product.CreatedDate = DateTime.Now;
                 AddImageToDirectory(product);
                 await _service.CreateProductAsync(product);
+                return RedirectToAction("Service");
             }
-            else
+
+            if (product.ImageFile != null)
             {
-                await _service.UpdateProductAsync(product);
+                AddImageToDirectory(product);
             }
+                await _service.UpdateProductAsync(product);
+
             return RedirectToAction("Service");
         }
 

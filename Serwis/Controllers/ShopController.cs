@@ -16,6 +16,7 @@ using System.Text.Json;
 
 namespace Serwis.ShopControllers
 {
+
     public class ShopController : Controller // dodaje wsparcie dla widoków
     {
         private readonly IService _service;

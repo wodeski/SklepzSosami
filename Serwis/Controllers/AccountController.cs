@@ -49,7 +49,6 @@ namespace Serwis.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
             registerVM.CreatedDate = DateTime.Now;
@@ -98,7 +97,6 @@ namespace Serwis.Controllers
             return false;
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
 
         public async Task<IActionResult> Login(ApplicationUserViewModel userVM)
         {

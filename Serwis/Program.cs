@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serwis.Controllers;
 using Serwis.Core;
@@ -54,7 +55,10 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IGenarateHtmlEmail, GenarateHtmlEmail>();
 builder.Services.AddSingleton<List<OrderPositionViewModel>, List<OrderPositionViewModel>>();
 
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); // POZWALA NA WIDZENIE ZMIAN PO ODSWIEZENIU STRONY
+builder.Services.AddControllersWithViews(option =>
+{
+    option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+}).AddRazorRuntimeCompilation(); // POZWALA NA WIDZENIE ZMIAN PO ODSWIEZENIU STRONY
 builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
 
 builder.Services.AddDistributedMemoryCache();
