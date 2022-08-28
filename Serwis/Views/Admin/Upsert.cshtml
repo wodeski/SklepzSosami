@@ -39,9 +39,12 @@
                 </aside>
                 <aside class="col-6 offset-3">
                     <input id="imageFile" class="form-control" accept="image/*" asp-for="ImageFile">
+                    @if (@Model.ImageFileName == null)
+                    {
                         <div id="preview" class="mt-3">
                             <p>Nie wybrano żadnego zdjecia</p>
                         </div>
+                    }
                 </aside>
 
                 <span class="text-danger" asp-validation-for="ImageFile"></span>
@@ -134,9 +137,6 @@ function updateImageDisplay() {
             if (validFileType(file)) {//jesli format jest odpowiedni
                 const image = document.createElement('img'); //stworzenie znacznika img
                 image.src = URL.createObjectURL(file); //pobranie zrodla zdjecia
-                image.style.width = "280px";
-                image.style.height = "500px";
-
                 preview.appendChild(image);
             } else {
                 para.textContent = `Plik ${file.name}: nie jest odpowiedniego typu!`;
